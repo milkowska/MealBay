@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -23,6 +24,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     Greeting("Android")
+                    SimpleButton()
                 }
             }
         }
@@ -37,7 +39,17 @@ fun Greeting(name: String) {
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
-    MealBayTheme {
+    MealBayTheme(dynamicColor = false
+    ) {
         Greeting("Android")
+    }
+}
+
+@Composable
+fun SimpleButton() {
+    Button(onClick = {
+        //your onclick code here
+    }) {
+        Text(text = "Simple Button")
     }
 }
