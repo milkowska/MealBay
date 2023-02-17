@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">MealBay</string>
+    <string name="search_icon">Search</string>
+    <string name="collection_icon">Collections</string>
+    <string name="list_icon">Shopping list</string>
+    <string name="home_icon">Home</string>
+
 </resources>
