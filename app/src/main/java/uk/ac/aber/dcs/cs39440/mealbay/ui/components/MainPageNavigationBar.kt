@@ -33,7 +33,7 @@ fun MainPageNavigationBar(
             label = stringResource(id = R.string.home_icon)
         ),
         Screen.Explore to IconGroup(
-            filledIcon = painterResource(R.drawable.ic_outline_search_21),
+            filledIcon = painterResource(R.drawable.ic_icons8_search),
             outlinedIcon = painterResource(R.drawable.ic_outline_search_21),
             label = stringResource(id = R.string.search_icon)
         ),

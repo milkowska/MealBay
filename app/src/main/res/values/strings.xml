@@ -4,5 +4,11 @@
     <string name="collection_icon">Collections</string>
     <string name="list_icon">Shopping list</string>
     <string name="home_icon">Home</string>
+    <string name="shopping_list_is_empty">Shopping list is currently empty.</string>
+    <string name="clear_all">Clear all</string>
+    <string name="clear_the_list">Clear the list</string>
+    <string name="confirm_clearing">Do you want to delete the entire shopping list?</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
 
 </resources>
