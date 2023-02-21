@@ -18,4 +18,6 @@ class MealBayRepository(application: Application) {
         shoppingListDao.deleteItem(shoppingListItem)
     }
 
+    fun getShoppingList() = shoppingListDao.getAllItems()
+
 }
