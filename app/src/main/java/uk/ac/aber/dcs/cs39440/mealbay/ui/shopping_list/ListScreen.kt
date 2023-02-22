@@ -1,5 +1,6 @@
 package uk.ac.aber.dcs.cs39440.mealbay.ui.shopping_list
 
+import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -9,6 +10,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -56,7 +58,6 @@ fun ListScreenTopLevel(
                 shoppingListItem
             )
         },
-        shoppingListViewModel
     )
 }
 
@@ -67,16 +68,15 @@ fun ListScreen(
     shoppingList: List<ShoppingListItem> = listOf(),
     doDelete: (ShoppingListItem) -> Unit = {},
     doInsert: (ShoppingListItem) -> Unit = {},
-    shoppingListViewModel: ShoppingListViewModel
 ) {
     var openDialog = remember { mutableStateOf(false) }
-    // var displayBoxCard by remember { mutableStateOf(false) }
+    var item by rememberSaveable { mutableStateOf("") }
+    var context = LocalContext.current
     TopLevelScaffold(
         navController = navController,
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    // displayBoxCard = true
                     openDialog.value = true
                 },
             ) {
@@ -92,25 +92,20 @@ fun ListScreen(
                 .padding(innerPadding)
                 .fillMaxSize()
         ) {
-
             val openAlertDialog = remember { mutableStateOf(false) }
-            val context = LocalContext.current
-            var item by rememberSaveable { mutableStateOf("") }
+
+
 
             Column(
                 modifier = Modifier
                     .fillMaxSize(),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
-
-            ) {
+                ) {
 
                 if (openDialog.value) {
                     Dialog(
                         onDismissRequest = {
-                            // Dismiss the dialog when the user clicks outside the dialog or on the back
-                            // button. If you want to disable that functionality, simply use an empty
-                            // onDismissRequest.
                             openDialog.value = false
                         }
                     ) {
@@ -186,40 +181,8 @@ fun ListScreen(
                         }
                     }
                 }
-                /*if (displayBoxCard) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .wrapContentHeight()
-                            .padding(16.dp)
-                            .offset(y = (-16).dp)
-                    ) {
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .wrapContentHeight()
-                                .padding(16.dp),
-                            //  elevation = 8.dp
-                        ) {
-                            Column(
-                                modifier = Modifier.padding(16.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Text("Hello, this is a box card!")
-                                Button(
-                                    onClick = { displayBoxCard = false },
-                                    modifier = Modifier.padding(top = 16.dp)
-                                ) {
-                                    Text("Close")
-                                }
-                            }
-                            // }
-                        }
-                    }
-                }*/
                 if (shoppingList.isEmpty()) {
                     EmptyScreenContent(shoppingList)
-
                 } else {
                     Column(
                         modifier = Modifier
@@ -258,14 +221,12 @@ fun ListScreen(
                                             .weight(1f),
                                         fontSize = 18.sp,
                                     )
-                                    //TODO add  delete icon in the list element
                                     Icon(
-                                        imageVector = Icons.Filled.Delete,
+                                        imageVector = Icons.Filled.Close,
                                         contentDescription = stringResource(id = R.string.delete_icon),
                                         modifier = Modifier
                                             .clickable(
                                                 onClick = {
-                                                    /*todo("perform different actions based upon item clicked")*/
                                                     doDelete(
                                                         ShoppingListItem(
                                                             item = item.item,
@@ -274,82 +235,53 @@ fun ListScreen(
                                                     )
                                                 }
                                             ),
-                                    )
+                                        )
                                 }
-
                                 Divider(startIndent = 0.dp, thickness = 1.dp)
                             }
                         }
-                    }
 
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(all = 35.dp)
-                    ) {
-                        ElevatedButton(modifier = Modifier
-                            .height(60.dp)
-                            .width(200.dp)
-                            .weight(0.5f),
-                            onClick = {
-                                openAlertDialog.value = true
-                            }
-                        )
-                        {
-                            //TODO disable
-                            Text(
-                                text = stringResource(id = R.string.clear_all),
-                                fontSize = 16.sp,
-                            )
-                        }
-
-                        if (openAlertDialog.value) {
-                            AlertDialog(
-                                onDismissRequest = {
-                                    openAlertDialog.value = false
-                                },
-                                title = {
-                                    Text(
-                                        text = stringResource(R.string.clear_the_list),
-                                    )
-                                },
-                                text = {
-                                    Text(
-                                        stringResource(R.string.confirm_clearing),
-                                    )
-                                },
-                                confirmButton = {
-                                    TextButton(
-                                        onClick = {
-                                            openAlertDialog.value = false
-
-                                            shoppingListViewModel.clearShoppingList()
-
-                                            Toast.makeText(
-                                                context,
-                                                "The shopping list has been cleared.",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
-                                        },
-                                    ) {
-                                        Text(
-                                            stringResource(R.string.delete),
-                                        )
-                                    }
-                                },
-
-                                dismissButton = {
-                                    TextButton(
-                                        onClick = {
-                                            openAlertDialog.value = false
-                                        },
-                                    ) {
-                                        Text(
-                                            stringResource(R.string.cancel),
-                                        )
-                                    }
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceEvenly,
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(all = 35.dp)
+                        ) {
+                            ElevatedButton(modifier = Modifier
+                                .height(60.dp)
+                                .width(200.dp)
+                                .weight(0.5f),
+                                enabled = shoppingList.isNotEmpty(),
+                                onClick = {
+                                    openAlertDialog.value = true
                                 }
                             )
+                            {
+
+                                Text(
+                                    text = stringResource(id = R.string.clear_all),
+                                    fontSize = 16.sp,
+                                )
+                            }
+
+                            if (openAlertDialog.value) {
+                                AlertDialog(
+                                    onDismissRequest = {
+                                        openAlertDialog.value = false
+                                    },
+                                    title = {
+                                        Text(
+                                            text = stringResource(R.string.clear_the_list),
+                                        )
+                                    },
+                                    text = {
+                                        Text(
+                                            stringResource(R.string.confirm_clearing),
+                                        )
+                                    },
+                                    confirmButton = { ConfirmButton(openAlertDialog, context) },
+                                    dismissButton = { DismissButton(openAlertDialog) }
+                                )
+                            }
                         }
                     }
                 }
@@ -364,13 +296,11 @@ fun ListScreen(
 private fun EmptyScreenContent(
     shoppingList: List<ShoppingListItem> = listOf()
 ) {
+
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally
-
-    ) {
-        val openAlertDialog = remember { mutableStateOf(false) }
-        val context = LocalContext.current
+        ) {
 
         Spacer(modifier = Modifier.height(10.dp))
 
@@ -407,13 +337,10 @@ private fun EmptyScreenContent(
         ) {
             ElevatedButton(modifier = Modifier
                 .height(50.dp)
-                .width(180.dp)
-                .weight(0.5f)
-                .padding(end = 20.dp),
+                .fillMaxWidth()
+                .padding(end = 80.dp),
                 enabled = shoppingList.isNotEmpty(),
-                onClick = {
-                    openAlertDialog.value = true
-                }
+                onClick = { /* nothing happens because button is always disable for empty screen */ }
             )
             {
                 Text(
@@ -421,57 +348,41 @@ private fun EmptyScreenContent(
                     fontSize = 16.sp,
                 )
             }
-
-            if (openAlertDialog.value) {
-                AlertDialog(
-                    onDismissRequest = {
-                        openAlertDialog.value = false
-                    },
-                    title = {
-                        Text(
-                            text = stringResource(R.string.clear_the_list),
-                        )
-                    },
-                    text = {
-                        Text(
-                            stringResource(R.string.confirm_clearing),
-                        )
-                    },
-                    confirmButton = {
-                        TextButton(
-                            onClick = {
-                                openAlertDialog.value = false
-
-                                Toast.makeText(
-                                    context,
-                                    "The shopping list has been cleared.",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            },
-                        ) {
-                            Text(
-                                stringResource(R.string.delete),
-                            )
-                        }
-                    },
-
-                    dismissButton = {
-                        TextButton(
-                            onClick = {
-                                openAlertDialog.value = false
-                            },
-                        ) {
-                            Text(
-                                stringResource(R.string.cancel),
-                            )
-                        }
-                    }
-                )
-            }
         }
     }
 }
 
+@Composable
+private fun ConfirmButton(openAlertDialog: MutableState<Boolean>, context: Context) {
+    TextButton(
+        onClick = {
+            openAlertDialog.value = false
+
+            Toast.makeText(
+                context,
+                "The shopping list has been cleared.",
+                Toast.LENGTH_SHORT
+            ).show()
+        },
+    ) {
+        Text(
+            stringResource(R.string.delete),
+        )
+    }
+}
+
+@Composable
+private fun DismissButton(openAlertDialog: MutableState<Boolean>) {
+    TextButton(
+        onClick = {
+            openAlertDialog.value = false
+        },
+    ) {
+        Text(
+            stringResource(R.string.cancel),
+        )
+    }
+}
 
 @Composable
 fun AddElement(
