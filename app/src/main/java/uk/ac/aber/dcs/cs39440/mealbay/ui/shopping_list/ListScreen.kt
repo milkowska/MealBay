@@ -3,23 +3,17 @@ package uk.ac.aber.dcs.cs39440.mealbay.ui.shopping_list
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.BottomCenter
-import androidx.compose.ui.Alignment.Companion.CenterHorizontally
-import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -36,7 +30,6 @@ import uk.ac.aber.dcs.cs39440.mealbay.R
 import uk.ac.aber.dcs.cs39440.mealbay.model.ShoppingListItem
 import uk.ac.aber.dcs.cs39440.mealbay.model.ShoppingListViewModel
 import uk.ac.aber.dcs.cs39440.mealbay.ui.components.TopLevelScaffold
-
 
 @Composable
 fun ListScreenTopLevel(
@@ -58,6 +51,7 @@ fun ListScreenTopLevel(
                 shoppingListItem
             )
         },
+        shoppingListViewModel
     )
 }
 
@@ -68,10 +62,13 @@ fun ListScreen(
     shoppingList: List<ShoppingListItem> = listOf(),
     doDelete: (ShoppingListItem) -> Unit = {},
     doInsert: (ShoppingListItem) -> Unit = {},
+    shoppingListViewModel: ShoppingListViewModel = viewModel(),
 ) {
     var openDialog = remember { mutableStateOf(false) }
     var item by rememberSaveable { mutableStateOf("") }
     var context = LocalContext.current
+    val openAlertDialog = remember { mutableStateOf(false) }
+
     TopLevelScaffold(
         navController = navController,
         floatingActionButton = {
@@ -92,16 +89,13 @@ fun ListScreen(
                 .padding(innerPadding)
                 .fillMaxSize()
         ) {
-            val openAlertDialog = remember { mutableStateOf(false) }
-
-
 
             Column(
                 modifier = Modifier
                     .fillMaxSize(),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
-                ) {
+            ) {
 
                 if (openDialog.value) {
                     Dialog(
@@ -161,7 +155,7 @@ fun ListScreen(
                                             )
                                             Toast.makeText(
                                                 context,
-                                                "New word pair has been added!",
+                                                "A new ingredient has been added!",
                                                 Toast.LENGTH_SHORT
                                             )
                                                 .show()
@@ -184,105 +178,57 @@ fun ListScreen(
                 if (shoppingList.isEmpty()) {
                     EmptyScreenContent(shoppingList)
                 } else {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(10.dp)
-                    ) {
-                        Divider(
-                            thickness = 1.dp,
-                            modifier = Modifier.padding(vertical = 10.dp)
-                        )
-
+                    Column(modifier = Modifier.fillMaxSize()) {
+                        // Shopping list title
                         Text(
                             text = stringResource(R.string.shopping_list),
-                            modifier = Modifier,
+                            modifier = Modifier.padding(10.dp),
                             fontWeight = FontWeight.Bold,
                             fontSize = 20.sp,
                         )
 
+                        // Shopping list items
                         LazyColumn(
-                            modifier = Modifier
-                                .fillMaxSize(),
-                            contentPadding = PaddingValues(bottom = 5.dp)
+                            modifier = Modifier.fillMaxSize()
+                                .weight(1f),
+//                            contentPadding = PaddingValues(bottom = 5.dp)
                         ) {
-
                             items(shoppingList) { item ->
-                                Row(
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier.fillMaxWidth()
-
-                                ) {
-                                    Text(
-                                        text = item.item,
-                                        modifier = Modifier
-                                            .padding(start = 8.dp, top = 10.dp, end = 10.dp)
-                                            .weight(1f),
-                                        fontSize = 18.sp,
-                                    )
-                                    Icon(
-                                        imageVector = Icons.Filled.Close,
-                                        contentDescription = stringResource(id = R.string.delete_icon),
-                                        modifier = Modifier
-                                            .clickable(
-                                                onClick = {
-                                                    doDelete(
-                                                        ShoppingListItem(
-                                                            item = item.item,
-                                                            id = item.id
-                                                        )
-                                                    )
-                                                }
-                                            ),
-                                        )
-                                }
-                                Divider(startIndent = 0.dp, thickness = 1.dp)
+                                ShoppingListItem(item) { doDelete(item) }
                             }
                         }
 
-                        Row(
-                            horizontalArrangement = Arrangement.SpaceEvenly,
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.padding(all = 35.dp)
+                        // Clear all button
+                        ElevatedButton(
+                            modifier = Modifier
+                                .padding(35.dp)
+                                .fillMaxWidth(.5f)
+                                .height(60.dp),
+                            enabled = shoppingList.isNotEmpty(),
+                            onClick = { openAlertDialog.value = true }
                         ) {
-                            ElevatedButton(modifier = Modifier
-                                .height(60.dp)
-                                .width(200.dp)
-                                .weight(0.5f),
-                                enabled = shoppingList.isNotEmpty(),
-                                onClick = {
-                                    openAlertDialog.value = true
-                                }
-                            )
-                            {
-
-                                Text(
-                                    text = stringResource(id = R.string.clear_all),
-                                    fontSize = 16.sp,
-                                )
-                            }
-
-                            if (openAlertDialog.value) {
-                                AlertDialog(
-                                    onDismissRequest = {
-                                        openAlertDialog.value = false
-                                    },
-                                    title = {
-                                        Text(
-                                            text = stringResource(R.string.clear_the_list),
-                                        )
-                                    },
-                                    text = {
-                                        Text(
-                                            stringResource(R.string.confirm_clearing),
-                                        )
-                                    },
-                                    confirmButton = { ConfirmButton(openAlertDialog, context) },
-                                    dismissButton = { DismissButton(openAlertDialog) }
-                                )
-                            }
+                            Text(text = stringResource(id = R.string.clear_all), fontSize = 16.sp)
                         }
+                    }
+
+                    if (openAlertDialog.value) {
+                        AlertDialog(
+                            onDismissRequest = {
+                                openAlertDialog.value = false
+                            },
+                            title = {
+                                Text(
+                                    text = stringResource(R.string.clear_the_list),
+                                )
+                            },
+                            text = {
+                                Text(
+                                    stringResource(R.string.confirm_clearing),
+                                )
+                            },
+                            confirmButton = { ConfirmButton(openAlertDialog, context) },
+                            dismissButton = { DismissButton(openAlertDialog) }
+                        )
                     }
                 }
             }
@@ -290,6 +236,31 @@ fun ListScreen(
     }
 }
 
+
+// Shopping list item row
+@Composable
+fun ShoppingListItem(item: ShoppingListItem, onDelete: () -> Unit) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .padding(10.dp)
+            .fillMaxWidth()
+    ) {
+        Text(
+            text = item.item,
+            modifier = Modifier.weight(1f),
+            fontSize = 18.sp,
+        )
+        IconButton(onClick = onDelete) {
+            Icon(
+                imageVector = Icons.Filled.Close,
+                contentDescription = stringResource(id = R.string.delete_icon)
+            )
+        }
+    }
+    Divider(startIndent = 0.dp, thickness = 1.dp)
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -300,7 +271,7 @@ private fun EmptyScreenContent(
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+    ) {
 
         Spacer(modifier = Modifier.height(10.dp))
 
@@ -328,7 +299,7 @@ private fun EmptyScreenContent(
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.height(25.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         Row(
             horizontalArrangement = Arrangement.SpaceEvenly,
@@ -340,7 +311,7 @@ private fun EmptyScreenContent(
                 .fillMaxWidth()
                 .padding(end = 80.dp),
                 enabled = shoppingList.isNotEmpty(),
-                onClick = { /* nothing happens because button is always disable for empty screen */ }
+                onClick = { /* nothing happens because button is always disabled for empty screen */ }
             )
             {
                 Text(
@@ -353,10 +324,14 @@ private fun EmptyScreenContent(
 }
 
 @Composable
-private fun ConfirmButton(openAlertDialog: MutableState<Boolean>, context: Context) {
+private fun ConfirmButton(openAlertDialog: MutableState<Boolean>,
+                          context: Context,
+                          shoppingListViewModel: ShoppingListViewModel = viewModel(),) {
     TextButton(
         onClick = {
             openAlertDialog.value = false
+            //clears the entire list
+            shoppingListViewModel.clearShoppingList()
 
             Toast.makeText(
                 context,
