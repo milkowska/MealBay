@@ -12,5 +12,8 @@
     <string name="cancel">Cancel</string>
     <string name="shopping_list">Shopping list</string>
     <string name="add">Add</string>
+    <string name="add_element">Add element</string>
+    <string name="save">Save</string>
+    <string name="delete_icon">Delete icon</string>
 
 </resources>

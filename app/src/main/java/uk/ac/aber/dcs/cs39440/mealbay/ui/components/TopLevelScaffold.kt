@@ -13,12 +13,15 @@ import androidx.navigation.NavHostController
 @Composable
 fun TopLevelScaffold(
     navController: NavHostController,
+    floatingActionButton: @Composable () -> Unit = { },
     pageContent: @Composable (innerPadding: PaddingValues) -> Unit = {}
 ){
     Scaffold(
         bottomBar = {
             MainPageNavigationBar(navController)
         },
+        floatingActionButton = floatingActionButton,
+
         content = { innerPadding ->
             pageContent(innerPadding)
         }
