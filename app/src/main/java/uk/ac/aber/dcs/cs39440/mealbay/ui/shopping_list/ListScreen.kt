@@ -180,18 +180,23 @@ fun ListScreen(
                 } else {
                     Column(modifier = Modifier.fillMaxSize()) {
                         // Shopping list title
+                        Spacer(modifier = Modifier.height(19.dp))
                         Text(
                             text = stringResource(R.string.shopping_list),
-                            modifier = Modifier.padding(10.dp),
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 20.sp,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(10.dp),
+
+                            fontSize = 27.sp,
+                            textAlign = TextAlign.Center
                         )
 
                         // Shopping list items
                         LazyColumn(
-                            modifier = Modifier.fillMaxSize()
+                            modifier = Modifier
+                                .fillMaxSize()
                                 .weight(1f),
-//                            contentPadding = PaddingValues(bottom = 5.dp)
+                            //contentPadding = PaddingValues(start = 20.dp)
                         ) {
                             items(shoppingList) { item ->
                                 ShoppingListItem(item) { doDelete(item) }
@@ -201,9 +206,9 @@ fun ListScreen(
                         // Clear all button
                         ElevatedButton(
                             modifier = Modifier
-                                .padding(35.dp)
-                                .fillMaxWidth(.5f)
-                                .height(60.dp),
+                                .height(70.dp)
+                                .width(280.dp)
+                                .padding(start = 25.dp, bottom = 20.dp),
                             enabled = shoppingList.isNotEmpty(),
                             onClick = { openAlertDialog.value = true }
                         ) {
@@ -262,18 +267,16 @@ fun ShoppingListItem(item: ShoppingListItem, onDelete: () -> Unit) {
     Divider(startIndent = 0.dp, thickness = 1.dp)
 }
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun EmptyScreenContent(
     shoppingList: List<ShoppingListItem> = listOf()
 ) {
-
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
-        Spacer(modifier = Modifier.height(10.dp))
 
         Text(
             text = "Shopping list",
@@ -299,34 +302,30 @@ private fun EmptyScreenContent(
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(60.dp))
 
-        Row(
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(all = 35.dp)
-        ) {
-            ElevatedButton(modifier = Modifier
-                .height(50.dp)
-                .fillMaxWidth()
-                .padding(end = 80.dp),
-                enabled = shoppingList.isNotEmpty(),
-                onClick = { /* nothing happens because button is always disabled for empty screen */ }
+        ElevatedButton(modifier = Modifier
+            .height(60.dp)
+            .width(350.dp)
+            .padding(top = 10.dp, end = 80.dp),
+            enabled = shoppingList.isNotEmpty(),
+            onClick = { /* nothing happens because button is always disabled for empty screen */ }
+        )
+        {
+            Text(
+                text = stringResource(id = R.string.clear_all),
+                fontSize = 16.sp,
             )
-            {
-                Text(
-                    text = stringResource(id = R.string.clear_all),
-                    fontSize = 16.sp,
-                )
-            }
         }
     }
 }
 
 @Composable
-private fun ConfirmButton(openAlertDialog: MutableState<Boolean>,
-                          context: Context,
-                          shoppingListViewModel: ShoppingListViewModel = viewModel(),) {
+private fun ConfirmButton(
+    openAlertDialog: MutableState<Boolean>,
+    context: Context,
+    shoppingListViewModel: ShoppingListViewModel = viewModel(),
+) {
     TextButton(
         onClick = {
             openAlertDialog.value = false
