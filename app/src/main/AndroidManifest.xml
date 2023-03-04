@@ -2,8 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="uk.ac.aber.dcs.cs39440.mealbay">
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
+        android:name=".MealBayApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
