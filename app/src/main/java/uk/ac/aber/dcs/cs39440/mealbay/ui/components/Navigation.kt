@@ -8,6 +8,7 @@ import uk.ac.aber.dcs.cs39440.mealbay.ui.collection.CollectionScreenTopLevel
 import uk.ac.aber.dcs.cs39440.mealbay.ui.explore.ExploreScreenTopLevel
 import uk.ac.aber.dcs.cs39440.mealbay.ui.home.HomeScreenTopLevel
 import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
+import uk.ac.aber.dcs.cs39440.mealbay.ui.onboarding.SplashScreen
 import uk.ac.aber.dcs.cs39440.mealbay.ui.shopping_list.ListScreenTopLevel
 
 @Composable
@@ -27,5 +28,6 @@ fun Navigation() {
         }
         composable(Screen.Collection.route) { CollectionScreenTopLevel(navController) }
         composable(Screen.List.route) { ListScreenTopLevel(navController) }
+        composable(Screen.Splash.route) { SplashScreen(navController)}
     }
 }
