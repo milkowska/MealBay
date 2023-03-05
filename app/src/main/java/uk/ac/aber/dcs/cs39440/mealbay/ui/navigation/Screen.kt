@@ -14,6 +14,4 @@ val screens = listOf(
     Screen.Explore,
     Screen.Collection,
     Screen.List,
-    Screen.Splash,
-    Screen.Login
 )

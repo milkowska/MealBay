@@ -29,13 +29,15 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import uk.ac.aber.dcs.cs39440.mealbay.R
 import uk.ac.aber.dcs.cs39440.mealbay.ui.components.EmailInput
 import uk.ac.aber.dcs.cs39440.mealbay.ui.components.PasswordInput
+import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun LoginScreen(navController: NavController) {
+    fun LoginScreen(navController: NavController, viewModel: LoginScreenViewModel = viewModel()) {
     val showLoginForm = rememberSaveable { mutableStateOf(true) }
 
     Surface(
@@ -60,14 +62,17 @@ fun LoginScreen(navController: NavController) {
                 isCreateAccount = false
             ) { email, password ->
                 // Log.d("Form", "LoginScreen: $email $password")
-                //TODO FB login
+                viewModel.signInWithEmailAndPassword(email = email, password = password) {
+                    navController.navigate(Screen.Home.route)
+                }
             }
             else {
                 UserForm(loading = false, isCreateAccount = true) { email, password ->
-                    //TODO create FB account
+                   viewModel.createUserWithEmailAndPassword(email, password) {
+                       navController.navigate(Screen.Home.route)
+                   }
                 }
             }
-
 
             Spacer(modifier = Modifier.height(50.dp))
 
@@ -119,7 +124,7 @@ fun UserForm(
         email.value.trim().isNotEmpty() && password.value.trim().isNotEmpty()
     }
     val modifier = Modifier
-        .height(360.dp)
+        .height(340.dp)
         .verticalScroll(rememberScrollState())
     Column(
         modifier,
