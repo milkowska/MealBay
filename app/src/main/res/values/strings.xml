@@ -16,7 +16,7 @@
     <string name="save">Save</string>
     <string name="delete_icon">Delete icon</string>
     <string name="logo">Meal Bay\'s logo</string>
-    <string name="create_account_description">"Please enter a valid email address and a password that is at least 7 characters long to create your account. "</string>
+    <string name="create_account_description">"Please enter a valid email address and a password that is at least 6 characters long to create your account. "</string>
     <string name="signup">Sign up</string>
     <string name="login">Login</string>
     <string name="create">Create Account</string>
