@@ -6,6 +6,7 @@ sealed class Screen(val route: String) {
     object Collection : Screen("collection")
     object List : Screen("list")
     object Splash : Screen("onboarding")
+    object Login : Screen("login")
 }
 
 val screens = listOf(
@@ -13,5 +14,6 @@ val screens = listOf(
     Screen.Explore,
     Screen.Collection,
     Screen.List,
-    Screen.Splash
+    Screen.Splash,
+    Screen.Login
 )

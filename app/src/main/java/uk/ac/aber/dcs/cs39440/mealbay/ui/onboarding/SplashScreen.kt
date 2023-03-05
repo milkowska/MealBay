@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import kotlinx.coroutines.delay
 import uk.ac.aber.dcs.cs39440.mealbay.R
+import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
 
 
 @SuppressLint("RememberReturnType")
@@ -44,6 +45,8 @@ fun SplashScreen(navController: NavController = NavController(context = LocalCon
                 })
         )
         delay(2000L)
+
+        navController.navigate(Screen.Login.route)
     }
 
     Surface(
