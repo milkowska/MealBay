@@ -21,18 +21,18 @@ class MainActivity : ComponentActivity() {
         setContent {
             MealBayTheme {
 
-                /*      val db = FirebaseFirestore.getInstance()
+                /*    val db = FirebaseFirestore.getInstance()
                       val user: MutableMap<String, Any> = HashMap()
                       user["firstName"] = "Robert"
                       user["lastName"] = "Barski"
 
-                          db.collection("users")
-                              .add(user)
-                              .addOnSuccessListener {
-                                  Log.d("FB", "onCreate: ${it.id}")
-                              }.addOnFailureListener {
-                                  Log.d("FB", "onCreate: $it")
-                              }*/
+                        db.collection("users")
+                          .add(user)
+                          .addOnSuccessListener {
+                        Log.d("FB", "onCreate: ${it.id}")
+                        }.addOnFailureListener {
+                             Log.d("FB", "onCreate: $it")
+                          }*/
                 MealBayApp()
             }
         }

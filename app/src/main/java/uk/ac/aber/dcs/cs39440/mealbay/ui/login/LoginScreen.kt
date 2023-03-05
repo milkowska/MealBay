@@ -1,15 +1,13 @@
 package uk.ac.aber.dcs.cs39440.mealbay.ui.login
 
-import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Surface
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.material3.FilledTonalButton
@@ -29,6 +27,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 import uk.ac.aber.dcs.cs39440.mealbay.R
 import uk.ac.aber.dcs.cs39440.mealbay.ui.components.EmailInput
 import uk.ac.aber.dcs.cs39440.mealbay.ui.components.PasswordInput
@@ -36,6 +36,8 @@ import uk.ac.aber.dcs.cs39440.mealbay.ui.components.PasswordInput
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun LoginScreen(navController: NavController) {
+    val showLoginForm = rememberSaveable { mutableStateOf(true) }
+
     Surface(
         modifier = Modifier
             .fillMaxSize()
@@ -53,11 +55,51 @@ fun LoginScreen(navController: NavController) {
                 contentDescription = stringResource(id = R.string.logo),
                 contentScale = ContentScale.Crop
             )
-            UserForm(loading = false, isCreateAccount = false) { email, password ->
-                Log.d("Form", "LoginScreen: $email $password")
+            if (showLoginForm.value) UserForm(
+                loading = false,
+                isCreateAccount = false
+            ) { email, password ->
+                // Log.d("Form", "LoginScreen: $email $password")
+                //TODO FB login
+            }
+            else {
+                UserForm(loading = false, isCreateAccount = true) { email, password ->
+                    //TODO create FB account
+                }
+            }
+
+
+            Spacer(modifier = Modifier.height(50.dp))
+
+            Row(
+                modifier = Modifier.padding(15.dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                val text =
+                    if (showLoginForm.value) stringResource(id = R.string.signup)
+                    else stringResource(id = R.string.login)
+
+                val text2 =
+                    if (showLoginForm.value) stringResource(id = R.string.new_user)
+                    else stringResource(id = R.string.has_an_account)
+
+                Text(
+                    text2,
+                    fontSize = 16.sp
+                )
+                Text(
+                    text,
+                    modifier = Modifier
+                        .clickable {
+                            showLoginForm.value = !showLoginForm.value
+                        }
+                        .padding(start = 5.dp),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
             }
         }
-
     }
 }
 
@@ -77,13 +119,20 @@ fun UserForm(
         email.value.trim().isNotEmpty() && password.value.trim().isNotEmpty()
     }
     val modifier = Modifier
-        .height(240.dp)
+        .height(360.dp)
         .verticalScroll(rememberScrollState())
-
     Column(
         modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
+        if (isCreateAccount) Text(
+            text = stringResource(id = R.string.create_account_description),
+            fontSize = 16.sp,
+            modifier = Modifier
+                .padding(25.dp)
+        )
+
         EmailInput(emailState = email, enabled = !loading, onAction = KeyboardActions {
             passwordFocusRequest.requestFocus()
         })
@@ -99,12 +148,18 @@ fun UserForm(
             }
         )
         SendButton(
-            textId = if (isCreateAccount) "Create Account" else "Login",
+            textId = if (isCreateAccount) stringResource(id = R.string.create) else stringResource(
+                id = R.string.login
+            ),
             loading = loading,
             validInputs = valid
         ) {
             onDone(email.value.trim(), password.value.trim())
+            // to make the keyboard go away when the button is clicked
+            keyboardController?.hide()
         }
+
+
     }
 }
 
