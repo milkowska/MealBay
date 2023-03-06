@@ -1,15 +1,22 @@
 package uk.ac.aber.dcs.cs39440.mealbay.ui.login
 
 import android.util.Log
+import android.widget.Toast
+import androidx.compose.material.Text
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.tasks.RuntimeExecutionException
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
+import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
 import java.lang.Exception
 
 class LoginScreenViewModel : ViewModel() {
@@ -20,7 +27,8 @@ class LoginScreenViewModel : ViewModel() {
     private val _loading = MutableLiveData(false)
     val loading: LiveData<Boolean> = _loading
 
-    fun signInWithEmailAndPassword(email: String, password: String, home: () -> Unit) =
+
+   /* fun signInWithEmailAndPassword(email: String, password: String, home: () -> Unit) =
         viewModelScope.launch {
 
             try {
@@ -31,13 +39,14 @@ class LoginScreenViewModel : ViewModel() {
                                 "FB",
                                 "signInWithEmailAndPassword: WORKS ${task.result.toString()}"
                             )
-
                             home()
                         } else {
+
                             Log.d(
                                 "FB",
                                 "signInWithEmailAndPassword: NOT SUCCESSFUL  ${task.result.toString()}"
                             )
+
                         }
                     }
 
@@ -46,6 +55,40 @@ class LoginScreenViewModel : ViewModel() {
             }
 
         }
+    */
+    fun signInWithEmailAndPassword(email: String, password: String, onSuccess: () -> Unit, onError: (String) -> Unit) {
+        FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
+            .addOnSuccessListener {
+                onSuccess() // goes home
+            }
+            .addOnFailureListener { exception ->
+                when (exception) {
+                    is FirebaseAuthInvalidUserException -> {
+                        // handle invalid user exception
+                        onError("Invalid email address")
+                        Log.d("FBA", "Invalid email address")
+                    }
+                    is FirebaseAuthInvalidCredentialsException -> {
+                        // handle invalid credentials exception
+                        onError("Invalid password")
+                        Log.d("FBA", "Invalid password")
+                    }
+                    is RuntimeExecutionException -> {
+                        // handle runtime exception
+                        if (exception.cause is FirebaseAuthInvalidUserException) {
+                            onError("Invalid email address")
+                        } else {
+                            onError("Error signing in")
+                        }
+                    }
+                    else -> {
+                        // handle other exceptions
+                        onError("Error signing in")
+                    }
+                }
+            }
+    }
+
 
     fun createUserWithEmailAndPassword(email: String, password: String, home: () -> Unit) {
         if (_loading.value == false) {
@@ -59,6 +102,7 @@ class LoginScreenViewModel : ViewModel() {
                         createUser(displayName)
                         home()
                     } else {
+
                         Log.d("FB", "createUserWithEmailAndPassword: ${task.result.toString()}")
                     }
                     _loading.value = false

@@ -1,5 +1,6 @@
 package uk.ac.aber.dcs.cs39440.mealbay.ui.login
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -26,6 +27,7 @@ import androidx.navigation.NavController
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
@@ -39,7 +41,7 @@ import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
 @Composable
     fun LoginScreen(navController: NavController, viewModel: LoginScreenViewModel = viewModel()) {
     val showLoginForm = rememberSaveable { mutableStateOf(true) }
-
+    val context = LocalContext.current
     Surface(
         modifier = Modifier
             .fillMaxSize()
@@ -61,9 +63,11 @@ import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
                 loading = false,
                 isCreateAccount = false
             ) { email, password ->
-                // Log.d("Form", "LoginScreen: $email $password")
-                viewModel.signInWithEmailAndPassword(email = email, password = password) {
-                    navController.navigate(Screen.Home.route)
+
+                viewModel.signInWithEmailAndPassword(email = email, password = password, onSuccess = {navController.navigate(Screen.Home.route)} ) {
+                   //navController.navigate(Screen.Home.route)
+
+                    Toast.makeText(context, "Wrong credentials. Try again!", Toast.LENGTH_SHORT).show()
                 }
             }
             else {
