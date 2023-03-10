@@ -65,8 +65,6 @@ import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
             ) { email, password ->
 
                 viewModel.signInWithEmailAndPassword(email = email, password = password, onSuccess = {navController.navigate(Screen.Home.route)} ) {
-                   //navController.navigate(Screen.Home.route)
-
                     Toast.makeText(context, "Wrong credentials. Try again!", Toast.LENGTH_SHORT).show()
                 }
             }
