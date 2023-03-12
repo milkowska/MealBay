@@ -15,15 +15,18 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester.Companion.createRefs
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import com.google.firebase.firestore.FirebaseFirestore
 import uk.ac.aber.dcs.cs39440.mealbay.model.Recipe
 import uk.ac.aber.dcs.cs39440.mealbay.ui.components.TopLevelScaffold
-
 
 
 @Composable
@@ -182,22 +185,12 @@ fun firebaseUI(context: Context, recipeList: SnapshotStateList<Recipe?>) {
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // on below line we are
-        // calling lazy column
-        // for displaying listview.
         LazyColumn {
-            // on below line we are setting data
-            // for each item of our listview.
+            // on below line we are setting data for each item.
             itemsIndexed(recipeList) { index, item ->
-                // on below line we are creating
-                // a card for our list view item.
-
-
-
-
-
+/*
                 Card(
-                    /*onClick = {
+                    *//*onClick = {
                         // inside on click we are
                         // displaying the toast message.
                         Toast.makeText(
@@ -205,100 +198,138 @@ fun firebaseUI(context: Context, recipeList: SnapshotStateList<Recipe?>) {
                             recipeList [index]?.title + " selected..",
                             Toast.LENGTH_SHORT
                         ).show()
-                    },*/
+                    },*//*
                     // on below line we are adding
                     // padding from our all sides.
                     modifier = Modifier.padding(8.dp),
 
                     // on below line we are adding
                     // elevation for the card. //elevation = 6.sp
+                ) {*/
+                // on below line we are creating
+                // a row for our list view item.
+                Column(
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .fillMaxWidth()
                 ) {
-                    // on below line we are creating
-                    // a row for our list view item.
-                    Column(
-                        // for our row we are adding modifier
-                        // to set padding from all sides.
+
+                    ConstraintLayout(
                         modifier = Modifier
-                            .padding(8.dp)
+                            .padding(top = 5.dp, start = 8.dp)
                             .fillMaxWidth()
                     ) {
-                        // on below line inside row we are adding spacer
-                        Spacer(modifier = Modifier.width(5.dp))
-                        // on below line we are displaying course name.
+                        // Define the recipe photo constraints
+                        val ( photo, title, rating)  = createRefs()
+                        Box(
+                            modifier = Modifier
+                                //.width(150.dp)
+                                .constrainAs(photo) {
+                                    start.linkTo(parent.start)
+                                    top.linkTo(parent.top, 5.dp)
+
+                                }
+                        ) {
+                            // Display the recipe photo
+                            recipeList[index]?.photo?.let {
+                                Image(
+                                    painter = rememberImagePainter(it),
+                                    contentDescription = "Recipe Image",
+                                    modifier = Modifier
+                                        .height(120.dp)
+                                        .width(155.dp)
+                                        .fillMaxSize()
+                                        .clip(shape = RoundedCornerShape(8.dp))
+                                        .padding(top = 10.dp),
+                                    contentScale = ContentScale.Crop
+                                )
+                            }
+                        }
+
+                        // Define the recipe title constraints
                         recipeList[index]?.title?.let {
                             Text(
-                                // inside the text on below line we are
-                                // setting text as the language name
-                                // from our modal class.
                                 text = it,
-
-                                // on below line we are adding padding
-                                // for our text from all sides.
-                                modifier = Modifier.padding(4.dp),
-
-                                // on below line we are adding
-                                // color for our text
-                                textAlign = TextAlign.Center,
-
-                                )
+                                modifier = Modifier
+                                    .padding(2.dp)
+                                    .constrainAs(title) {
+                                        start.linkTo(photo.end, 4.dp)
+                                        end.linkTo(parent.end)
+                                        top.linkTo(parent.top, 25.dp)
+                                    },
+                                //textAlign = TextAlign.Center,
+                                fontSize = 20.sp
+                            )
                         }
-                        // adding spacer on below line.
-                        Spacer(modifier = Modifier.height(5.dp))
-
-                        // on below line displaying text for course duration
+                        // Define the recipe rating constraints
                         recipeList[index]?.rating?.let {
                             Text(
-                                // inside the text on below line we are
-                                // setting text as the language name
-                                // from our modal class.
-                                text = it,
-
-                                // on below line we are adding padding
-                                // for our text from all sides.
-                                modifier = Modifier.padding(4.dp),
-
-                                // on below line we are
-                                // adding color for our text
-
-                                textAlign = TextAlign.Center,
-
-                                )
-                        }
-                        // adding spacer on below line.
-                        Spacer(modifier = Modifier.width(5.dp))
-
-                        // on below line displaying text for course description
-                        recipeList[index]?.photo?.let {
-                            Image(
-                                painter = rememberImagePainter(it),
-                                contentDescription = "Recipe Image",
+                                text = "Rating: $it",
                                 modifier = Modifier
-                                    .size(80.dp)
-                                    .clip(shape = RoundedCornerShape(4.dp))
+                                    .padding(top = 2.dp, start = 4.dp, end = 4.dp, bottom = 4.dp)
+                                    .constrainAs(rating) {
+                                        start.linkTo(photo.end, 4.dp)
+                                        end.linkTo(parent.end)
+                                        top.linkTo(title.bottom, 2.dp)
+                                    },
+                                fontSize = 16.sp,
+                                //textAlign = TextAlign.Center,
                             )
-
-/*
-                            Text(
-                                // inside the text on below line we are
-                                // setting text as the language name
-                                // from our modal class.
-                                text = it,
-
-                                // on below line we are adding padding
-                                // for our text from all sides.
-                                modifier = Modifier.padding(4.dp),
-
-                                // on below line we are adding color for our text
-
-                                textAlign = TextAlign.Center,
-
-                                )*/
                         }
                     }
+                 /*   Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .padding(10.dp)
+                            .fillMaxWidth()
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .width(150.dp)
+                        ) {
+                            //displaying meal photo
+                            recipeList[index]?.photo?.let {
+                                Image(
+                                    painter = rememberImagePainter(it),
+                                    contentDescription = "Recipe Image",
+                                    modifier = Modifier
+                                        .height(110.dp)
+                                        .width(140.dp)
+                                        .fillMaxSize()
+                                        .clip(shape = RoundedCornerShape(4.dp)),
+                                    contentScale = ContentScale.Crop
+                                )
+                            }
+                        }
+                        //displaying recipe name.
+                        recipeList[index]?.title?.let {
+                            Text(
+                                text = it,
+                                modifier = Modifier.padding(2.dp),
+                                textAlign = TextAlign.Center,
+                                fontSize = 18.sp
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(5.dp))
+
+                        // displaying meal rating
+                        recipeList[index]?.rating?.let {
+                            Text(
+                                text = "Rating: $it",
+                                modifier = Modifier.padding(4.dp),
+                                fontSize = 16.sp,
+                                textAlign = TextAlign.Center,
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(5.dp))
+                    }*/
                 }
             }
-
         }
+
     }
+    // }
 }
+
 
