@@ -6,6 +6,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import uk.ac.aber.dcs.cs39440.mealbay.ui.collection.CollectionScreenTopLevel
 import uk.ac.aber.dcs.cs39440.mealbay.ui.explore.ExploreScreenTopLevel
+import uk.ac.aber.dcs.cs39440.mealbay.ui.explore.RecipeScreen
 import uk.ac.aber.dcs.cs39440.mealbay.ui.home.HomeScreenTopLevel
 import uk.ac.aber.dcs.cs39440.mealbay.ui.login.LoginScreen
 import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
@@ -31,5 +32,6 @@ fun Navigation() {
         composable(Screen.List.route) { ListScreenTopLevel(navController) }
         composable(Screen.Splash.route) { SplashScreen(navController)}
         composable(Screen.Login.route) { LoginScreen(navController)}
+        composable(Screen.Recipe.route) { RecipeScreen(navController)}
     }
 }
