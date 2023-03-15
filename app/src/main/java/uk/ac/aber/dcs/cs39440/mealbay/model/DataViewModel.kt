@@ -1,26 +1,26 @@
 package uk.ac.aber.dcs.cs39440.mealbay.model
 
-import android.util.Log
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.FirebaseFirestoreException
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import uk.ac.aber.dcs.cs39440.mealbay.storage.Storage
+import javax.inject.Inject
 
-import kotlinx.coroutines.tasks.await
 
+@HiltViewModel
+class DataViewModel @Inject constructor(
+    private val storage: Storage
+) : ViewModel() {
 
-
-/*
-suspend fun getDataFromFireStore():Recipe{
-    val db = FirebaseFirestore.getInstance()
-    var recipe = Recipe()
-
-    try {
-        db.collection("recipes").get().await().map {
-          val result = it.toObject(Recipe::class.java)
-            recipe = result
-        }
-    }catch (e: FirebaseFirestoreException){
-        Log.d("err", "getDataFromFirestore: $e")
+    fun getString(key: String): String? = runBlocking {
+        storage.getString(key)
     }
 
-    return recipe
-}*/
+    fun saveString(value: String, key: String) {
+        viewModelScope.launch {
+            storage.saveString(value, key)
+        }
+    }
+}

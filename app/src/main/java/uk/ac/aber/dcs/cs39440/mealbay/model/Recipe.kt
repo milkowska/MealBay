@@ -1,5 +1,6 @@
 package uk.ac.aber.dcs.cs39440.mealbay.model
 data class Recipe(
+
     val category: String? = "",
     val difficulty: String? = "",
     val ingredients: List<String>,
@@ -10,7 +11,8 @@ data class Recipe(
     val rating: String? = "",
     val title: String? = "",
     val total_time: String? = "",
+    var id: String? = "",
 ) {
     // No-argument constructor
-    constructor() : this("", "", emptyList(), false, false, "", emptyList(), "", "", "")
+    constructor() : this("", "", emptyList(), false, false, "", emptyList(), "", "", "", "")
 }
