@@ -1,19 +1,15 @@
 package uk.ac.aber.dcs.cs39440.mealbay.ui.components
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.navigation.NavType
+import androidx.lifecycle.ViewModel
+
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
-import uk.ac.aber.dcs.cs39440.mealbay.data.DataOrException
-import uk.ac.aber.dcs.cs39440.mealbay.model.Recipe
 
 import uk.ac.aber.dcs.cs39440.mealbay.ui.collection.CollectionScreenTopLevel
 import uk.ac.aber.dcs.cs39440.mealbay.ui.explore.ExploreScreen
-import uk.ac.aber.dcs.cs39440.mealbay.ui.explore.ExploreScreenTopLevel
-import uk.ac.aber.dcs.cs39440.mealbay.ui.explore.RecipeScreen
+import uk.ac.aber.dcs.cs39440.mealbay.ui.explore.MealViewModel
 import uk.ac.aber.dcs.cs39440.mealbay.ui.explore.RecipeScreenTopLevel
 import uk.ac.aber.dcs.cs39440.mealbay.ui.home.HomeScreenTopLevel
 import uk.ac.aber.dcs.cs39440.mealbay.ui.login.LoginScreen
@@ -23,7 +19,6 @@ import uk.ac.aber.dcs.cs39440.mealbay.ui.shopping_list.ListScreenTopLevel
 
 @Composable
 fun Navigation() {
-
     val navController = rememberNavController()
 
     NavHost(

@@ -9,9 +9,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.google.firebase.firestore.FirebaseFirestore
+
 import dagger.hilt.android.AndroidEntryPoint
 import uk.ac.aber.dcs.cs39440.mealbay.ui.components.Navigation
+import uk.ac.aber.dcs.cs39440.mealbay.ui.explore.MealViewModel
 import uk.ac.aber.dcs.cs39440.mealbay.ui.theme.MealBayTheme
 
 @AndroidEntryPoint

@@ -1,5 +1,6 @@
 package uk.ac.aber.dcs.cs39440.mealbay.ui.explore
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
@@ -9,67 +10,84 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.delay
 import uk.ac.aber.dcs.cs39440.mealbay.model.DataViewModel
 
 import uk.ac.aber.dcs.cs39440.mealbay.model.Recipe
 import uk.ac.aber.dcs.cs39440.mealbay.storage.RECIPE_ID
+import uk.ac.aber.dcs.cs39440.mealbay.ui.components.CircularProgressBar
 
 
 @Composable
 fun RecipeScreenTopLevel(
     navController: NavHostController,
-    dataViewModel: DataViewModel = hiltViewModel()
+    dataViewModel: DataViewModel = hiltViewModel(),
+    mealViewModel: MealViewModel = viewModel()
 ) {
-    RecipeScreen(navController, dataViewModel)
+    RecipeScreen(navController, dataViewModel, mealViewModel)
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecipeScreen(
     navController: NavHostController,
-    dataViewModel: DataViewModel = hiltViewModel()
+    dataViewModel: DataViewModel = hiltViewModel(),
+    mealViewModel: MealViewModel = viewModel()
 ) {
 
-    /* val recipeId = remember {
-         val arguments = navController.currentBackStackEntry?.arguments
-         arguments?.getString("recipeId") ?: ""
-     }
- */
-    /* var db: FirebaseFirestore = FirebaseFirestore.getInstance()
-     var recipeLoaded: Recipe? = null
-     LaunchedEffect(recipeId, db) {
-         val documentSnapshot = db.collection("recipes").document(recipeId).get().await()
-         var recipe = documentSnapshot.toObject(Recipe::class.java)
-         if (recipe != null) {
-             recipeLoaded = recipe
-
-         } else {
-             // handle document not found error
-         }
-     }
- */
-    //   recipeLoaded?.let { ShowRecipeContent(it) }
-
-
     var id = dataViewModel.getString(RECIPE_ID)
-    Column(
-        modifier = Modifier
-            .fillMaxHeight()
-            .fillMaxWidth(),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+    /*   Text(
+           text = "works! $id",
+           modifier = Modifier
+               .padding(2.dp),
+           fontSize = 20.sp
+       )*/
+    val db = FirebaseFirestore.getInstance()
+    val documentRef = id?.let { db.collection("recipes").document(it) }
+    if (id != null) {
+        YourComposableFunction(documentId = id, mealViewModel)
+    }
+
+}
+
+@Composable
+fun YourComposableFunction(documentId: String, mealViewModel: MealViewModel) {
+    val documentState = remember { mutableStateOf<Recipe?>(null) }
+
+    // Observe the LiveData returned by getDocumentById and update the documentState
+    // object when it changes
+    LaunchedEffect(documentId) {
+        mealViewModel.getDocumentById(documentId).observeForever { recipe ->
+            Log.d("YourComposableFunction", "result: $recipe")
+            documentState.value = recipe
+        }
+    }
+
+    Log.d("YourComposableFunction", "documentState: ${documentState.value}")
+
+    if (documentState.value == null) {
         Text(
-            text = "works! $id",
-            modifier = Modifier
-                .padding(2.dp),
+            text = "not working",
+            modifier = Modifier.padding(2.dp),
             fontSize = 20.sp
+        )
+        //CircularProgressBar(isDisplayed = true)
+
+    } else {
+        val document = documentState.value!!
+        ShowRecipeContent(recipe = documentState.value!!)
+        Text (
+                text = "works! ${document.title}",
+        modifier = Modifier.padding(2.dp),
+        fontSize = 20.sp
         )
     }
 }
+
 
 @Composable
 fun ShowRecipeContent(recipe: Recipe) {
@@ -81,12 +99,10 @@ fun ShowRecipeContent(recipe: Recipe) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "works! ${recipe.title}",
+            text = "works! ${recipe.difficulty}",
             modifier = Modifier
-                .padding(2.dp),
+                .padding(50.dp),
             fontSize = 20.sp
         )
     }
-
-
 }

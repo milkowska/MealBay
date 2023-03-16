@@ -32,7 +32,9 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import uk.ac.aber.dcs.cs39440.mealbay.R
+import uk.ac.aber.dcs.cs39440.mealbay.ui.components.CircularProgressBar
 import uk.ac.aber.dcs.cs39440.mealbay.ui.components.EmailInput
 import uk.ac.aber.dcs.cs39440.mealbay.ui.components.PasswordInput
 import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
@@ -170,6 +172,7 @@ fun UserForm(
     }
 }
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @Composable
 fun SendButton(
     textId: String,
@@ -184,7 +187,7 @@ fun SendButton(
             .fillMaxWidth(),
         enabled = !loading && validInputs,
     ) {
-        if (loading) CircularProgressIndicator(modifier = Modifier.size(30.dp))
+        if (loading) CircularProgressBar(isDisplayed = true) //CircularProgressIndicator(modifier = Modifier.size(30.dp))
         else Text(text = textId, modifier = Modifier.padding(5.dp))
     }
 

@@ -29,7 +29,6 @@ import uk.ac.aber.dcs.cs39440.mealbay.ui.components.TopLevelScaffold
 import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import uk.ac.aber.dcs.cs39440.mealbay.model.DataViewModel
 import uk.ac.aber.dcs.cs39440.mealbay.storage.RECIPE_ID
 import uk.ac.aber.dcs.cs39440.mealbay.ui.components.CircularProgressBar
@@ -71,7 +70,7 @@ fun ExploreScreen(
             var db: FirebaseFirestore = FirebaseFirestore.getInstance()
             // val dataOrException =  DataOrException<List<Recipe>,Boolean, Exception>()
             // on below line getting data from our database
-            if(bool)  {CircularProgressBar(true) }
+            //if(bool)  {CircularProgressBar(true) }
 
             db.collection("recipes").get()
                 .addOnSuccessListener { queryDocumentSnapshots ->
@@ -112,9 +111,7 @@ fun ExploreScreen(
                     }
 
                 }
-                // if we don't get any data or any error
-                // we are displaying a toast message
-                // that we donot get any data
+
                 .addOnFailureListener {
                     Toast.makeText(
                         context,
@@ -122,7 +119,7 @@ fun ExploreScreen(
                         Toast.LENGTH_SHORT
                     ).show()
                 }
-            // on below line we are calling method to display UI
+
             firebaseUI(LocalContext.current, recipeList, navController, dataViewModel)
         }
 
