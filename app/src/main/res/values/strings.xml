@@ -22,5 +22,6 @@
     <string name="create">Create Account</string>
     <string name="new_user">Are you a new user?</string>
     <string name="has_an_account">Already have an account?</string>
+    <string name="ingredients">Ingredients</string>
 
 </resources>

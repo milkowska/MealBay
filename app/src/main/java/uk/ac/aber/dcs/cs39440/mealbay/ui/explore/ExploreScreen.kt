@@ -2,6 +2,7 @@ package uk.ac.aber.dcs.cs39440.mealbay.ui.explore
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.view.View
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -39,7 +40,7 @@ fun ExploreScreenTopLevel(
     navController: NavHostController,
     dataViewModel: DataViewModel = hiltViewModel()
 
-    ) {
+) {
     ExploreScreen(navController, dataViewModel = dataViewModel)
 }
 
@@ -60,49 +61,33 @@ fun ExploreScreen(
                 .fillMaxSize()
         )
         {
-            // FirebaseFirestore.getInstance().collection("recipes").get()
-            var bool: Boolean = true
+
             var context = LocalContext.current
-            // on below line creating variable for list of data.
             var recipeList = mutableStateListOf<Recipe?>()
-            // on below line creating variable for freebase database
-            // and database reference.
             var db: FirebaseFirestore = FirebaseFirestore.getInstance()
-            // val dataOrException =  DataOrException<List<Recipe>,Boolean, Exception>()
             // on below line getting data from our database
-            //if(bool)  {CircularProgressBar(true) }
+
 
             db.collection("recipes").get()
                 .addOnSuccessListener { queryDocumentSnapshots ->
-                    // after getting the data we are calling
-                    // on success method
-                    // and inside this method we are checking
+                    // after getting the data we are calling on success method and inside this method we are checking
                     // if the received query snapshot is empty or not.
                     if (!queryDocumentSnapshots.isEmpty) {
-                        //dataOrException.loading = true
-                        // if the snapshot is not empty we are
-                        // hiding our progress bar and adding
-                        // our data in a list.
-                        // loadingPB.setVisibility(View.GONE)
+
+                        // if the snapshot is not empty we are hiding our progress bar and adding our data in a list.
+                        //TODO circularprogressbar!!
+                        
                         val list = queryDocumentSnapshots.documents
                         for (d in list) {
-                            // after getting this list we are passing that
-                            // list to our object class.
-
                             val r: Recipe? = d.toObject(Recipe::class.java)
                             if (r != null) {
                                 r.id = d.id
                             }
-                            // and we will pass this object class inside
-                            // our arraylist which we have created for list view.
                             recipeList.add(r)
-                            bool = false
                         }
 
-
                     } else {
-                        // if the snapshot is empty we are displaying
-                        // a toast message.
+                        // if the snapshot is empty
                         Toast.makeText(
                             context,
                             "No data found in Database",
@@ -111,7 +96,6 @@ fun ExploreScreen(
                     }
 
                 }
-
                 .addOnFailureListener {
                     Toast.makeText(
                         context,
@@ -122,10 +106,9 @@ fun ExploreScreen(
 
             firebaseUI(LocalContext.current, recipeList, navController, dataViewModel)
         }
-
-
     }
 }
+
 @OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun firebaseUI(
