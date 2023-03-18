@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -30,6 +31,7 @@ import uk.ac.aber.dcs.cs39440.mealbay.ui.components.TopLevelScaffold
 import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import uk.ac.aber.dcs.cs39440.mealbay.R
 import uk.ac.aber.dcs.cs39440.mealbay.model.DataViewModel
 import uk.ac.aber.dcs.cs39440.mealbay.storage.RECIPE_ID
 import uk.ac.aber.dcs.cs39440.mealbay.ui.components.CircularProgressBar
@@ -76,7 +78,7 @@ fun ExploreScreen(
 
                         // if the snapshot is not empty we are hiding our progress bar and adding our data in a list.
                         //TODO circularprogressbar!!
-                        
+
                         val list = queryDocumentSnapshots.documents
                         for (d in list) {
                             val r: Recipe? = d.toObject(Recipe::class.java)
@@ -210,8 +212,39 @@ fun firebaseUI(
                     }
 
                 }
+
+
             }
         }
+
+
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            ElevatedButton(
+                onClick = {
+                },
+                modifier = Modifier
+                    .padding(start = 16.dp)
+                    .width(180.dp)
+            ) {
+                Text(stringResource(R.string.add_filter))
+            }
+
+            ElevatedButton(
+                onClick = {
+                    navController.navigate(Screen.Create.route)
+                }, modifier = Modifier
+                    .padding(start = 16.dp)
+                    .width(180.dp)
+            ) {
+                Text(stringResource(R.string.create_new))
+            }
+        }
+
     }
 }
 

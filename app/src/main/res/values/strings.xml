@@ -23,5 +23,12 @@
     <string name="new_user">Are you a new user?</string>
     <string name="has_an_account">Already have an account?</string>
     <string name="ingredients">Ingredients</string>
+    <string name="create_new">Create new</string>
+    <string name="add_filter">Add filter</string>
+    <string name="name_of_new_recipe">The name of your new recipe</string>
+    <string name="total_time_of_new_recipe">Give the total time of preparing this recipe</string>
+    <string name="difficulty_of_new_recipe">The difficulty of this meal</string>
+    <string name="rating_of_new_recipe">Give your rating</string>
+    <string name="next">Next</string>
 
 </resources>
