@@ -30,5 +30,6 @@
     <string name="difficulty_of_new_recipe">The difficulty of this meal</string>
     <string name="rating_of_new_recipe">Give your rating</string>
     <string name="next">Next</string>
+    <string name="preparation">Preparation</string>
 
 </resources>

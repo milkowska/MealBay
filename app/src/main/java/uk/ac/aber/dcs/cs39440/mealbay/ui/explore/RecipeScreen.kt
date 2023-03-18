@@ -21,6 +21,7 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -59,7 +60,11 @@ fun RecipeScreen(
 }
 
 @Composable
-fun YourComposableFunction(navController: NavHostController, documentId: String, mealViewModel: MealViewModel) {
+fun YourComposableFunction(
+    navController: NavHostController,
+    documentId: String,
+    mealViewModel: MealViewModel
+) {
     val documentState = remember { mutableStateOf<Recipe?>(null) }
 
     // Observe the LiveData returned by getDocumentById and update the documentState object when it changes
@@ -112,7 +117,7 @@ fun ShowRecipeContent(navController: NavHostController, recipe: Recipe) {
                         }
                     },
                     navigationIcon = {
-                        IconButton(onClick = { navController.navigate(Screen.Explore.route)}) {
+                        IconButton(onClick = { navController.popBackStack() }) {
                             Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                         }
                     },
@@ -120,7 +125,7 @@ fun ShowRecipeContent(navController: NavHostController, recipe: Recipe) {
                 )
             }
         ) {
-            Spacer(modifier = Modifier.height(100.dp))
+
             LazyColumn {
                 item {
                     Image(
@@ -130,7 +135,7 @@ fun ShowRecipeContent(navController: NavHostController, recipe: Recipe) {
                             .fillMaxWidth()
                             .height(330.dp)
                             .padding(25.dp)
-                        .clip(RoundedCornerShape(25.dp)),
+                            .clip(RoundedCornerShape(25.dp)),
                         contentScale = ContentScale.Crop
                     )
                 }
@@ -141,8 +146,16 @@ fun ShowRecipeContent(navController: NavHostController, recipe: Recipe) {
                             .fillMaxWidth()
                             .padding(16.dp)
                     ) {
-                        Text("Difficulty: ${recipe.difficulty}", modifier = Modifier.weight(0.5f))
-                        Text("Rating: ${recipe.rating}", modifier = Modifier.weight(0.5f))
+                        Text(
+                            "Difficulty: ${recipe.difficulty}",
+                            modifier = Modifier.weight(0.5f),
+                            fontSize = 18.sp
+                        )
+                        Text(
+                            "Rating: ${recipe.rating}",
+                            modifier = Modifier.weight(0.5f),
+                            fontSize = 18.sp
+                        )
                     }
                 }
                 item {
@@ -154,7 +167,8 @@ fun ShowRecipeContent(navController: NavHostController, recipe: Recipe) {
                     ) {
                         Text(
                             "Total time: ${recipe.total_time}",
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            fontSize = 18.sp
                         )
                         ElevatedButton(
                             onClick = { /* Handle button click */ },
@@ -170,7 +184,8 @@ fun ShowRecipeContent(navController: NavHostController, recipe: Recipe) {
                                 )
                                 Text(
                                     "Add",
-                                    modifier = Modifier.padding(start = 4.dp)
+                                    modifier = Modifier.padding(start = 4.dp),
+                                    fontSize = 18.sp
                                 )
                             }
                         }
@@ -194,7 +209,6 @@ fun ShowRecipeContent(navController: NavHostController, recipe: Recipe) {
                             append("  • ") // bullet point
                             withStyle(SpanStyle(fontSize = 20.sp)) {
                                 append(item) // item text
-
                                 Spacer(modifier = Modifier.padding(4.dp))
                             }
                         }
@@ -203,24 +217,32 @@ fun ShowRecipeContent(navController: NavHostController, recipe: Recipe) {
                 item {
                     Divider(modifier = Modifier.height(1.dp))
                 }
+                item {
+                    Text(
+                        stringResource(R.string.preparation),
+                        fontSize = 25.sp,
+                        //modifier = Modifier.padding(start = 20.dp),
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.padding(4.dp))
+                }
+
                 items(recipe.preparation.size) { index ->
                     val item = recipe.preparation[index]
 
                     Text(
                         buildAnnotatedString {
-
-                            append("  ${index + 1}) ") // bullet point
-                            withStyle(SpanStyle(fontSize = 20.sp)) {
-                                append(item) // item text
-                                Spacer(modifier = Modifier.padding(4.dp))
+                            withStyle(SpanStyle(fontSize = 22.sp)) {
+                                append("  ${index + 1}) ")
+                            }
+                            withStyle(SpanStyle(fontSize = 19.sp)) {
+                                append(item)
+                                Spacer(modifier = Modifier.padding(6.dp))
                             }
                         }
                     )
-
                 }
             }
-
-
         }
     }
 }

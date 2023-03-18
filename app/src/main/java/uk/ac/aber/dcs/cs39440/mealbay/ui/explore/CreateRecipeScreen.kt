@@ -25,6 +25,7 @@ import coil.compose.rememberImagePainter
 import uk.ac.aber.dcs.cs39440.mealbay.R
 import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
 
+
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,9 +36,6 @@ fun CreateRecipeScreen(navController: NavHostController) {
     var isErrorInTextField by remember {
         mutableStateOf(false)
     }
-   /* var isErrorInTextField by remember {
-        mutableStateOf(false)
-    }*/
 
 
     Scaffold(
@@ -119,7 +117,6 @@ fun CreateRecipeScreen(navController: NavHostController) {
 
 
         ElevatedButton(onClick = {
-            navController.navigate(Screen.Explore.route)
 
         }) {
             Text(stringResource(R.string.next))
@@ -127,4 +124,9 @@ fun CreateRecipeScreen(navController: NavHostController) {
     }
 
 
+}
+
+@Composable
+private fun AddIngredientsScreen() {
+    TODO("Not yet implemented")
 }
