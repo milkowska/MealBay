@@ -31,5 +31,18 @@
     <string name="rating_of_new_recipe">Give your rating</string>
     <string name="next">Next</string>
     <string name="preparation">Preparation</string>
+    <string name="home_description">Unleash your culinary creativity with the app\'s vast selection of delicious and convenient meal recipes, ready for you to explore and enjoy.</string>
+    <string name="explore">Explore our recipes</string>
+    <string name="latest">Latest recipe</string>
+    <string name="meal_of_the_day">Meal of the day</string>
+    <string name="home_pic">People eating by the table</string>
+    <string name="take_me_there">Take me there</string>
+    <string name="check_the_latest_collection">Check the latest collection</string>
+    <string name="create_your_own">Create your own shopping list</string>
+    <string name="list_picture">List picture</string>
+    <string name="discover">Discover categories</string>
+    <string name="breakfast">Breakfast</string>
+    <string name="no_collections">Your collections are empty!</string>
+    <string name="click_to_create">Add your first collection by clicking on the button below.</string>
 
 </resources>

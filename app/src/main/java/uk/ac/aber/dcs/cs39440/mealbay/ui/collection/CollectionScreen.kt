@@ -1,6 +1,7 @@
 package uk.ac.aber.dcs.cs39440.mealbay.ui.collection
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -13,8 +14,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.launch
 import uk.ac.aber.dcs.cs39440.mealbay.R
@@ -82,7 +85,26 @@ fun MainScreen() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-          /*  Button(modifier = Modifier.
+            Image(
+                painter = painterResource(id = R.drawable.nodata),
+                contentDescription = "No data image",
+                modifier = Modifier
+                    .width(300.dp)
+                    .height(300.dp)
+                    .padding(25.dp),
+            )
+
+            Text(
+                text = stringResource(R.string.no_collections),
+                fontSize = 20.sp
+            )
+
+            Text(
+                text = stringResource(R.string.click_to_create),
+                fontSize = 18.sp
+            )
+
+            /*  Button(modifier = Modifier.
             padding(10.dp),
                 onClick = {
                     coroutineScope.launch {
@@ -95,15 +117,17 @@ fun MainScreen() {
             }
 */
             FloatingActionButton(
-                onClick = { coroutineScope.launch {
-                    if (sheetState.isVisible) sheetState.hide()
-                    else sheetState.show()
-                }  },
+                onClick = {
+                    coroutineScope.launch {
+                        if (sheetState.isVisible) sheetState.hide()
+                        else sheetState.show()
+                    }
+                },
                 modifier = Modifier.padding(10.dp)
+                    .width(200.dp)
             ) {
-                Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.add))
+                Text(text = "Create collection")
             }
-
         }
     }
 }
@@ -116,12 +140,10 @@ fun BottomSheet() {
     ) {
         Text(
             text = "Bottom sheet",
-            style = MaterialTheme.typography.h6
         )
         Spacer(modifier = Modifier.height(200.dp))
         Text(
             text = "Click outside the bottom sheet to hide it",
-            style = MaterialTheme.typography.body1
         )
     }
 }

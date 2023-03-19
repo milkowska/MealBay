@@ -34,8 +34,6 @@ import uk.ac.aber.dcs.cs39440.mealbay.model.DataViewModel
 
 import uk.ac.aber.dcs.cs39440.mealbay.model.Recipe
 import uk.ac.aber.dcs.cs39440.mealbay.storage.RECIPE_ID
-import uk.ac.aber.dcs.cs39440.mealbay.ui.components.CircularProgressBar
-import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
 
 @Composable
 fun RecipeScreenTopLevel(
@@ -78,12 +76,7 @@ fun YourComposableFunction(
     Log.d("YourComposableFunction", "documentState: ${documentState.value}")
 
     if (documentState.value == null) {
-        Text(
-            text = "not working",
-            modifier = Modifier.padding(2.dp),
-            fontSize = 20.sp
-        )
-        //CircularProgressBar(isDisplayed = true)
+
 
     } else {
         val document = documentState.value!!
@@ -133,7 +126,7 @@ fun ShowRecipeContent(navController: NavHostController, recipe: Recipe) {
                         contentDescription = "Recipe image",
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(330.dp)
+                            .height(360.dp)
                             .padding(25.dp)
                             .clip(RoundedCornerShape(25.dp)),
                         contentScale = ContentScale.Crop
@@ -192,7 +185,10 @@ fun ShowRecipeContent(navController: NavHostController, recipe: Recipe) {
                     }
                 }
                 item {
-                    Divider(modifier = Modifier.height(1.dp))
+                    Divider(
+                        thickness = 0.5.dp,
+                        modifier = Modifier.padding(vertical = 10.dp)
+                    )
                 }
                 item {
                     Text(
@@ -215,15 +211,18 @@ fun ShowRecipeContent(navController: NavHostController, recipe: Recipe) {
                     )
                 }
                 item {
-                    Divider(modifier = Modifier.height(1.dp))
+                    Divider(
+                        thickness = 0.5.dp,
+                        modifier = Modifier.padding(vertical = 10.dp)
+                    )
                 }
                 item {
                     Text(
                         stringResource(R.string.preparation),
                         fontSize = 25.sp,
-                        //modifier = Modifier.padding(start = 20.dp),
-                        textAlign = TextAlign.Center
-                    )
+                        modifier = Modifier.padding(start = 20.dp),
+
+                        )
                     Spacer(modifier = Modifier.padding(4.dp))
                 }
 

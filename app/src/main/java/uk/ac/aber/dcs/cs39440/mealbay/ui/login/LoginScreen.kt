@@ -187,7 +187,7 @@ fun SendButton(
             .fillMaxWidth(),
         enabled = !loading && validInputs,
     ) {
-        if (loading) CircularProgressBar(isDisplayed = true) //CircularProgressIndicator(modifier = Modifier.size(30.dp))
+        if (loading) CircularProgressIndicator(modifier = Modifier.size(30.dp))
         else Text(text = textId, modifier = Modifier.padding(5.dp))
     }
 
