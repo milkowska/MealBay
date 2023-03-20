@@ -12,7 +12,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
@@ -21,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import com.google.firebase.firestore.FirebaseFirestore
@@ -35,7 +35,6 @@ import uk.ac.aber.dcs.cs39440.mealbay.model.DataViewModel
 import uk.ac.aber.dcs.cs39440.mealbay.storage.RECIPE_ID
 
 
-
 @Composable
 fun ExploreScreenTopLevel(
     navController: NavHostController,
@@ -45,6 +44,7 @@ fun ExploreScreenTopLevel(
     ExploreScreen(navController, dataViewModel = dataViewModel)
 }
 
+
 @SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalCoroutinesApi::class)
 @Composable
@@ -52,9 +52,6 @@ fun ExploreScreen(
     navController: NavHostController,
     dataViewModel: DataViewModel = hiltViewModel()
 ) {
-    var isLoading by remember { mutableStateOf(true) }
-
-
     TopLevelScaffold(
         navController = navController,
     ) { innerPadding ->
@@ -69,7 +66,6 @@ fun ExploreScreen(
             val context = LocalContext.current
 
             if (isLoading) {
-                // CircularProgressBar(isDisplayed = isLoading)
                 CircularProgressIndicator()
             }
 
@@ -180,22 +176,21 @@ fun firebaseUI(
                                 }
                             }
 
-                            // Define the recipe title constraints
                             recipeList[index]?.title?.let {
                                 Text(
                                     text = it,
                                     modifier = Modifier
                                         .padding(2.dp)
-
                                         .constrainAs(title) {
-                                            start.linkTo(photo.end, 4.dp)
+                                            start.linkTo(photo.end, 16.dp)
                                             end.linkTo(parent.end)
-                                            top.linkTo(parent.top, 25.dp)
+                                            top.linkTo(photo.top)
+                                            width = Dimension.fillToConstraints
                                         },
                                     fontSize = 20.sp
                                 )
                             }
-                            // Define the recipe rating constraints
+
                             recipeList[index]?.rating?.let {
                                 Text(
                                     text = "Rating: $it",
@@ -209,7 +204,10 @@ fun firebaseUI(
                                         .constrainAs(rating) {
                                             start.linkTo(photo.end, 4.dp)
                                             end.linkTo(parent.end)
-                                            top.linkTo(title.bottom, 2.dp)
+                                            top.linkTo(
+                                                title.bottom,
+                                                10.dp
+                                            ) // Add a top margin to align the rating with the title
                                         },
                                     fontSize = 16.sp,
                                 )
@@ -224,6 +222,7 @@ fun firebaseUI(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
+
             ) {
                 ElevatedButton(
                     onClick = {
@@ -231,6 +230,7 @@ fun firebaseUI(
                     modifier = Modifier
                         .padding(start = 16.dp)
                         .width(180.dp)
+                        .weight(0.5f)
                 ) {
                     Text(stringResource(R.string.add_filter))
                 }
@@ -241,6 +241,8 @@ fun firebaseUI(
                     }, modifier = Modifier
                         .padding(start = 16.dp)
                         .width(180.dp)
+                        .weight(0.5f)
+
                 ) {
                     Text(stringResource(R.string.create_new))
                 }
@@ -249,9 +251,7 @@ fun firebaseUI(
     }
 }
 
-
 /*
-
 fun saveNewRecipe(recipe: Recipe) {
     val document = firestore.collection("recipes").document()
     val set = document.set(recipe)
@@ -263,68 +263,3 @@ fun saveNewRecipe(recipe: Recipe) {
         }
 }
 */
-
-
-/*
-var displayBoxCard by remember { mutableStateOf(false) }
-TopLevelScaffold(
-navController = navController,
-floatingActionButton = {
-FloatingActionButton(
-    onClick = {
-        displayBoxCard = true
-    },
-) {
-    Icon(
-        imageVector = Icons.Filled.Add,
-        contentDescription = stringResource(R.string.add)
-    )
-}
-}
-) { innerPadding ->
-Surface(
-modifier = Modifier
-    .padding(innerPadding)
-    .fillMaxSize()
-) {
-Column(
-    modifier = modifier
-        .fillMaxSize(),
-    verticalArrangement = Arrangement.Center,
-    horizontalAlignment = Alignment.CenterHorizontally
-
-) {
-    if (displayBoxCard) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .padding(16.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight()
-                    .padding(16.dp),
-              //  elevation = 8.dp
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text("Hello, this is a box card!")
-                    Button(
-                        onClick = { displayBoxCard = false },
-                        modifier = Modifier.padding(top = 16.dp)
-                    ) {
-                        Text("Close")
-                    }
-                }
-            }
-        }
-    }
-}
-}
-}*//*
-        }*/

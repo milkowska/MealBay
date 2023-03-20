@@ -1,19 +1,12 @@
 package uk.ac.aber.dcs.cs39440.mealbay.ui.home
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.SnackbarDefaults.backgroundColor
 import androidx.compose.material.TopAppBar
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -24,13 +17,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import coil.compose.rememberImagePainter
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
-import com.google.firebase.ktx.Firebase
 import uk.ac.aber.dcs.cs39440.mealbay.R
-import uk.ac.aber.dcs.cs39440.mealbay.model.Recipe
 import uk.ac.aber.dcs.cs39440.mealbay.ui.components.TopLevelScaffold
 import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
 
@@ -41,73 +29,17 @@ fun HomeScreenTopLevel(
     HomeScreen(navController, modifier = Modifier)
 }
 
-/*@Composable
-fun HomeScreen(
-    navController: NavHostController,
-    modifier: Modifier,
-) {
-   *//* TopAppBar(
-        title = {
-            Text(
-                text = "Welcome! ${FirebaseAuth.getInstance().currentUser}",
-                fontSize = 20.sp
-            )
-        },
-        navigationIcon = {
-            IconButton(onClick = {
-                FirebaseAuth.getInstance().signOut().run {
-                    navController.navigate(Screen.Login.route)
-                }
-            }) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_logout_icon),
-                    contentDescription = "Logout"
-                )
-
-            }
-        },
-        backgroundColor = Color(0xFFFFDAD4)
-    )
-*//*
-
-    TopLevelScaffold(
-
-        navController = navController,
-    ) { innerPadding ->
-        Surface(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize()
-        ) {
-            Column(
-                modifier = modifier
-                    .fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-
-            ) {
-
-                Text(
-                    text = "Welcome! ${FirebaseAuth.getInstance().currentUser}",
-                    fontSize = 20.sp
-                )
-
-            }
-        }
-    }
-}*/
 @Composable
 fun HomeScreen(
     navController: NavHostController,
     modifier: Modifier,
 ) {
 
-
     TopLevelScaffold(
         navController = navController,
         topBar = {
             TopAppBar(
-                title = { Text(text = "Meal Bay") },
+                title = { Text(text = stringResource(id = R.string.meal_bay)) },
                 navigationIcon = {
                     IconButton(onClick = {
                         FirebaseAuth.getInstance().signOut().run {
@@ -116,9 +48,8 @@ fun HomeScreen(
                     }) {
                         Icon(
                             painter = painterResource(R.drawable.ic_logout_icon),
-                            contentDescription = "Logout"
+                            contentDescription = stringResource(id = R.string.logout)
                         )
-
                     }
                 },
                 backgroundColor = Color(0xFFFFDAD4)
@@ -131,24 +62,6 @@ fun HomeScreen(
                 .padding(innerPadding)
                 .fillMaxSize()
         ) {
-
-
-            val latestRecipe = remember { mutableStateOf<Recipe?>(null) }
-            val collectionRef = FirebaseFirestore.getInstance().collection("recipes")
-
-
-            collectionRef.orderBy("timestamp", Query.Direction.DESCENDING).limit(1)
-                .get()
-                .addOnSuccessListener { documents ->
-                    if (!documents.isEmpty) {
-                        val latestDocument = documents.documents[0]
-                        latestRecipe.value = latestDocument.toObject(Recipe::class.java)
-                    }
-                }
-                .addOnFailureListener { exception ->
-                    Log.w("ERR", "Error getting documents: ", exception)
-                }
-
             Column(
                 Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -305,23 +218,7 @@ fun HomeScreen(
                         )
                     }
                 }
-
-                if (latestRecipe.value != null) {
-                    LatestRecipe(latestRecipe.value!!)
-                }
-
-                // Add a scrollbar on the right side of the screen
             }
         }
     }
-}
-
-@Composable
-fun LatestRecipe(recipe: Recipe) {
-    Text(
-        text = "Latest Recipe: ${recipe.title}",
-
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-    )
-    Log.d("REC", "${recipe.title}")
 }

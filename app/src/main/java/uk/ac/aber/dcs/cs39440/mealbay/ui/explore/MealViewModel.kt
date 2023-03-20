@@ -1,7 +1,6 @@
 package uk.ac.aber.dcs.cs39440.mealbay.ui.explore
 
 import android.util.Log
-import androidx.compose.runtime.*
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.firestore.FirebaseFirestore

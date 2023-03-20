@@ -34,7 +34,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import uk.ac.aber.dcs.cs39440.mealbay.R
-import uk.ac.aber.dcs.cs39440.mealbay.ui.components.CircularProgressBar
 import uk.ac.aber.dcs.cs39440.mealbay.ui.components.EmailInput
 import uk.ac.aber.dcs.cs39440.mealbay.ui.components.PasswordInput
 import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen

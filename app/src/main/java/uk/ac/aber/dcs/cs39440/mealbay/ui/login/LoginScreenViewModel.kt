@@ -1,7 +1,6 @@
 package uk.ac.aber.dcs.cs39440.mealbay.ui.login
 
 import android.util.Log
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -12,9 +11,6 @@ import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
-import uk.ac.aber.dcs.cs39440.mealbay.model.DataViewModel
-import uk.ac.aber.dcs.cs39440.mealbay.storage.CURRENT_USER
-import uk.ac.aber.dcs.cs39440.mealbay.storage.RECIPE_ID
 
 
 class LoginScreenViewModel : ViewModel() {

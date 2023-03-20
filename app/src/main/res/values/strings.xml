@@ -44,5 +44,15 @@
     <string name="breakfast">Breakfast</string>
     <string name="no_collections">Your collections are empty!</string>
     <string name="click_to_create">Add your first collection by clicking on the button below.</string>
+    <string name="create_new_recipe">Create new recipe</string>
+    <string name="back">Back</string>
+    <string name="people_cooking">People cooking image</string>
+    <string name="no_data_image">No data image</string>
+    <string name="total_time">Total time</string>
+    <string name="title">Title</string>
+    <string name="name_this_collection">Name this collection</string>
+    <string name="create_collection">Create collection</string>
+    <string name="meal_bay">Meal Bay</string>
+    <string name="logout">Logout</string>
 
 </resources>

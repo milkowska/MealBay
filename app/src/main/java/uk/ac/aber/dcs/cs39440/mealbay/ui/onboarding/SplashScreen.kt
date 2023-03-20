@@ -22,12 +22,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.delay
 import uk.ac.aber.dcs.cs39440.mealbay.R
 import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
-
 
 @SuppressLint("RememberReturnType")
 @Preview
@@ -47,12 +44,6 @@ fun SplashScreen(navController: NavController = NavController(context = LocalCon
                 })
         )
         delay(2000L)
-        //bypassing the login when user is logged in
-      /*  if (FirebaseAuth.getInstance().currentUser?.email.isNullOrEmpty()) {
-            navController.navigate(Screen.Login.route)
-        } else {
-            navController.navigate(Screen.Home.route)
-        }*/
         navController.navigate(Screen.Login.route)
     }
 

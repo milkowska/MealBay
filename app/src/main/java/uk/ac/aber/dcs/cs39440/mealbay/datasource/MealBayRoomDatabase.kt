@@ -10,6 +10,7 @@ import uk.ac.aber.dcs.cs39440.mealbay.model.ShoppingListItem
 /**
  * Implementation of the Room Database
  */
+
 @Database(entities = [ShoppingListItem::class], version = 1)
 abstract class MealBayRoomDatabase : RoomDatabase() {
 
