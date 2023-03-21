@@ -1,7 +1,6 @@
 package uk.ac.aber.dcs.cs39440.mealbay.ui.login
 
 import android.util.Log
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.tasks.RuntimeExecutionException
@@ -14,13 +13,10 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 
 class LoginScreenViewModel : ViewModel() {
-    // val loadingState = MutableStateFlow(LoadingState.IDLE)
     private val auth: FirebaseAuth = Firebase.auth
 
     //internally
     private val _loading = MutableLiveData(false)
-    val loading: LiveData<Boolean> = _loading
-
 
     fun signInWithEmailAndPassword(email: String, password: String, onSuccess: () -> Unit, onError: (String) -> Unit) {
         FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
@@ -55,7 +51,6 @@ class LoginScreenViewModel : ViewModel() {
             }
     }
 
-
     fun createUserWithEmailAndPassword(email: String, password: String, home: () -> Unit) {
         if (_loading.value == false) {
             _loading.value = true
@@ -69,7 +64,6 @@ class LoginScreenViewModel : ViewModel() {
                         home()
 
                     } else {
-
                         Log.d("FB", "createUserWithEmailAndPassword: ${task.result.toString()}")
                     }
                     _loading.value = false

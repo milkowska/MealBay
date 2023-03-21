@@ -1,6 +1,8 @@
 package uk.ac.aber.dcs.cs39440.mealbay.ui.explore
 
 import android.annotation.SuppressLint
+import android.content.ContentValues.TAG
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -20,15 +22,23 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.google.firebase.firestore.FirebaseFirestore
 import uk.ac.aber.dcs.cs39440.mealbay.R
+import uk.ac.aber.dcs.cs39440.mealbay.model.DataViewModel
+import uk.ac.aber.dcs.cs39440.mealbay.model.Recipe
+import uk.ac.aber.dcs.cs39440.mealbay.storage.*
 import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateRecipeScreen(navController: NavHostController) {
+fun CreateRecipeScreen(
+    navController: NavHostController,
+    dataViewModel: DataViewModel = hiltViewModel()
+) {
     var recipeName by rememberSaveable { mutableStateOf("") }
     var totalTime by rememberSaveable { mutableStateOf("") }
     var difficulty by remember { mutableStateOf(0) }
@@ -121,6 +131,7 @@ fun CreateRecipeScreen(navController: NavHostController) {
             RatingBar(rating = difficulty) {
                 difficulty = it
             }
+
             Spacer(modifier = Modifier.height(10.dp))
             Text(
                 text = stringResource(R.string.rating_of_new_recipe),
@@ -136,6 +147,19 @@ fun CreateRecipeScreen(navController: NavHostController) {
             ElevatedButton(
                 onClick = {
                     //if enable then nav -> ingredfietns
+
+                    dataViewModel.saveString(recipeName, NEW_RECIPE_TITLE)
+                    dataViewModel.saveString(totalTime, NEW_RECIPE_TIME)
+                    val difficultyInString = getDifficulty(difficulty)
+                    if (difficultyInString != null) {
+                        dataViewModel.saveString(difficultyInString, NEW_RECIPE_DIFFICULTY)
+                    }
+                    val ratingInString = getRating(rating)
+                    if (ratingInString != null) {
+                        dataViewModel.saveString(ratingInString, NEW_RECIPE_RATING)
+                    }
+
+                    navController.navigate(Screen.Ingredients.route)
                 },
                 modifier = Modifier.width(180.dp)
             ) {
@@ -144,6 +168,7 @@ fun CreateRecipeScreen(navController: NavHostController) {
         }
     }
 }
+
 
 @Composable
 fun RatingBar(
@@ -168,4 +193,60 @@ fun RatingBar(
 @Composable
 private fun AddIngredientsScreen() {
     TODO("Not yet implemented")
+}
+
+fun createRecipe(
+    category: String?,
+    difficulty: String?,
+    ingredients: List<String>,
+    isVegan: Boolean,
+    isVegetarian: Boolean,
+    photo: String?,
+    preparation: List<String>,
+    rating: String?,
+    title: String?,
+    totalTime: String?,
+    firestore: FirebaseFirestore
+) {
+    val recipe = Recipe(
+        category = category,
+        difficulty = difficulty,
+        ingredients = ingredients,
+        isVegan = isVegan,
+        isVegetarian = isVegetarian,
+        photo = photo,
+        preparation = preparation,
+        rating = rating,
+        title = title,
+        total_time = totalTime
+    )
+
+    firestore.collection("recipes")
+        .add(recipe)
+        .addOnSuccessListener { documentReference ->
+            Log.d(TAG, "Recipe document added with ID: ${documentReference.id}")
+        }
+        .addOnFailureListener { e ->
+            Log.w(TAG, "Error adding recipe document", e)
+        }
+}
+
+/**
+ * This function converts the difficulty as integer into a String value, so that one start equals very easy,
+ * 2 -> easy,
+ * 3 -> medium,
+ * 4 -> hard,
+ * 5 -> very hard.
+ */
+fun getDifficulty(difficultyInInt: Int): String? {
+    val difficultyLevels = listOf("very easy", "easy", "medium", "hard", "very hard")
+    return difficultyLevels.getOrNull(difficultyInInt - 1)
+}
+
+/**
+ * This function converts the rating as integer into a String value.
+ */
+fun getRating(ratingInInt: Int): String? {
+    val ratingLevels = listOf("1.0", "2.0", "3.0", "4.0", "5.0")
+    return ratingLevels.getOrNull(ratingInInt - 1)
 }

@@ -40,9 +40,11 @@ import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-    fun LoginScreen(navController: NavController, viewModel: LoginScreenViewModel = viewModel()) {
+fun LoginScreen(navController: NavController, viewModel: LoginScreenViewModel = viewModel()) {
+
     val showLoginForm = rememberSaveable { mutableStateOf(true) }
     val context = LocalContext.current
+
     Surface(
         modifier = Modifier
             .fillMaxSize()
@@ -60,20 +62,28 @@ import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
                 contentDescription = stringResource(id = R.string.logo),
                 contentScale = ContentScale.Crop
             )
+
+            // displays either the login form or the create account form based on the value of the showLoginForm variable.
             if (showLoginForm.value) UserForm(
                 loading = false,
                 isCreateAccount = false
             ) { email, password ->
 
-                viewModel.signInWithEmailAndPassword(email = email, password = password, onSuccess = {navController.navigate(Screen.Home.route)} ) {
-                    Toast.makeText(context, "Wrong credentials. Try again!", Toast.LENGTH_SHORT).show()
+                viewModel.signInWithEmailAndPassword(
+                    email = email,
+                    password = password,
+                    onSuccess = { navController.navigate(Screen.Home.route) }) // if successful, goes to home page.
+                {
+                    //if failed, displays a message
+                    Toast.makeText(context, "Wrong credentials. Try again!", Toast.LENGTH_SHORT)
+                        .show()
                 }
             }
             else {
                 UserForm(loading = false, isCreateAccount = true) { email, password ->
-                   viewModel.createUserWithEmailAndPassword(email, password) {
-                       navController.navigate(Screen.Home.route)
-                   }
+                    viewModel.createUserWithEmailAndPassword(email, password) {
+                        navController.navigate(Screen.Home.route)
+                    }
                 }
             }
 
@@ -84,20 +94,22 @@ import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                val text =
-                    if (showLoginForm.value) stringResource(id = R.string.signup)
-                    else stringResource(id = R.string.login)
 
-                val text2 =
+                val loginText =
                     if (showLoginForm.value) stringResource(id = R.string.new_user)
                     else stringResource(id = R.string.has_an_account)
 
+                val loginOrSignUp =
+                    if (showLoginForm.value) stringResource(id = R.string.signup)
+                    else stringResource(id = R.string.login)
+
                 Text(
-                    text2,
+                    loginText,
                     fontSize = 16.sp
                 )
+
                 Text(
-                    text,
+                    loginOrSignUp,
                     modifier = Modifier
                         .clickable {
                             showLoginForm.value = !showLoginForm.value
@@ -126,9 +138,11 @@ fun UserForm(
     val valid = remember(email.value, password.value) {
         email.value.trim().isNotEmpty() && password.value.trim().isNotEmpty()
     }
+
     val modifier = Modifier
         .height(340.dp)
         .verticalScroll(rememberScrollState())
+
     Column(
         modifier,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -144,6 +158,7 @@ fun UserForm(
         EmailInput(emailState = email, enabled = !loading, onAction = KeyboardActions {
             passwordFocusRequest.requestFocus()
         })
+
         PasswordInput(
             modifier = Modifier.focusRequester(passwordFocusRequest),
             passwordState = password,
@@ -155,6 +170,7 @@ fun UserForm(
                 onDone(email.value.trim(), password.value.trim())
             }
         )
+
         SendButton(
             textId = if (isCreateAccount) stringResource(id = R.string.create) else stringResource(
                 id = R.string.login
@@ -163,11 +179,10 @@ fun UserForm(
             validInputs = valid
         ) {
             onDone(email.value.trim(), password.value.trim())
+
             // to make the keyboard go away when the button is clicked
             keyboardController?.hide()
         }
-
-
     }
 }
 
@@ -189,7 +204,5 @@ fun SendButton(
         if (loading) CircularProgressIndicator(modifier = Modifier.size(30.dp))
         else Text(text = textId, modifier = Modifier.padding(5.dp))
     }
-
-
 }
 

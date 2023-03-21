@@ -35,7 +35,7 @@ fun EmailInput(
         labelId = labelId,
         enabled = enabled,
         keyboardType = KeyboardType.Email,
-        imeAction = imeAction,
+        imeAction = imeAction, //  to be performed when the user presses the action button on the email input field. This action will move the focus to the next input field in the form
         onAction = onAction
     )
 
@@ -81,6 +81,7 @@ fun PasswordInput(
 ) {
     val visualTransformation = if (passwordVisibility.value) VisualTransformation.None else
         PasswordVisualTransformation()
+
     OutlinedTextField(
         value = passwordState.value,
         onValueChange = {

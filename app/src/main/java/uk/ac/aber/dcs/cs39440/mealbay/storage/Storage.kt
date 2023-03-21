@@ -24,4 +24,31 @@ class Storage(private val context: Context) {
             preferences[stringPreferencesKey(key)] = value
         }
     }
+
+    suspend fun getStringList(key: String): List<String>? {
+        val sharedPrefKey = stringPreferencesKey(key)
+        return context.dataStore.data.first()[sharedPrefKey]?.split(",")?.map { it.trim() }
+    }
+
+    suspend fun saveStringList(list: List<String>, key: String) {
+        val joinedString = list.joinToString(separator = "|") // Use "|" as a delimiter
+        context.dataStore.edit { preferences ->
+            preferences[stringPreferencesKey(key)] = joinedString
+        }
+    }
+
+    suspend fun getBoolean(key: String, defaultValue: Boolean): Boolean {
+        val booleanKey = booleanPreferencesKey(key)
+        val preferences = context.dataStore.data.first()
+        return preferences[booleanKey] ?: defaultValue
+    }
+    suspend fun saveBoolean(key: String, value: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[booleanPreferencesKey(key)] = value
+        }
+    }
+
+
+
+
 }
