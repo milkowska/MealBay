@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
@@ -66,7 +67,17 @@ fun ExploreScreen(
             val context = LocalContext.current
 
             if (isLoading) {
-                CircularProgressIndicator()
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .size(29.dp)
+                    )
+                }
             }
 
             FirebaseFetcher(

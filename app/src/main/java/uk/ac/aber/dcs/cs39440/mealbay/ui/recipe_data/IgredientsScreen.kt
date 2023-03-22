@@ -132,6 +132,7 @@ fun IngredientsScreen(navController: NavController) {
                             onClick = {
                                 //navigate to prep
                             },
+                            enabled = ingredientsList.isNotEmpty(),
                             modifier = Modifier
                                 .padding(10.dp)
                                 .width(200.dp)
