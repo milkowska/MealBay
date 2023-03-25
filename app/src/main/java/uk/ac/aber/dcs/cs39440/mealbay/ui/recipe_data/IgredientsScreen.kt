@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.material3.Icon
@@ -74,90 +75,71 @@ fun IngredientsScreen(navController: NavController) {
             sheetState = sheetState,
             sheetContent = { BottomSheetHere(ingredientsList) },
             modifier = Modifier.fillMaxSize(),
-
             sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+        ) {
 
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-
-            Box(modifier = Modifier.fillMaxSize()) {
-
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(top = 24.dp)
-                        .padding(horizontal = 24.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
+                Spacer(modifier = Modifier.height(70.dp))
+                Text(
+                    text = stringResource(R.string.ingredients),
+                    fontSize = 24.sp
+                )
+                Text(
+                    text = stringResource(R.string.add_at_least_one),
+                    fontSize = 20.sp
+                )
+                LazyColumn(
+                    modifier = Modifier.weight(1f),
+                    contentPadding = PaddingValues(vertical = 16.dp, horizontal = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-
-                    Spacer(modifier = Modifier.height(40.dp))
-
-                    Text(
-                        text = stringResource(R.string.ingredients),
-                        fontSize = 24.sp
-                    )
-
-                    Text(
-                        text = stringResource(R.string.add_at_leaat_one),
-                        fontSize = 20.sp
-                    )
-
-                    Divider(
-                        thickness = 0.5.dp,
-                        modifier = Modifier.padding(vertical = 10.dp)
-                    )
-                    if (ingredientsList.isNotEmpty()) {
-                        LazyColumn(
-                            modifier = Modifier.fillMaxSize(),
-                            contentPadding = PaddingValues(vertical = 16.dp, horizontal = 8.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            items(ingredientsList) { ingredient ->
-                                Text(
-                                    text = ingredient,
-                                    fontSize = 16.sp,
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                            }
-                        }
+                    items(ingredientsList) { ingredient ->
+                        Text(
+                            text = ingredient,
+                            fontSize = 16.sp,
+                            modifier = Modifier.fillMaxWidth()
+                        )
                     }
                 }
-                    Row(
+
+                Row(
+                    modifier = Modifier.padding(16.dp)
+                        .weight(1f),
+                    horizontalArrangement = Arrangement.spacedBy(40.dp),
+                    verticalAlignment = Alignment.Bottom
+                ) {
+                    ElevatedButton(
+                        onClick = {
+                            //navigate to prep
+                        },
+                        enabled = ingredientsList.isNotEmpty(),
                         modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                            .padding(vertical = 24.dp, horizontal = 24.dp)
-                    ) {
+                            .width(180.dp)
+                            .height(50.dp),
 
-                        ElevatedButton(
-                            onClick = {
-                                //navigate to prep
-                            },
-                            enabled = ingredientsList.isNotEmpty(),
-                            modifier = Modifier
-                                .padding(10.dp)
-                                .width(200.dp)
-                                .weight(0.5f)
                         ) {
-                            Text(text = stringResource(id = R.string.next))
-                        }
-
-                        FloatingActionButton(
-                            backgroundColor = (Color(0xFFFFDAD4)),
-                            onClick = {
-                                coroutineScope.launch {
-                                    if (sheetState.isVisible) sheetState.hide()
-                                    else sheetState.show()
-                                }
-                            },
-                            modifier = Modifier
-                                .padding(10.dp)
-                                .width(200.dp)
-                                .weight(0.5f)
-                        ) {
-                            Text(text = stringResource(id = R.string.add_ingredient))
-                        }
+                        Text(text = stringResource(id = R.string.next))
                     }
 
+                    FloatingActionButton(
+                        backgroundColor = (Color(0xFFFFDAD4)),
+                        onClick = {
+                            coroutineScope.launch {
+                                if (sheetState.isVisible) sheetState.hide()
+                                else sheetState.show()
+                            }
+                        },
+
+                     /*   modifier = Modifier
+                            .width(200.dp)
+                            .height(50.dp),*/
+                    ) {
+                        Icon(Icons.Filled.Add, contentDescription = "Add Ingredient")
+                    }
+                }
             }
         }
     }
@@ -209,6 +191,7 @@ fun BottomSheetHere(ingredientsList: SnapshotStateList<String>) {
                     isErrorInTextField = true
                 } else {
                     ingredientsList.add(ingredient)
+                    //ingredient = ""
 
                     //TODO save
                 }

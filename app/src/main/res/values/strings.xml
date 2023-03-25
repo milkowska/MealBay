@@ -54,7 +54,7 @@
     <string name="create_collection">Create collection</string>
     <string name="meal_bay">Meal Bay</string>
     <string name="logout">Logout</string>
-    <string name="add_at_leaat_one">Add at least one ingredient.</string>
+    <string name="add_at_least_one">Add at least one ingredient.</string>
     <string name="add_ingredient">Add ingredient</string>
 
 </resources>
