@@ -44,9 +44,13 @@ fun CreateRecipeScreen(
     var difficulty by remember { mutableStateOf(0) }
     var rating by remember { mutableStateOf(0) }
 
+    val isButtonEnabled by remember { derivedStateOf { recipeName.isNotEmpty() && totalTime.isNotEmpty() && difficulty > 0 && rating > 0 } }
+
     var isErrorInTextField by remember {
         mutableStateOf(false)
     }
+    val maxChars = 26
+    val maxCharsLonger = 72
 
     Scaffold(
         topBar = {
@@ -74,13 +78,15 @@ fun CreateRecipeScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly
         ) {
-            Spacer(modifier = Modifier.height(20.dp))
+
+            Spacer(modifier = Modifier.height(30.dp))
+
             Image(
                 painter = painterResource(id = R.drawable.peoplecooking),
                 contentDescription = stringResource(id = R.string.people_cooking),
                 modifier = Modifier
-                    .height(220.dp)
-                    .padding(20.dp),
+                    .height(200.dp)
+                    .padding(10.dp),
                 contentScale = ContentScale.FillHeight
             )
 
@@ -95,13 +101,21 @@ fun CreateRecipeScreen(
                     Text(text = stringResource(R.string.title))
                 },
                 onValueChange = {
-                    recipeName = it
-                    isErrorInTextField = recipeName.isEmpty()
+                    if (it.length <= maxCharsLonger) {
+                        recipeName = it
+                        isErrorInTextField = recipeName.isEmpty()
+                    }
                 },
                 modifier = Modifier.width(340.dp),
                 singleLine = true,
                 isError = isErrorInTextField,
-                )
+                trailingIcon = {
+                    Text(
+                        text = "${maxCharsLonger - recipeName.length}",
+                        modifier = Modifier.padding(end = 8.dp)
+                    )
+                }
+            )
 
             Text(
                 text = stringResource(R.string.total_time_of_new_recipe),
@@ -114,14 +128,22 @@ fun CreateRecipeScreen(
                     Text(text = stringResource(R.string.total_time))
                 },
                 onValueChange = {
-                    totalTime = it
-                    isErrorInTextField = totalTime.isEmpty()
+                    if (it.length <= maxChars) {
+                        totalTime = it
+                        isErrorInTextField = totalTime.isEmpty()
+                    }
                 },
                 modifier = Modifier.width(340.dp),
                 singleLine = true,
                 isError = isErrorInTextField,
+                trailingIcon = {
+                    Text(
+                        text = "${maxChars - totalTime.length}",
+                        modifier = Modifier.padding(end = 8.dp)
+                    )
+                }
+            )
 
-                )
             Spacer(modifier = Modifier.height(20.dp))
             Text(
                 text = stringResource(R.string.difficulty_of_new_recipe),
@@ -145,7 +167,6 @@ fun CreateRecipeScreen(
 
             ElevatedButton(
                 onClick = {
-                    //if enable then nav -> ingredfietns
 
                     dataViewModel.saveString(recipeName, NEW_RECIPE_TITLE)
                     dataViewModel.saveString(totalTime, NEW_RECIPE_TIME)
@@ -157,10 +178,12 @@ fun CreateRecipeScreen(
                     if (ratingInString != null) {
                         dataViewModel.saveString(ratingInString, NEW_RECIPE_RATING)
                     }
-
                     navController.navigate(Screen.Ingredients.route)
                 },
-                modifier = Modifier.width(180.dp)
+                enabled = isButtonEnabled,
+                modifier = Modifier
+                    .width(180.dp)
+                    .height(50.dp),
             ) {
                 Text(stringResource(R.string.next))
             }
@@ -168,7 +191,12 @@ fun CreateRecipeScreen(
     }
 }
 
-
+/**
+ * A custom RatingBar composable that displays a row of stars for rating selection.
+ *
+ * @param rating The current selected rating (1 to 5)
+ * @param onRatingChanged A callback function that will be invoked when the user changes the rating by clicking a star
+ */
 @Composable
 fun RatingBar(
     rating: Int,
@@ -187,43 +215,6 @@ fun RatingBar(
             )
         }
     }
-}
-
-@Composable
-private fun AddIngredientsScreen() {
-    TODO("Not yet implemented")
-}
-
-fun createRecipe(
-    category: String?,
-    difficulty: String?,
-    ingredients: List<String>,
-    photo: String?,
-    preparation: List<String>,
-    rating: String?,
-    title: String?,
-    totalTime: String?,
-    firestore: FirebaseFirestore
-) {
-    val recipe = Recipe(
-        category = category,
-        difficulty = difficulty,
-        ingredients = ingredients,
-        photo = photo,
-        preparation = preparation,
-        rating = rating,
-        title = title,
-        total_time = totalTime
-    )
-
-    firestore.collection("recipes")
-        .add(recipe)
-        .addOnSuccessListener { documentReference ->
-            Log.d(TAG, "Recipe document added with ID: ${documentReference.id}")
-        }
-        .addOnFailureListener { e ->
-            Log.w(TAG, "Error adding recipe document", e)
-        }
 }
 
 /**
