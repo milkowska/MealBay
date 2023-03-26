@@ -101,7 +101,6 @@ fun CreateRecipeScreen(
                 modifier = Modifier.width(340.dp),
                 singleLine = true,
                 isError = isErrorInTextField,
-
                 )
 
             Text(
@@ -199,8 +198,6 @@ fun createRecipe(
     category: String?,
     difficulty: String?,
     ingredients: List<String>,
-    isVegan: Boolean,
-    isVegetarian: Boolean,
     photo: String?,
     preparation: List<String>,
     rating: String?,
@@ -212,8 +209,6 @@ fun createRecipe(
         category = category,
         difficulty = difficulty,
         ingredients = ingredients,
-        isVegan = isVegan,
-        isVegetarian = isVegetarian,
         photo = photo,
         preparation = preparation,
         rating = rating,

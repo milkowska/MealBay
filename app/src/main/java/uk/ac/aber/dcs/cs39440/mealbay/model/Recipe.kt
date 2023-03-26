@@ -4,8 +4,6 @@ data class Recipe(
     val category: String? = "",
     val difficulty: String? = "",
     val ingredients: List<String>,
-    val isVegan: Boolean = false,
-    val isVegetarian: Boolean = false,
     val photo: String? = "",
     val preparation: List<String>,
     val rating: String? = "",
@@ -14,5 +12,5 @@ data class Recipe(
     var id: String? = "",
 ) {
     // No-argument constructor
-    constructor() : this("", "", emptyList(), false, false, "", emptyList(), "", "", "", "")
+    constructor() : this("", "", emptyList(), "", emptyList(), "", "", "", "")
 }

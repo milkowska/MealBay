@@ -1,8 +1,6 @@
 package uk.ac.aber.dcs.cs39440.mealbay.ui.recipe_data
 
 import androidx.compose.material3.TextField
-
-
 import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
@@ -28,6 +26,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.material3.Divider
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
@@ -42,7 +41,10 @@ import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun IngredientsScreen(navController: NavController, dataViewModel: DataViewModel = hiltViewModel()) {
+fun IngredientsScreen(
+    navController: NavController,
+    dataViewModel: DataViewModel = hiltViewModel()
+) {
     val sheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
         confirmStateChange = { it != ModalBottomSheetValue.HalfExpanded }
@@ -77,6 +79,7 @@ fun IngredientsScreen(navController: NavController, dataViewModel: DataViewModel
             coroutineScope.launch { sheetState.hide() }
         }
 
+        // Show a modal bottom sheet when the FAB is clicked
         ModalBottomSheetLayout(
             sheetState = sheetState,
             sheetContent = { BottomSheetHere(ingredientsList) },
@@ -85,10 +88,13 @@ fun IngredientsScreen(navController: NavController, dataViewModel: DataViewModel
         ) {
 
             Column(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize()
+                    .padding(10.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+
                 Spacer(modifier = Modifier.height(70.dp))
+
                 Text(
                     text = stringResource(R.string.ingredients),
                     fontSize = 24.sp
@@ -101,11 +107,12 @@ fun IngredientsScreen(navController: NavController, dataViewModel: DataViewModel
                     fontSize = 20.sp
                 )
 
-                androidx.compose.material3.Divider(
+                Divider(
                     thickness = 0.5.dp,
                     modifier = Modifier.padding(vertical = 10.dp)
                 )
 
+                //Displaying the ingredient list content as a scrollable column.
                 LazyColumn(
                     modifier = Modifier.weight(1f),
                     contentPadding = PaddingValues(vertical = 16.dp, horizontal = 8.dp),
@@ -122,7 +129,7 @@ fun IngredientsScreen(navController: NavController, dataViewModel: DataViewModel
 
                 if (openDialog.value) {
 
-                    androidx.compose.material3.AlertDialog(
+                    AlertDialog(
                         onDismissRequest = {
                             openDialog.value = false
                         },
@@ -167,24 +174,27 @@ fun IngredientsScreen(navController: NavController, dataViewModel: DataViewModel
                     )
                 }
                 Row(
-                    modifier = Modifier.padding(16.dp)
+                    modifier = Modifier
+                        .padding(16.dp)
                         .weight(1f),
                     horizontalArrangement = Arrangement.spacedBy(40.dp),
                     verticalAlignment = Alignment.Bottom
                 ) {
+
                     ElevatedButton(
                         onClick = {
                             dataViewModel.saveStringList(ingredientsList, NEW_RECIPE_INGREDIENTS)
                             navController.navigate(route = Screen.Preparation.route)
                         },
-                        enabled = ingredientsList.isNotEmpty(),
+                        enabled = ingredientsList.isNotEmpty(), // button is enabled once the ingredient list is created and not empty.
                         modifier = Modifier
                             .width(180.dp)
                             .height(50.dp),
-                        ) {
-                        Text(text = stringResource(id = R.string.next))
+                    ) {
+                        Text(text = stringResource(id = R.string.save))
                     }
 
+                    // The floating button is used to show the bottom sheet when clicked.
                     FloatingActionButton(
                         backgroundColor = (Color(0xFFFFDAD4)),
                         onClick = {
@@ -256,6 +266,5 @@ fun BottomSheetHere(ingredientsList: SnapshotStateList<String>) {
         ) {
             Text(stringResource(R.string.save))
         }
-
     }
 }

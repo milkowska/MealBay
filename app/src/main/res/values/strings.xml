@@ -59,5 +59,10 @@
     <string name="are_you_sure">Are you sure?</string>
     <string name="warning">"If you proceed, any ingredients data you've entered for this recipe will be lost when returning to the previous screen. "</string>
     <string name="proceed">Proceed</string>
+    <string name="add_preparation">Add prepartion details.</string>
+    <string name="add_step">Add step</string>
+    <string name="enter_details">Enter preparation details here...</string>
+    <string name="category">Category</string>
+    <string name="which_category">What category suit your recipe the best?</string>
 
 </resources>
