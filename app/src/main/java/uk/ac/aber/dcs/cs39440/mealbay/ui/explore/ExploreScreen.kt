@@ -140,8 +140,7 @@ fun firebaseUI(
     navController: NavHostController,
     dataViewModel: DataViewModel = hiltViewModel()
 ) {
-    var recipe_id: String?
-
+    var recipeId: String?
 
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         Column {
@@ -156,8 +155,8 @@ fun firebaseUI(
                                 .fillMaxWidth()
                                 .clickable {
                                     recipeList[index]?.id?.let {
-                                        recipe_id = it
-                                        dataViewModel.saveString(recipe_id!!, RECIPE_ID)
+                                        recipeId = it
+                                        dataViewModel.saveString(recipeId!!, RECIPE_ID)
                                     }
                                     navController.navigate(Screen.Recipe.route)
                                 }

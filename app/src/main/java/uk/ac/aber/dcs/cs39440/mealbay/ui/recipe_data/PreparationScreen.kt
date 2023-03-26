@@ -20,6 +20,10 @@ import androidx.navigation.NavController
 import uk.ac.aber.dcs.cs39440.mealbay.R
 import uk.ac.aber.dcs.cs39440.mealbay.model.DataViewModel
 import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
+import com.google.firebase.firestore.FirebaseFirestore
+import uk.ac.aber.dcs.cs39440.mealbay.model.Recipe
+import uk.ac.aber.dcs.cs39440.mealbay.storage.*
+
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -28,10 +32,19 @@ fun PreparationScreen(
     navController: NavController,
     dataViewModel: DataViewModel = hiltViewModel()
 ) {
-    var preparation by rememberSaveable { mutableStateOf("") }
+    var preparationDetails by rememberSaveable { mutableStateOf("") }
+    var preparationList by rememberSaveable { mutableStateOf(emptyList<String>()) }
 
+    fun updateFirstElement(element: String) {
+        if (preparationList.isEmpty()) {
+            preparationList = listOf(element)
+        } else {
+            preparationList = preparationList.toMutableList().apply { this[0] = element }
+        }
+    }
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
             .padding(10.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -55,8 +68,8 @@ fun PreparationScreen(
         Spacer(modifier = Modifier.height(5.dp))
 
         TextField(
-            value = preparation,
-            onValueChange = { preparation = it },
+            value = preparationDetails,
+            onValueChange = { preparationDetails = it },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(20.dp)
@@ -76,9 +89,11 @@ fun PreparationScreen(
 
             ElevatedButton(
                 onClick = {
+                    updateFirstElement(preparationDetails)
+                    dataViewModel.saveStringList(preparationList, NEW_RECIPE_PREPARATION)
                     navController.navigate(route = Screen.Category.route)
                 },
-                enabled = preparation.isNotEmpty(), // button is enabled once the ingredient list is created and not empty.
+                enabled = preparationDetails.isNotEmpty(), // button is enabled once the ingredient list is created and not empty.
                 modifier = Modifier
                     .width(180.dp)
                     .height(50.dp),
@@ -91,4 +106,3 @@ fun PreparationScreen(
         // dataViewModel.getString(NEW_RECIPE_RATING)?.let { Text(text = it) }*//*
     }
 }
-

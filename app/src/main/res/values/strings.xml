@@ -59,10 +59,15 @@
     <string name="are_you_sure">Are you sure?</string>
     <string name="warning">"If you proceed, any ingredients data you've entered for this recipe will be lost when returning to the previous screen. "</string>
     <string name="proceed">Proceed</string>
-    <string name="add_preparation">Add prepartion details.</string>
+    <string name="add_preparation">Add preparation details.</string>
     <string name="add_step">Add step</string>
-    <string name="enter_details">Enter preparation details here...</string>
+    <string name="enter_details">Enter preparation details here…</string>
     <string name="category">Category</string>
     <string name="which_category">What category suit your recipe the best?</string>
+    <string name="exciting_news">Exciting news!</string>
+    <string name="recipe_created">Your custom recipe has been added. Happy cooking and bon appetit!</string>
+    <string name="default_picture">Default recipe picture</string>
+    <string name="done">Done</string>
+    <string name="success_picture">Success</string>
 
 </resources>
