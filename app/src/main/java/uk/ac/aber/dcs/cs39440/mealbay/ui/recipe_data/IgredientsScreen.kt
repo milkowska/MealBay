@@ -6,7 +6,6 @@ import androidx.compose.material3.TextField
 import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
-import androidx.compose.material.Divider
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -33,18 +32,24 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import uk.ac.aber.dcs.cs39440.mealbay.R
-
+import uk.ac.aber.dcs.cs39440.mealbay.ui.theme.Railway
+import androidx.compose.material3.TextButton
+import androidx.hilt.navigation.compose.hiltViewModel
+import uk.ac.aber.dcs.cs39440.mealbay.model.DataViewModel
+import uk.ac.aber.dcs.cs39440.mealbay.storage.NEW_RECIPE_INGREDIENTS
+import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun IngredientsScreen(navController: NavController) {
+fun IngredientsScreen(navController: NavController, dataViewModel: DataViewModel = hiltViewModel()) {
     val sheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
         confirmStateChange = { it != ModalBottomSheetValue.HalfExpanded }
     )
     val coroutineScope = rememberCoroutineScope()
     val ingredientsList = remember { mutableStateListOf<String>() }
+    val openDialog = remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -56,7 +61,9 @@ fun IngredientsScreen(navController: NavController) {
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(onClick = {
+                        openDialog.value = true
+                    }) {
                         Icon(
                             Icons.Default.ArrowBack,
                             contentDescription = stringResource(id = R.string.back)
@@ -66,7 +73,6 @@ fun IngredientsScreen(navController: NavController) {
                 backgroundColor = Color(0xFFFFFFFF)
             )
         }) {
-
         BackHandler(sheetState.isVisible) {
             coroutineScope.launch { sheetState.hide() }
         }
@@ -87,10 +93,19 @@ fun IngredientsScreen(navController: NavController) {
                     text = stringResource(R.string.ingredients),
                     fontSize = 24.sp
                 )
+
+                Spacer(modifier = Modifier.height(10.dp))
+
                 Text(
                     text = stringResource(R.string.add_at_least_one),
                     fontSize = 20.sp
                 )
+
+                androidx.compose.material3.Divider(
+                    thickness = 0.5.dp,
+                    modifier = Modifier.padding(vertical = 10.dp)
+                )
+
                 LazyColumn(
                     modifier = Modifier.weight(1f),
                     contentPadding = PaddingValues(vertical = 16.dp, horizontal = 8.dp),
@@ -105,6 +120,52 @@ fun IngredientsScreen(navController: NavController) {
                     }
                 }
 
+                if (openDialog.value) {
+
+                    androidx.compose.material3.AlertDialog(
+                        onDismissRequest = {
+                            openDialog.value = false
+                        },
+                        title = {
+                            Text(
+                                text = stringResource(R.string.are_you_sure),
+                                fontFamily = Railway
+                            )
+                        },
+                        text = {
+                            Text(
+                                stringResource(R.string.warning),
+                                fontFamily = Railway,
+                                fontSize = 15.sp
+                            )
+                        },
+                        confirmButton = {
+                            TextButton(
+                                onClick = {
+                                    openDialog.value = false
+                                    navController.popBackStack()
+                                },
+                            ) {
+                                Text(
+                                    stringResource(R.string.proceed),
+                                    fontFamily = Railway
+                                )
+                            }
+                        },
+                        dismissButton = {
+                            TextButton(
+                                onClick = {
+                                    openDialog.value = false
+                                },
+                            ) {
+                                Text(
+                                    stringResource(R.string.cancel),
+                                    fontFamily = Railway
+                                )
+                            }
+                        }
+                    )
+                }
                 Row(
                     modifier = Modifier.padding(16.dp)
                         .weight(1f),
@@ -113,13 +174,13 @@ fun IngredientsScreen(navController: NavController) {
                 ) {
                     ElevatedButton(
                         onClick = {
-                            //navigate to prep
+                            dataViewModel.saveStringList(ingredientsList, NEW_RECIPE_INGREDIENTS)
+                            navController.navigate(route = Screen.Preparation.route)
                         },
                         enabled = ingredientsList.isNotEmpty(),
                         modifier = Modifier
                             .width(180.dp)
                             .height(50.dp),
-
                         ) {
                         Text(text = stringResource(id = R.string.next))
                     }
@@ -132,10 +193,6 @@ fun IngredientsScreen(navController: NavController) {
                                 else sheetState.show()
                             }
                         },
-
-                     /*   modifier = Modifier
-                            .width(200.dp)
-                            .height(50.dp),*/
                     ) {
                         Icon(Icons.Filled.Add, contentDescription = "Add Ingredient")
                     }
@@ -191,8 +248,7 @@ fun BottomSheetHere(ingredientsList: SnapshotStateList<String>) {
                     isErrorInTextField = true
                 } else {
                     ingredientsList.add(ingredient)
-                    //ingredient = ""
-
+                    ingredient = ""
                     //TODO save
                 }
             }, modifier = Modifier

@@ -23,4 +23,25 @@ class DataViewModel @Inject constructor(
             storage.saveString(value, key)
         }
     }
+
+    fun getStringList(key: String): List<String>? = runBlocking {
+        storage.getStringList(key)
+    }
+
+    fun saveStringList(list: List<String>, key: String) {
+        viewModelScope.launch {
+            storage.saveStringList(list, key)
+        }
+    }
+
+    fun getBoolean(key: String, defaultValue: Boolean): Boolean = runBlocking {
+        storage.getBoolean(key, defaultValue)
+    }
+
+    fun saveBoolean(key: String, value: Boolean) {
+        viewModelScope.launch {
+            storage.saveBoolean(key, value)
+        }
+    }
+
 }

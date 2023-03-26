@@ -56,5 +56,8 @@
     <string name="logout">Logout</string>
     <string name="add_at_least_one">Add at least one ingredient.</string>
     <string name="add_ingredient">Add ingredient</string>
+    <string name="are_you_sure">Are you sure?</string>
+    <string name="warning">"If you proceed, any ingredients data you've entered for this recipe will be lost when returning to the previous screen. "</string>
+    <string name="proceed">Proceed</string>
 
 </resources>

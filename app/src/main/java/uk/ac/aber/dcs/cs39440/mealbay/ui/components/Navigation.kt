@@ -13,6 +13,7 @@ import uk.ac.aber.dcs.cs39440.mealbay.ui.login.LoginScreen
 import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
 import uk.ac.aber.dcs.cs39440.mealbay.ui.onboarding.SplashScreen
 import uk.ac.aber.dcs.cs39440.mealbay.ui.recipe_data.IngredientsScreen
+import uk.ac.aber.dcs.cs39440.mealbay.ui.recipe_data.PreparationScreen
 import uk.ac.aber.dcs.cs39440.mealbay.ui.shopping_list.ListScreenTopLevel
 
 /**
@@ -39,5 +40,6 @@ fun Navigation() {
         composable(Screen.Recipe.route) { RecipeScreenTopLevel(navController) }
         composable(Screen.Create.route) { CreateRecipeScreen(navController)}
         composable(Screen.Ingredients.route) { IngredientsScreen(navController)}
+        composable(Screen.Preparation.route) { PreparationScreen(navController)}
     }
 }
