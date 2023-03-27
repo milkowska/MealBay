@@ -65,6 +65,7 @@ fun PreparationScreen(
             thickness = 0.5.dp,
             modifier = Modifier.padding(vertical = 10.dp)
         )
+
         Spacer(modifier = Modifier.height(5.dp))
 
         TextField(
@@ -79,6 +80,7 @@ fun PreparationScreen(
         )
 
         Spacer(modifier = Modifier.height(10.dp))
+
         Row(
             modifier = Modifier
                 .padding(16.dp)
@@ -95,14 +97,11 @@ fun PreparationScreen(
                 },
                 enabled = preparationDetails.isNotEmpty(), // button is enabled once the ingredient list is created and not empty.
                 modifier = Modifier
-                    .width(180.dp)
+                    .width(220.dp)
                     .height(50.dp),
             ) {
                 Text(text = stringResource(id = R.string.save))
             }
         }
-
-        // dataViewModel.getString(NEW_RECIPE_TITLE)?.let { Text(text = it) }
-        // dataViewModel.getString(NEW_RECIPE_RATING)?.let { Text(text = it) }*//*
     }
 }

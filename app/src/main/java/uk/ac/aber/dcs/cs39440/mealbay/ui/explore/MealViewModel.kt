@@ -14,7 +14,7 @@ class MealViewModel : ViewModel() {
     fun getDocumentById(documentId: String): MutableLiveData<Recipe?> {
         val documentState = MutableLiveData<Recipe?>()
 
-        firestore.collection("recipes").document(documentId)
+        firestore.collection("recipesready").document(documentId)
             .get()
             .addOnSuccessListener { document ->
                 if (document != null) {

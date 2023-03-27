@@ -1,8 +1,6 @@
-package uk.ac.aber.dcs.cs39440.mealbay.ui.explore
+package uk.ac.aber.dcs.cs39440.mealbay.ui.recipe_data
 
 import android.annotation.SuppressLint
-import android.content.ContentValues.TAG
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -24,10 +22,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.google.firebase.firestore.FirebaseFirestore
 import uk.ac.aber.dcs.cs39440.mealbay.R
 import uk.ac.aber.dcs.cs39440.mealbay.model.DataViewModel
-import uk.ac.aber.dcs.cs39440.mealbay.model.Recipe
 import uk.ac.aber.dcs.cs39440.mealbay.storage.*
 import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
 
@@ -50,7 +46,7 @@ fun CreateRecipeScreen(
         mutableStateOf(false)
     }
     val maxChars = 26
-    val maxCharsLonger = 72
+    val maxCharsLonger = 52
 
     Scaffold(
         topBar = {
@@ -167,7 +163,6 @@ fun CreateRecipeScreen(
 
             ElevatedButton(
                 onClick = {
-
                     dataViewModel.saveString(recipeName, NEW_RECIPE_TITLE)
                     dataViewModel.saveString(totalTime, NEW_RECIPE_TIME)
                     val difficultyInString = getDifficulty(difficulty)

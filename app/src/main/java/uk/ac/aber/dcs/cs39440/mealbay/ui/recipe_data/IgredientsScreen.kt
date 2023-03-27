@@ -188,7 +188,7 @@ fun IngredientsScreen(
                         },
                         enabled = ingredientsList.isNotEmpty(), // button is enabled once the ingredient list is created and not empty.
                         modifier = Modifier
-                            .width(180.dp)
+                            .width(220.dp)
                             .height(50.dp),
                     ) {
                         Text(text = stringResource(id = R.string.save))
@@ -259,10 +259,11 @@ fun BottomSheetHere(ingredientsList: SnapshotStateList<String>) {
                 } else {
                     ingredientsList.add(ingredient)
                     ingredient = ""
-                    //TODO save
+
                 }
             }, modifier = Modifier
-                .width(180.dp)
+                .width(220.dp)
+                .height(50.dp)
         ) {
             Text(stringResource(R.string.save))
         }

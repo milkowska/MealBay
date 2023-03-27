@@ -18,6 +18,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -34,6 +35,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import uk.ac.aber.dcs.cs39440.mealbay.R
 import uk.ac.aber.dcs.cs39440.mealbay.model.DataViewModel
 import uk.ac.aber.dcs.cs39440.mealbay.storage.RECIPE_ID
+import uk.ac.aber.dcs.cs39440.mealbay.ui.theme.Railway
 
 
 @Composable
@@ -118,13 +120,14 @@ fun FirebaseFetcher(
     val db: FirebaseFirestore = FirebaseFirestore.getInstance()
 
     DisposableEffect(Unit) {
-        val listenerRegistration = db.collection("recipes").addSnapshotListener { value, error ->
-            if (error != null) {
-                onFailure()
-            } else if (value != null && !value.isEmpty) {
-                onSuccess(value)
+        val listenerRegistration =
+            db.collection("recipesready").addSnapshotListener { value, error ->
+                if (error != null) {
+                    onFailure()
+                } else if (value != null && !value.isEmpty) {
+                    onSuccess(value)
+                }
             }
-        }
 
         onDispose {
             listenerRegistration.remove()
@@ -151,7 +154,7 @@ fun firebaseUI(
 
                         ConstraintLayout(
                             modifier = Modifier
-                                .padding(top = 5.dp, start = 15.dp)
+                                .padding(top = 5.dp, start = 10.dp, end = 10.dp)
                                 .fillMaxWidth()
                                 .clickable {
                                     recipeList[index]?.id?.let {
@@ -185,7 +188,6 @@ fun firebaseUI(
                                     )
                                 }
                             }
-
                             recipeList[index]?.title?.let {
                                 Text(
                                     text = it,
@@ -194,10 +196,11 @@ fun firebaseUI(
                                         .constrainAs(title) {
                                             start.linkTo(photo.end, 16.dp)
                                             end.linkTo(parent.end)
-                                            top.linkTo(photo.top)
+                                            top.linkTo(photo.top, margin = 16.dp)
                                             width = Dimension.fillToConstraints
                                         },
-                                    fontSize = 20.sp
+                                    fontSize = 20.sp,
+                                    textAlign = TextAlign.Center // Add text alignment to center the title
                                 )
                             }
 
@@ -212,14 +215,15 @@ fun firebaseUI(
                                             bottom = 4.dp
                                         )
                                         .constrainAs(rating) {
-                                            start.linkTo(photo.end, 4.dp)
-                                            end.linkTo(parent.end)
+                                            start.linkTo(title.start)
+                                            end.linkTo(title.end)
                                             top.linkTo(
                                                 title.bottom,
-                                                10.dp
-                                            ) // Add a top margin to align the rating with the title
+                                                0.dp
+                                            ) // Remove top margin to align the rating directly below the title
                                         },
                                     fontSize = 16.sp,
+                                    textAlign = TextAlign.Center // Add text alignment to center the rating
                                 )
                             }
                         }
@@ -231,45 +235,37 @@ fun firebaseUI(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
-
             ) {
                 ElevatedButton(
                     onClick = {
                     },
                     modifier = Modifier
-                        .padding(start = 16.dp)
-                        .width(180.dp)
+                        .fillMaxWidth()
+                        .padding(all = 15.dp)
                         .weight(0.5f)
                 ) {
-                    Text(stringResource(R.string.add_filter))
+                    Text(
+                        stringResource(R.string.add_filter),
+                        fontFamily = Railway,
+
+                    )
                 }
 
                 ElevatedButton(
                     onClick = {
                         navController.navigate(Screen.Create.route)
                     }, modifier = Modifier
-                        .padding(start = 16.dp)
-                        .width(180.dp)
+                        .fillMaxWidth()
+                        .padding(all = 15.dp)
                         .weight(0.5f)
 
                 ) {
-                    Text(stringResource(R.string.create_new))
+                    Text(
+                        stringResource(R.string.create_new),
+                        fontFamily = Railway
+                    )
                 }
             }
         }
     }
 }
-
-/*
-fun saveNewRecipe(recipe: Recipe) {
-    val document = firestore.collection("recipes").document()
-    val set = document.set(recipe)
-        set.addOnSuccessListener {
-            Log.d("FB", "new recipe saved")
-        }
-        set.addOnFailureListener {
-            Log.d("FB", "save failed")
-        }
-}
-*/

@@ -54,13 +54,14 @@ fun RecipeScreen(
     mealViewModel: MealViewModel = viewModel()
 ) {
     var id = dataViewModel.getString(RECIPE_ID)
+    Log.d("MYTAG", "the id is $id or ${dataViewModel.getString(RECIPE_ID)}")
     if (id != null) {
-        YourComposableFunction(navController, documentId = id, mealViewModel)
+        FetchRecipeByID(navController, documentId = id, mealViewModel)
     }
 }
 
 @Composable
-fun YourComposableFunction(
+fun FetchRecipeByID(
     navController: NavHostController,
     documentId: String,
     mealViewModel: MealViewModel
@@ -70,18 +71,17 @@ fun YourComposableFunction(
     // Observe the LiveData returned by getDocumentById and update the documentState object when it changes
     LaunchedEffect(documentId) {
         mealViewModel.getDocumentById(documentId).observeForever { recipe ->
-            Log.d("YourComposableFunction", "result: $recipe")
+            Log.d("FetchRecipeByID", "result: $recipe")
             documentState.value = recipe
         }
     }
 
-    Log.d("YourComposableFunction", "documentState: ${documentState.value}")
+    Log.d("FetchRecipeByID", "documentState: ${documentState.value}")
 
     if (documentState.value == null) {
-
-
+        Log.d("FetchRecipeByID", "documentState value is null!")
     } else {
-        val document = documentState.value!!
+        // val document = documentState.value!!
         ShowRecipeContent(navController, recipe = documentState.value!!)
     }
 }
@@ -194,11 +194,16 @@ fun ShowRecipeContent(navController: NavHostController, recipe: Recipe) {
                     )
                 }
                 item {
-                    Text(
-                        stringResource(R.string.ingredients),
-                        fontSize = 25.sp,
-                        modifier = Modifier.padding(start = 20.dp)
-                    )
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            stringResource(R.string.ingredients),
+                            fontSize = 25.sp
+
+                        )
+                    }
                 }
                 items(recipe.ingredients.size) { index ->
                     val item = recipe.ingredients[index]
@@ -220,13 +225,16 @@ fun ShowRecipeContent(navController: NavHostController, recipe: Recipe) {
                     )
                 }
                 item {
-                    Text(
-                        stringResource(R.string.preparation),
-                        fontSize = 25.sp,
-                        modifier = Modifier.padding(start = 20.dp),
-
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            stringResource(R.string.preparation),
+                            fontSize = 25.sp,
+                            modifier = Modifier.padding(start = 20.dp),
                         )
-                    Spacer(modifier = Modifier.padding(4.dp))
+                    }
                 }
 
                 items(recipe.preparation.size) { index ->

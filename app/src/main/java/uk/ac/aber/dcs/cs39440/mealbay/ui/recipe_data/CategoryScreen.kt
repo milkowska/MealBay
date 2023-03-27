@@ -118,7 +118,7 @@ fun CategoryScreen(
                     },
                     enabled = selectedCategory.value != null,
                     modifier = Modifier
-                        .width(180.dp)
+                        .width(220.dp)
                         .height(50.dp),
                 ) {
                     Text(text = stringResource(id = R.string.save))
@@ -198,7 +198,7 @@ fun CategoryScreen(
                     categorySelected.value = false
                 },
                 modifier = Modifier
-                    .width(180.dp)
+                    .width(220.dp)
                     .height(50.dp),
             ) {
                 Text(text = stringResource(id = R.string.done))
@@ -213,7 +213,7 @@ fun saveRecipeToFirestore(
     onFailure: (Exception) -> Unit
 ) {
     val db = FirebaseFirestore.getInstance()
-    val recipesRef = db.collection("recipes")
+    val recipesRef = db.collection("recipesready")
 
     recipesRef.add(recipe)
         .addOnSuccessListener { documentReference ->
