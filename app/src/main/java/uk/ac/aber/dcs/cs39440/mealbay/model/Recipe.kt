@@ -9,7 +9,7 @@ data class Recipe(
     val rating: String? = "",
     val title: String? = "",
     val total_time: String? = "",
-    var id: String? = "",
+    var id: String? = null,
 ) {
     // No-argument constructor
     constructor() : this("", "", emptyList(), "", emptyList(), "", "", "", "")

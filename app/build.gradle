@@ -6,6 +6,7 @@ plugins {
     // Google services Gradle plugin
     id 'com.google.gms.google-services'
 
+
 }
 
 android {
@@ -89,8 +90,8 @@ dependencies {
     //coroutine lifecycle scopes
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.5.1"
-   /* // Datastore preferences
-    implementation 'androidx.datastore:datastore-preferences:1.0.0'*/
+    // Datastore preferences
+    implementation 'androidx.datastore:datastore-preferences:1.0.0'
 
     //Dagger - Hilt
     kapt "com.google.dagger:hilt-android-compiler:2.38.1"
@@ -98,17 +99,14 @@ dependencies {
     implementation "com.google.dagger:hilt-android:2.38.1"
     implementation 'androidx.hilt:hilt-navigation-compose:1.0.0'
 
-
 // Import the Firebase BoM
     implementation platform('com.google.firebase:firebase-bom:31.2.2')
     // When using the BoM, don't specify versions in Firebase dependencies
     implementation 'com.google.firebase:firebase-analytics-ktx'
     implementation 'com.google.firebase:firebase-storage-ktx'
 
-
-
     // Datastore preferences
-    implementation 'androidx.datastore:datastore-preferences:1.0.0'
+    implementation "androidx.datastore:datastore-preferences:1.0.0"
 
     // Add the dependencies for any other desired Firebase products
     // https://firebase.google.com/docs/android/setup#available-libraries
@@ -120,6 +118,6 @@ dependencies {
     implementation "io.coil-kt:coil-compose:2.2.0"
     implementation "androidx.appcompat:appcompat:1.3.0-beta01"
 
-
+    implementation "androidx.datastore:datastore-preferences:1.0.0"
 
 }

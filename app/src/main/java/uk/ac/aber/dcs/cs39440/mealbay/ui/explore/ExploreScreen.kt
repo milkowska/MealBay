@@ -2,6 +2,7 @@ package uk.ac.aber.dcs.cs39440.mealbay.ui.explore
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -160,6 +161,8 @@ fun firebaseUI(
                                     recipeList[index]?.id?.let {
                                         recipeId = it
                                         dataViewModel.saveString(recipeId!!, RECIPE_ID)
+                                        Log.d("TEST","$recipeId")
+
                                     }
                                     navController.navigate(Screen.Recipe.route)
                                 }

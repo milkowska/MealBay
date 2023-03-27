@@ -1,5 +1,7 @@
 package uk.ac.aber.dcs.cs39440.mealbay.ui.components
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -20,6 +22,7 @@ import uk.ac.aber.dcs.cs39440.mealbay.ui.shopping_list.ListScreenTopLevel
 /**
  * A Composable function that sets up the navigation flow of the app using Jetpack Navigation.
  */
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun Navigation() {
     val navController = rememberNavController()
