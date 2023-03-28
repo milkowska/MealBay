@@ -52,13 +52,14 @@ fun IngredientsScreen(
     val coroutineScope = rememberCoroutineScope()
     val ingredientsList = remember { mutableStateListOf<String>() }
     val openDialog = remember { mutableStateOf(false) }
+    var openDialogOnSave = remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Text(
-                        text = "",
+                        text = "Ingredients",
                         fontSize = 20.sp
                     )
                 },
@@ -93,14 +94,7 @@ fun IngredientsScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
-                Spacer(modifier = Modifier.height(70.dp))
-
-                Text(
-                    text = stringResource(R.string.ingredients),
-                    fontSize = 24.sp
-                )
-
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(60.dp))
 
                 Text(
                     text = stringResource(R.string.add_at_least_one),
@@ -108,7 +102,7 @@ fun IngredientsScreen(
                 )
 
                 Divider(
-                    thickness = 0.5.dp,
+                    thickness = 1.dp,
                     modifier = Modifier.padding(vertical = 10.dp)
                 )
 
@@ -173,6 +167,53 @@ fun IngredientsScreen(
                         }
                     )
                 }
+                if (openDialogOnSave.value) {
+
+                    AlertDialog(
+                        onDismissRequest = {
+                            openDialog.value = false
+                        },
+                        title = {
+                            Text(
+                                text = stringResource(R.string.are_you_done),
+                                fontFamily = Railway
+                            )
+                        },
+                        text = {
+                            Text(
+                                stringResource(R.string.warning_two),
+                                fontFamily = Railway,
+                                fontSize = 15.sp
+                            )
+                        },
+                        confirmButton = {
+                            TextButton(
+                                onClick = {
+                                    openDialog.value = false
+                                    dataViewModel.saveStringList(ingredientsList, NEW_RECIPE_INGREDIENTS)
+                                    navController.navigate(route = Screen.Preparation.route)
+                                },
+                            ) {
+                                Text(
+                                    stringResource(R.string.proceed),
+                                    fontFamily = Railway
+                                )
+                            }
+                        },
+                        dismissButton = {
+                            TextButton(
+                                onClick = {
+                                    openDialog.value = false
+                                },
+                            ) {
+                                Text(
+                                    stringResource(R.string.cancel),
+                                    fontFamily = Railway
+                                )
+                            }
+                        }
+                    )
+                }
                 Row(
                     modifier = Modifier
                         .padding(16.dp)
@@ -183,8 +224,7 @@ fun IngredientsScreen(
 
                     ElevatedButton(
                         onClick = {
-                            dataViewModel.saveStringList(ingredientsList, NEW_RECIPE_INGREDIENTS)
-                            navController.navigate(route = Screen.Preparation.route)
+                            openDialogOnSave.value = true
                         },
                         enabled = ingredientsList.isNotEmpty(), // button is enabled once the ingredient list is created and not empty.
                         modifier = Modifier

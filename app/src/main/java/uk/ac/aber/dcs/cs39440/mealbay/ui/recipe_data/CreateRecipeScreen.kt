@@ -37,8 +37,8 @@ fun CreateRecipeScreen(
 ) {
     var recipeName by rememberSaveable { mutableStateOf("") }
     var totalTime by rememberSaveable { mutableStateOf("") }
-    var difficulty by remember { mutableStateOf(0) }
-    var rating by remember { mutableStateOf(0) }
+    var difficulty by rememberSaveable { mutableStateOf(0) }
+    var rating by rememberSaveable { mutableStateOf(0) }
 
     val isButtonEnabled by remember { derivedStateOf { recipeName.isNotEmpty() && totalTime.isNotEmpty() && difficulty > 0 && rating > 0 } }
 
@@ -68,120 +68,124 @@ fun CreateRecipeScreen(
                 backgroundColor = Color(0xFFFFDAD4)
             )
         }) {
-
-        Column(
-            modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceEvenly
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
         ) {
-
-            Spacer(modifier = Modifier.height(30.dp))
-
-            Image(
-                painter = painterResource(id = R.drawable.peoplecooking),
-                contentDescription = stringResource(id = R.string.people_cooking),
-                modifier = Modifier
-                    .height(200.dp)
-                    .padding(10.dp),
-                contentScale = ContentScale.FillHeight
-            )
-
-            Text(
-                text = stringResource(R.string.name_of_new_recipe),
-                modifier = Modifier.padding(10.dp)
-            )
-
-            TextField(
-                value = recipeName,
-                label = {
-                    Text(text = stringResource(R.string.title))
-                },
-                onValueChange = {
-                    if (it.length <= maxCharsLonger) {
-                        recipeName = it
-                        isErrorInTextField = recipeName.isEmpty()
-                    }
-                },
-                modifier = Modifier.width(340.dp),
-                singleLine = true,
-                isError = isErrorInTextField,
-                trailingIcon = {
-                    Text(
-                        text = "${maxCharsLonger - recipeName.length}",
-                        modifier = Modifier.padding(end = 8.dp)
-                    )
-                }
-            )
-
-            Text(
-                text = stringResource(R.string.total_time_of_new_recipe),
-                modifier = Modifier.padding(20.dp)
-            )
-
-            TextField(
-                value = totalTime,
-                label = {
-                    Text(text = stringResource(R.string.total_time))
-                },
-                onValueChange = {
-                    if (it.length <= maxChars) {
-                        totalTime = it
-                        isErrorInTextField = totalTime.isEmpty()
-                    }
-                },
-                modifier = Modifier.width(340.dp),
-                singleLine = true,
-                isError = isErrorInTextField,
-                trailingIcon = {
-                    Text(
-                        text = "${maxChars - totalTime.length}",
-                        modifier = Modifier.padding(end = 8.dp)
-                    )
-                }
-            )
-
-            Spacer(modifier = Modifier.height(20.dp))
-            Text(
-                text = stringResource(R.string.difficulty_of_new_recipe),
-                fontSize = 18.sp
-            )
-            RatingBar(rating = difficulty) {
-                difficulty = it
-            }
-
-            Spacer(modifier = Modifier.height(10.dp))
-            Text(
-                text = stringResource(R.string.rating_of_new_recipe),
-                fontSize = 18.sp
-            )
-
-            RatingBar(rating = rating) {
-                rating = it
-            }
-
-            Spacer(modifier = Modifier.height(15.dp))
-
-            ElevatedButton(
-                onClick = {
-                    dataViewModel.saveString(recipeName, NEW_RECIPE_TITLE)
-                    dataViewModel.saveString(totalTime, NEW_RECIPE_TIME)
-                    val difficultyInString = getDifficulty(difficulty)
-                    if (difficultyInString != null) {
-                        dataViewModel.saveString(difficultyInString, NEW_RECIPE_DIFFICULTY)
-                    }
-                    val ratingInString = getRating(rating)
-                    if (ratingInString != null) {
-                        dataViewModel.saveString(ratingInString, NEW_RECIPE_RATING)
-                    }
-                    navController.navigate(Screen.Ingredients.route)
-                },
-                enabled = isButtonEnabled,
-                modifier = Modifier
-                    .width(180.dp)
-                    .height(50.dp),
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceEvenly
             ) {
-                Text(stringResource(R.string.next))
+
+                Spacer(modifier = Modifier.height(30.dp))
+
+                Image(
+                    painter = painterResource(id = R.drawable.peoplecooking),
+                    contentDescription = stringResource(id = R.string.people_cooking),
+                    modifier = Modifier
+                        .height(200.dp)
+                        .padding(10.dp),
+                    contentScale = ContentScale.FillHeight
+                )
+
+                Text(
+                    text = stringResource(R.string.name_of_new_recipe),
+                    modifier = Modifier.padding(10.dp)
+                )
+
+                TextField(
+                    value = recipeName,
+                    label = {
+                        Text(text = stringResource(R.string.title))
+                    },
+                    onValueChange = {
+                        if (it.length <= maxCharsLonger) {
+                            recipeName = it
+                            isErrorInTextField = recipeName.isEmpty()
+                        }
+                    },
+                    modifier = Modifier.width(340.dp),
+                    singleLine = true,
+                    isError = isErrorInTextField,
+                    trailingIcon = {
+                        Text(
+                            text = "${maxCharsLonger - recipeName.length}",
+                            modifier = Modifier.padding(end = 8.dp)
+                        )
+                    }
+                )
+
+                Text(
+                    text = stringResource(R.string.total_time_of_new_recipe),
+                    modifier = Modifier.padding(10.dp)
+                )
+
+                TextField(
+                    value = totalTime,
+                    label = {
+                        Text(text = stringResource(R.string.total_time))
+                    },
+                    onValueChange = {
+                        if (it.length <= maxChars) {
+                            totalTime = it
+                            isErrorInTextField = totalTime.isEmpty()
+                        }
+                    },
+                    modifier = Modifier.width(340.dp),
+                    singleLine = true,
+                    isError = isErrorInTextField,
+                    trailingIcon = {
+                        Text(
+                            text = "${maxChars - totalTime.length}",
+                            modifier = Modifier.padding(end = 8.dp)
+                        )
+                    }
+                )
+
+                Spacer(modifier = Modifier.height(20.dp))
+                Text(
+                    text = stringResource(R.string.difficulty_of_new_recipe),
+                    fontSize = 18.sp
+                )
+                RatingBar(rating = difficulty) {
+                    difficulty = it
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+                Text(
+                    text = stringResource(R.string.rating_of_new_recipe),
+                    fontSize = 18.sp
+                )
+
+                RatingBar(rating = rating) {
+                    rating = it
+                }
+
+                Spacer(modifier = Modifier.height(15.dp))
+
+                ElevatedButton(
+                    onClick = {
+                        dataViewModel.saveString(recipeName, NEW_RECIPE_TITLE)
+                        dataViewModel.saveString(totalTime, NEW_RECIPE_TIME)
+                        val difficultyInString = getDifficulty(difficulty)
+                        if (difficultyInString != null) {
+                            dataViewModel.saveString(difficultyInString, NEW_RECIPE_DIFFICULTY)
+                        }
+                        val ratingInString = getRating(rating)
+                        if (ratingInString != null) {
+                            dataViewModel.saveString(ratingInString, NEW_RECIPE_RATING)
+                        }
+                        navController.navigate(Screen.Ingredients.route)
+                    },
+                    enabled = isButtonEnabled,
+                    modifier = Modifier
+                        .width(180.dp)
+                        .height(50.dp),
+                ) {
+                    Text(stringResource(R.string.next))
+                }
             }
+
         }
     }
 }

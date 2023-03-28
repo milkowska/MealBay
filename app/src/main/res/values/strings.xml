@@ -69,5 +69,7 @@
     <string name="default_picture">Default recipe picture</string>
     <string name="done">Done</string>
     <string name="success_picture">Success</string>
+    <string name="are_you_done">Are you done?</string>
+    <string name="warning_two">"After clicking the save button, you will no longer be able to modify the ingredients section. "</string>
 
 </resources>

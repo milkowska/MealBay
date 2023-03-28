@@ -81,7 +81,6 @@ fun FetchRecipeByID(
     if (documentState.value == null) {
         Log.d("FetchRecipeByID", "documentState value is null!")
     } else {
-        // val document = documentState.value!!
         ShowRecipeContent(navController, recipe = documentState.value!!)
     }
 }
@@ -207,17 +206,20 @@ fun ShowRecipeContent(navController: NavHostController, recipe: Recipe) {
                 }
                 items(recipe.ingredients.size) { index ->
                     val item = recipe.ingredients[index]
-                    Text(
-                        buildAnnotatedString {
+                    val splitItems = item.split("|") // Split the string using the delimiter
 
-                            append("  • ") // bullet point
-                            withStyle(SpanStyle(fontSize = 20.sp)) {
-                                append(item) // item text
-                                Spacer(modifier = Modifier.padding(4.dp))
+                    splitItems.forEach { splitItem ->
+                        Text(
+                            buildAnnotatedString {
+                                append("  • ") // bullet point
+                                withStyle(SpanStyle(fontSize = 20.sp)) {
+                                    append(splitItem) // item text
+                                }
                             }
-                        }
-                    )
+                        )
+                    }
                 }
+
                 item {
                     Divider(
                         thickness = 0.5.dp,

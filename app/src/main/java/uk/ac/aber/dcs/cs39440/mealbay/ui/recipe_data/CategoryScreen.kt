@@ -180,7 +180,9 @@ fun CategoryScreen(
 
             Text(
                 text = stringResource(id = R.string.recipe_created),
-                fontSize = 18.sp
+                fontSize = 18.sp,
+                modifier = Modifier
+                    .padding(30.dp),
             )
 
             Image(
