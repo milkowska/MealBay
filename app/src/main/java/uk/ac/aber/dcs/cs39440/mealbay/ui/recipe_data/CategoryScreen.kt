@@ -111,7 +111,7 @@ fun CategoryScreen(
 
                         //Setting a default picture of the recipe
                         dataViewModel.saveString(
-                            "https://drive.google.com/file/d/1C1P5a4alOUGleEzEylGU9KgR7jGHIyTM/view?usp=sharing",
+                            "https://cdn.pixabay.com/photo/2020/09/02/08/19/dinner-5537679_960_720.png",
                             NEW_RECIPE_PHOTO
                         )
                         categorySelected.value = true

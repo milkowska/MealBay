@@ -77,6 +77,7 @@ class LoginScreenViewModel : ViewModel() {
         user["user_id"] = userId.toString()
         user["displayName"] = displayName.toString()
 
+
         FirebaseFirestore.getInstance().collection("users")
             .add(user)
     }

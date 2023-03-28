@@ -51,13 +51,14 @@ fun HomeScreenTopLevel(
     navController: NavHostController,
     dataViewModel: DataViewModel = hiltViewModel()
 ) {
-    HomeScreen(navController, dataViewModel)
+    HomeScreen(navController, modifier = Modifier, dataViewModel)
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreen(
     navController: NavHostController,
+    modifier : Modifier,
     dataViewModel: DataViewModel = hiltViewModel()
 ) {
     val mealViewModel = viewModel<MealViewModel>()
@@ -352,7 +353,7 @@ fun HomeScreen(
                                 modifier = Modifier.fillMaxWidth()
                             ) {
                                 categoryRow.forEach { category ->
-                                    OutlinedButton(
+                                    ElevatedButton(
                                         onClick = {
                                             fetchRecipesByCategory(category)
                                             Log.d("CategoryClicked", "category is $category")
