@@ -137,6 +137,8 @@ fun CategoryScreen(
         val rating = dataViewModel.getString(NEW_RECIPE_RATING)
         val totalTime = dataViewModel.getString(NEW_RECIPE_TIME)
 
+        val userID = dataViewModel.getString(CURRENT_USER_ID)
+
         ingredients?.let { nonNullIngredients ->
             preparation?.let { nonNullPreparation ->
                 val newRecipe = Recipe(
@@ -149,7 +151,12 @@ fun CategoryScreen(
                     title = title,
                     total_time = totalTime
                 )
-                saveRecipeToFirestore(
+                if (userID != null) {
+                    savePrivateRecipe(userID, newRecipe)
+                }
+
+
+              /*  saveRecipeToFirestore(
                     recipe = newRecipe,
                     onSuccess = { documentId ->
                         Log.d(
@@ -161,7 +168,7 @@ fun CategoryScreen(
                         Log.d("FAILED", "The recipe ${newRecipe.title} has not been added.")
                         // Handle the error case
                     }
-                )
+                )*/
             }
         }
 
@@ -209,6 +216,7 @@ fun CategoryScreen(
     }
 }
 
+
 fun saveRecipeToFirestore(
     recipe: Recipe,
     onSuccess: (String) -> Unit,
@@ -223,5 +231,18 @@ fun saveRecipeToFirestore(
         }
         .addOnFailureListener { exception ->
             onFailure(exception)
+        }
+}
+fun savePrivateRecipe(userId: String, recipe: Recipe) {
+    val db = FirebaseFirestore.getInstance()
+    db.collection("users")
+        .document(userId)
+        .collection("privateRecipes")
+        .add(recipe)
+        .addOnSuccessListener { documentReference ->
+            Log.d("savePrivateRecipe", "DocumentSnapshot added with ID: ${documentReference.id}")
+        }
+        .addOnFailureListener { e ->
+            Log.w("savePrivateRecipe", "Error adding document", e)
         }
 }

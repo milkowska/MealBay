@@ -43,11 +43,9 @@ import uk.ac.aber.dcs.cs39440.mealbay.ui.theme.Railway
 fun ExploreScreenTopLevel(
     navController: NavHostController,
     dataViewModel: DataViewModel = hiltViewModel()
-
 ) {
     ExploreScreen(navController, dataViewModel = dataViewModel)
 }
-
 
 @SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalCoroutinesApi::class)
@@ -161,7 +159,7 @@ fun firebaseUI(
                                     recipeList[index]?.id?.let {
                                         recipeId = it
                                         dataViewModel.saveString(recipeId!!, RECIPE_ID)
-                                        Log.d("TEST","$recipeId")
+                                        Log.d("TEST", "$recipeId")
 
                                     }
                                     navController.navigate(Screen.Recipe.route)
@@ -239,20 +237,6 @@ fun firebaseUI(
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
-                ElevatedButton(
-                    onClick = {
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(all = 15.dp)
-                        .weight(0.5f)
-                ) {
-                    Text(
-                        stringResource(R.string.add_filter),
-                        fontFamily = Railway,
-
-                    )
-                }
 
                 ElevatedButton(
                     onClick = {
@@ -268,6 +252,23 @@ fun firebaseUI(
                         fontFamily = Railway
                     )
                 }
+
+                ElevatedButton(
+                    onClick = {
+                        navController.navigate(Screen.Custom.route)
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(all = 15.dp)
+                        .weight(0.5f)
+                ) {
+                    Text(
+                        stringResource(R.string.your_recipes),
+                        fontFamily = Railway,
+                        )
+                }
+
+
             }
         }
     }

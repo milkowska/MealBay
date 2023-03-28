@@ -18,6 +18,7 @@ import uk.ac.aber.dcs.cs39440.mealbay.ui.recipe_data.CategoryScreen
 import uk.ac.aber.dcs.cs39440.mealbay.ui.recipe_data.IngredientsScreen
 import uk.ac.aber.dcs.cs39440.mealbay.ui.recipe_data.PreparationScreen
 import uk.ac.aber.dcs.cs39440.mealbay.ui.shopping_list.ListScreenTopLevel
+import uk.ac.aber.dcs.cs39440.mealbay.ui.user_recipes.PrivateCustomRecipesScreen
 
 /**
  * A Composable function that sets up the navigation flow of the app using Jetpack Navigation.
@@ -27,7 +28,7 @@ import uk.ac.aber.dcs.cs39440.mealbay.ui.shopping_list.ListScreenTopLevel
 fun Navigation() {
     val navController = rememberNavController()
 
-     // Defining the navigation graph
+    // Defining the navigation graph
     NavHost(
         navController = navController,
         startDestination = Screen.Splash.route
@@ -35,7 +36,8 @@ fun Navigation() {
         composable(Screen.Home.route) { HomeScreenTopLevel(navController) }
         composable(Screen.Explore.route) {
             ExploreScreen(
-                navController)
+                navController
+            )
         }
         composable(Screen.Collection.route) { CollectionScreenTopLevel(navController) }
         composable(Screen.List.route) { ListScreenTopLevel(navController) }
@@ -43,8 +45,9 @@ fun Navigation() {
         composable(Screen.Login.route) { LoginScreen(navController) }
         composable(Screen.Recipe.route) { RecipeScreenTopLevel(navController) }
         composable(Screen.Create.route) { CreateRecipeScreen(navController) }
-        composable(Screen.Ingredients.route) { IngredientsScreen(navController)}
-        composable(Screen.Preparation.route) { PreparationScreen(navController)}
-        composable(Screen.Category.route) { CategoryScreen(navController)}
+        composable(Screen.Ingredients.route) { IngredientsScreen(navController) }
+        composable(Screen.Preparation.route) { PreparationScreen(navController) }
+        composable(Screen.Category.route) { CategoryScreen(navController) }
+        composable(Screen.Custom.route) { PrivateCustomRecipesScreen(navController) }
     }
 }

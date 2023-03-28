@@ -1,5 +1,6 @@
 package uk.ac.aber.dcs.cs39440.mealbay.ui.login
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -12,9 +13,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -31,19 +30,26 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import uk.ac.aber.dcs.cs39440.mealbay.R
+import uk.ac.aber.dcs.cs39440.mealbay.model.DataViewModel
+import uk.ac.aber.dcs.cs39440.mealbay.storage.CURRENT_USER_ID
 import uk.ac.aber.dcs.cs39440.mealbay.ui.components.EmailInput
 import uk.ac.aber.dcs.cs39440.mealbay.ui.components.PasswordInput
 import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun LoginScreen(navController: NavController, viewModel: LoginScreenViewModel = viewModel()) {
-
+fun LoginScreen(
+    navController: NavController,
+    viewModel: LoginScreenViewModel = viewModel(),
+    dataViewModel: DataViewModel = hiltViewModel()
+) {
     val showLoginForm = rememberSaveable { mutableStateOf(true) }
     val context = LocalContext.current
+    var currentUserID by rememberSaveable { mutableStateOf("") }
 
     Surface(
         modifier = Modifier
@@ -72,7 +78,11 @@ fun LoginScreen(navController: NavController, viewModel: LoginScreenViewModel = 
                 viewModel.signInWithEmailAndPassword(
                     email = email,
                     password = password,
-                    onSuccess = { navController.navigate(Screen.Home.route) }) // if successful, goes to home page.
+                    onSuccess = { user ->
+                        dataViewModel.saveString(user.uid, CURRENT_USER_ID) // Store the user ID in the view model
+                        Log.d("userUID", " the user uid is ${user.uid}")
+                        navController.navigate(Screen.Home.route)
+                    }) // if successful, goes to home page.
                 {
                     //if failed, displays a message
                     Toast.makeText(context, "Wrong credentials. Try again!", Toast.LENGTH_SHORT)
@@ -81,7 +91,9 @@ fun LoginScreen(navController: NavController, viewModel: LoginScreenViewModel = 
             }
             else {
                 UserForm(loading = false, isCreateAccount = true) { email, password ->
-                    viewModel.createUserWithEmailAndPassword(email, password) {
+                    viewModel.createUserWithEmailAndPassword(email, password) { user ->
+                        dataViewModel.saveString(user.uid, CURRENT_USER_ID)
+
                         navController.navigate(Screen.Home.route)
                     }
                 }
