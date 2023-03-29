@@ -4,6 +4,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -33,11 +34,9 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
 import uk.ac.aber.dcs.cs39440.mealbay.R
 import uk.ac.aber.dcs.cs39440.mealbay.model.DataViewModel
-import uk.ac.aber.dcs.cs39440.mealbay.storage.COLLECTION_EMPTY
 import uk.ac.aber.dcs.cs39440.mealbay.storage.CURRENT_USER_ID
 import uk.ac.aber.dcs.cs39440.mealbay.ui.components.TopLevelScaffold
-
-import com.google.firebase.firestore.ListenerRegistration
+import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
 
 @Composable
 fun CollectionScreenTopLevel(
@@ -82,7 +81,8 @@ fun CollectionScreen(
                             userId = userId,
                             onDeleteClick = { collectionId ->
                                 deleteCollection(userId, collectionId)
-                            }
+                            },
+                            onCollectionClick = { collectionId -> navController.navigate(Screen.Home.route) }
                         )
                     }
                 } else {
@@ -92,7 +92,6 @@ fun CollectionScreen(
         }
     }
 }
-
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -207,16 +206,14 @@ fun BottomSheet(dataViewModel: DataViewModel = hiltViewModel()) {
                     Toast.makeText(context, "Invalid input", Toast.LENGTH_LONG).show()
                     isErrorInTextField = true
                 } else {
-
                     if (userID != null) {
                         savePrivateCollection(userID, collectionName)
-                       // dataViewModel.saveBoolean(COLLECTION_EMPTY, false)
-
                     }
                     collectionName = ""
                 }
             }, modifier = Modifier
-                .width(180.dp)
+                .width(220.dp)
+                .height(50.dp)
         ) {
             Text(stringResource(R.string.save))
         }
@@ -261,7 +258,8 @@ fun deleteCollection(userId: String, collectionId: String) {
 @Composable
 fun DisplayCollections(
     userId: String,
-    onDeleteClick: (String) -> Unit
+    onDeleteClick: (String) -> Unit,
+    onCollectionClick: (String) -> Unit
 ) {
     val collections = remember { mutableStateOf(listOf<DocumentSnapshot>()) }
     val isLoading = remember { mutableStateOf(true) }
@@ -296,9 +294,11 @@ fun DisplayCollections(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(8.dp),
+                        .padding(8.dp)
+                        .clickable { onCollectionClick(documentSnapshot.id) },
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+
                 ) {
                     Column {
                         Text(text = collectionName, fontSize = 18.sp)

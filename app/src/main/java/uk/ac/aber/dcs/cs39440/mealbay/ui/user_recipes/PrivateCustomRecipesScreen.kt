@@ -13,7 +13,6 @@ fun PrivateCustomRecipesScreen(
 
 }
 
-
 fun EmptyCustomRecipesScreen(){
 
 }

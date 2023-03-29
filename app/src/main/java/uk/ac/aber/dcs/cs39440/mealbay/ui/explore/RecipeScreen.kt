@@ -3,8 +3,10 @@ package uk.ac.aber.dcs.cs39440.mealbay.ui.explore
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -22,6 +24,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.withStyle
@@ -33,8 +36,13 @@ import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import uk.ac.aber.dcs.cs39440.mealbay.R
 import uk.ac.aber.dcs.cs39440.mealbay.model.DataViewModel
+import androidx.compose.material.Card
+import androidx.compose.material.icons.filled.Close
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FirebaseFirestore
 
 import uk.ac.aber.dcs.cs39440.mealbay.model.Recipe
+import uk.ac.aber.dcs.cs39440.mealbay.storage.CURRENT_USER_ID
 import uk.ac.aber.dcs.cs39440.mealbay.storage.RECIPE_ID
 
 @Composable
@@ -88,173 +96,293 @@ fun FetchRecipeByID(
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
-fun ShowRecipeContent(navController: NavHostController, recipe: Recipe) {
-    Column(
+fun ShowRecipeContent(
+    navController: NavHostController,
+    recipe: Recipe,
+    dataViewModel: DataViewModel = hiltViewModel()
+) {
+    Box(
         modifier = Modifier
             .fillMaxHeight()
-            .fillMaxWidth(),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally
+            .fillMaxWidth()
     ) {
-        val ingredients = recipe.ingredients
-        val preparation = recipe.preparation
+        val isUserCollectionEmpty by dataViewModel.isUserCollectionEmpty.observeAsState(initial = true)
+        var userId = dataViewModel.getString(CURRENT_USER_ID)
+        val (showCollections, setShowCollections) = remember { mutableStateOf(false) }
+        val collectionsFetched = remember { mutableStateOf(listOf<DocumentSnapshot>()) }
+        val isLoading = remember { mutableStateOf(true) }
 
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = {
-                        recipe.title?.let {
-                            Text(
-                                text = it,
-                                fontSize = 20.sp
-                            )
-                        }
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = { navController.popBackStack() }) {
-                            Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-                        }
-                    },
-                    backgroundColor = Color(0xFFFFDAD4)
-                )
-            }
+        Column(
+            modifier = Modifier
+                .fillMaxHeight()
+                .fillMaxWidth(),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            val ingredients = recipe.ingredients
+            val preparation = recipe.preparation
 
-            LazyColumn {
-                item {
-                    Image(
-                        painter = rememberImagePainter("${recipe.photo}"),
-                        contentDescription = "Recipe image",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(360.dp)
-                            .padding(25.dp)
-                            .clip(RoundedCornerShape(25.dp)),
-                        contentScale = ContentScale.Crop
-                    )
-                }
-                item {
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                    ) {
-                        Text(
-                            "Difficulty: ${recipe.difficulty}",
-                            modifier = Modifier.weight(0.5f),
-                            fontSize = 18.sp
-                        )
-                        Text(
-                            "Rating: ${recipe.rating}",
-                            modifier = Modifier.weight(0.5f),
-                            fontSize = 18.sp
-                        )
-                    }
-                }
-                item {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                    ) {
-                        Text(
-                            "Total time: ${recipe.total_time}",
-                            modifier = Modifier.weight(1f),
-                            fontSize = 18.sp
-                        )
 
-                        ElevatedButton(
-                            onClick = { /* Handle button click */ },
-                            modifier = Modifier
-                                .padding(start = 16.dp)
-                                .width(180.dp)
-                        ) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(
-                                    Icons.Default.Add,
-                                    contentDescription = "Add icon",
-                                    modifier = Modifier.size(24.dp)
-                                )
-                                Text(
-                                    "Add",
-                                    modifier = Modifier.padding(start = 4.dp),
-                                    fontSize = 18.sp
-                                )
+            LaunchedEffect(userId) {
+                val db = FirebaseFirestore.getInstance()
+                if (userId != null) {
+                    db.collection("users")
+                        .document(userId)
+                        .collection("collections")
+                        .addSnapshotListener { value, error ->
+                            if (error != null) {
+                                Log.w("DisplayCollections", "Error fetching collections", error)
+                            } else {
+                                value?.let {
+                                    collectionsFetched.value = it.documents
+                                    isLoading.value = false
+                                }
                             }
                         }
-                    }
                 }
-                item {
-                    Divider(
-                        thickness = 0.5.dp,
-                        modifier = Modifier.padding(vertical = 10.dp)
+            }
+            LaunchedEffect(userId) {
+                if (userId != null) {
+                    dataViewModel.checkUserCollectionEmpty(userId)
+                }
+            }
+
+
+            Scaffold(
+                topBar = {
+                    TopAppBar(
+                        title = {
+                            recipe.title?.let {
+                                Text(
+                                    text = it,
+                                    fontSize = 20.sp
+                                )
+                            }
+                        },
+                        navigationIcon = {
+                            IconButton(onClick = { navController.popBackStack() }) {
+                                Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                            }
+                        },
+                        backgroundColor = Color(0xFFFFDAD4)
                     )
                 }
-                item {
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            stringResource(R.string.ingredients),
-                            fontSize = 25.sp
-
+            ) {
+                /*if (showCollections) {
+            CollectionList(
+                collections = collectionsFetched.value,
+                onItemClick = { collection ->
+                    // Handle the collection item click here
+                    println("Clicked on: ${collection.id}")
+                }
+            )
+        }*/
+                LazyColumn {
+                    item {
+                        Image(
+                            painter = rememberImagePainter("${recipe.photo}"),
+                            contentDescription = "Recipe image",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(360.dp)
+                                .padding(25.dp)
+                                .clip(RoundedCornerShape(25.dp)),
+                            contentScale = ContentScale.Crop
                         )
                     }
-                }
-                items(recipe.ingredients.size) { index ->
-                    val item = recipe.ingredients[index]
-                    val splitItems = item.split("|") // Split the string using the delimiter
+                    item {
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp)
+                        ) {
+                            Text(
+                                "Difficulty: ${recipe.difficulty}",
+                                modifier = Modifier.weight(0.5f),
+                                fontSize = 18.sp
+                            )
+                            Text(
+                                "Rating: ${recipe.rating}",
+                                modifier = Modifier.weight(0.5f),
+                                fontSize = 18.sp
+                            )
+                        }
+                    }
+                    item {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp)
+                        ) {
+                            Text(
+                                "Total time: ${recipe.total_time}",
+                                modifier = Modifier.weight(1f),
+                                fontSize = 18.sp
+                            )
 
-                    splitItems.forEach { splitItem ->
+                            ElevatedButton(
+                                onClick = {
+                                    setShowCollections(!showCollections)
+                                },
+                                enabled = !isUserCollectionEmpty,
+                                modifier = Modifier
+                                    .padding(start = 16.dp)
+                                    .width(170.dp)
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(
+                                        Icons.Default.Add,
+                                        contentDescription = "Add icon",
+                                        modifier = Modifier.size(22.dp)
+                                    )
+                                    Text(
+                                        "Add",
+                                        modifier = Modifier.padding(start = 4.dp),
+                                        fontSize = 17.sp
+                                    )
+                                }
+                            }
+
+                        }
+
+                    }
+                    item {
+                        Divider(
+                            thickness = 0.5.dp,
+                            modifier = Modifier.padding(vertical = 10.dp)
+                        )
+                    }
+                    item {
+                        Box(
+                            modifier = Modifier.fillMaxWidth(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                stringResource(R.string.ingredients),
+                                fontSize = 25.sp
+
+                            )
+                        }
+                    }
+                    items(recipe.ingredients.size) { index ->
+                        val item = recipe.ingredients[index]
+                        val splitItems = item.split("|") // Split the string using the delimiter
+
+                        splitItems.forEach { splitItem ->
+                            Text(
+                                buildAnnotatedString {
+                                    append("  • ") // bullet point
+                                    withStyle(SpanStyle(fontSize = 20.sp)) {
+                                        append(splitItem) // item text
+                                    }
+                                }
+                            )
+                        }
+                    }
+
+                    item {
+                        Divider(
+                            thickness = 0.5.dp,
+                            modifier = Modifier.padding(vertical = 10.dp)
+                        )
+                    }
+                    item {
+                        Box(
+                            modifier = Modifier.fillMaxWidth(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                stringResource(R.string.preparation),
+                                fontSize = 25.sp,
+                                modifier = Modifier.padding(start = 20.dp),
+                            )
+                        }
+                    }
+
+                    items(recipe.preparation.size) { index ->
+                        val item = recipe.preparation[index]
+
                         Text(
                             buildAnnotatedString {
-                                append("  • ") // bullet point
-                                withStyle(SpanStyle(fontSize = 20.sp)) {
-                                    append(splitItem) // item text
+                                withStyle(SpanStyle(fontSize = 22.sp)) {
+                                    append("  ${index + 1}) ")
+                                }
+                                withStyle(SpanStyle(fontSize = 19.sp)) {
+                                    append(item)
+                                    Spacer(modifier = Modifier.padding(6.dp))
                                 }
                             }
                         )
                     }
                 }
 
-                item {
-                    Divider(
-                        thickness = 0.5.dp,
-                        modifier = Modifier.padding(vertical = 10.dp)
-                    )
-                }
-                item {
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.Center
+
+            }
+        }
+        if (showCollections) {
+            Card(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .size(width = 350.dp, height = 450.dp)
+                    .align(Alignment.Center),
+                backgroundColor = Color(0xFFFFB4A4),
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                Column {
+                    IconButton(
+                        onClick = { setShowCollections(false) },
+                        modifier = Modifier
+                            .align(Alignment.End)
+                            .padding(end = 4.dp, top = 4.dp)
                     ) {
-                        Text(
-                            stringResource(R.string.preparation),
-                            fontSize = 25.sp,
-                            modifier = Modifier.padding(start = 20.dp),
+                        Icon(Icons.Default.Close, contentDescription = "Close")
+                    }
+
+                        CollectionList(
+                            collections = collectionsFetched.value,
+                            onItemClick = { collection ->
+                                // Handle the collection item click here
+                                println("Clicked on: ${collection.id}")
+                            }
                         )
                     }
                 }
+            }
+        }
+    }
+}
 
-                items(recipe.preparation.size) { index ->
-                    val item = recipe.preparation[index]
+@Composable
+fun CollectionList(
+    collections: List<DocumentSnapshot>,
+    onItemClick: (DocumentSnapshot) -> Unit
+) {
+    Box(contentAlignment = Alignment.Center) {
+        Card(
+            modifier = Modifier
+                .width(300.dp) // Set the width constraint
+                .height(400.dp) // Set the height constraint
+                .padding(16.dp),
+            backgroundColor = Color(0xFFFFB4A7),
 
+            ) {
+
+            LazyColumn {
+                items(collections) { collection ->
+                    val collectionName = collection.getString("name") ?: "Unnamed"
                     Text(
-                        buildAnnotatedString {
-                            withStyle(SpanStyle(fontSize = 22.sp)) {
-                                append("  ${index + 1}) ")
-                            }
-                            withStyle(SpanStyle(fontSize = 19.sp)) {
-                                append(item)
-                                Spacer(modifier = Modifier.padding(6.dp))
-                            }
-                        }
+                        text = collectionName,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                            .clickable { onItemClick(collection) }
                     )
                 }
             }
+
         }
     }
 }

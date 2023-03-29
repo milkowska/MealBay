@@ -149,7 +149,7 @@ fun firebaseUI(
         Column {
             Box(modifier = Modifier.weight(1f)) {
                 LazyColumn {
-                    // on below line we are setting data for each item.
+                    // setting data for each item
                     itemsIndexed(recipeList) { index, item ->
 
                         ConstraintLayout(
@@ -202,7 +202,7 @@ fun firebaseUI(
                                             width = Dimension.fillToConstraints
                                         },
                                     fontSize = 20.sp,
-                                    textAlign = TextAlign.Center // Add text alignment to center the title
+                                    textAlign = TextAlign.Center
                                 )
                             }
 
@@ -222,10 +222,10 @@ fun firebaseUI(
                                             top.linkTo(
                                                 title.bottom,
                                                 0.dp
-                                            ) // Remove top margin to align the rating directly below the title
+                                            )
                                         },
                                     fontSize = 16.sp,
-                                    textAlign = TextAlign.Center // Add text alignment to center the rating
+                                    textAlign = TextAlign.Center
                                 )
                             }
                         }
