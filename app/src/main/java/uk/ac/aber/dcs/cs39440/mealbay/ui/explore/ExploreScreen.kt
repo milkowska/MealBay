@@ -47,6 +47,7 @@ fun ExploreScreenTopLevel(
     ExploreScreen(navController, dataViewModel = dataViewModel)
 }
 
+
 @SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalCoroutinesApi::class)
 @Composable
