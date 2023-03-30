@@ -37,7 +37,7 @@ import uk.ac.aber.dcs.cs39440.mealbay.model.DataViewModel
 import uk.ac.aber.dcs.cs39440.mealbay.storage.CURRENT_USER_ID
 import uk.ac.aber.dcs.cs39440.mealbay.ui.components.TopLevelScaffold
 import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
-
+import  androidx.compose.material3.AlertDialog
 @Composable
 fun CollectionScreenTopLevel(
     navController: NavHostController,
@@ -263,6 +263,8 @@ fun DisplayCollections(
 ) {
     val collections = remember { mutableStateOf(listOf<DocumentSnapshot>()) }
     val isLoading = remember { mutableStateOf(true) }
+    val openAlertDialog = remember { mutableStateOf(false) }
+    val selectedCollectionId = remember { mutableStateOf("") }
 
     LaunchedEffect(userId) {
         val db = FirebaseFirestore.getInstance()
@@ -305,11 +307,48 @@ fun DisplayCollections(
                         Text(text = "$collectionSize recipes", fontSize = 14.sp)
                     }
 
-                    IconButton(onClick = { onDeleteClick(documentSnapshot.id) }) {
+                    IconButton(onClick = {
+                        openAlertDialog.value = true
+                        selectedCollectionId.value = documentSnapshot.id
+                    }) {
                         Icon(Icons.Default.Delete, contentDescription = "Delete Collection")
                     }
+
+
                 }
             }
+
+
+        }
+        if (openAlertDialog.value) {
+            AlertDialog(
+                onDismissRequest = {
+                    openAlertDialog.value = false
+                },
+                title = {
+                    Text(
+                        text = stringResource(R.string.are_you_sure),
+                    )
+                },
+                text = {
+                    Text(
+                        text = stringResource(R.string.pressing_confirm),
+                    )
+                },
+                confirmButton = {
+                    TextButton(onClick = {
+                        onDeleteClick(selectedCollectionId.value)
+                        openAlertDialog.value = false
+                    }) {
+                        Text("Confirm")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { openAlertDialog.value = false }) {
+                        Text("Cancel")
+                    }
+                }
+            )
         }
     }
 }

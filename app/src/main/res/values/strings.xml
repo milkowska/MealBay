@@ -72,5 +72,6 @@
     <string name="are_you_done">Are you done?</string>
     <string name="warning_two">"After clicking the save button, you will no longer be able to modify the ingredients section. "</string>
     <string name="your_recipes">Your recipes</string>
+    <string name="pressing_confirm">If you proceed, the collection will be permanently deleted.</string>
 
 </resources>

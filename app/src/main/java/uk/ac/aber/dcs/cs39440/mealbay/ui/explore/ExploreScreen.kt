@@ -268,8 +268,6 @@ fun firebaseUI(
                         fontFamily = Railway,
                         )
                 }
-
-
             }
         }
     }

@@ -1,5 +1,6 @@
 package uk.ac.aber.dcs.cs39440.mealbay.ui.home
 
+import android.annotation.SuppressLint
 import android.os.Build
 import android.util.Log
 import android.widget.Toast
@@ -45,7 +46,9 @@ import uk.ac.aber.dcs.cs39440.mealbay.model.Recipe
 import java.time.LocalDateTime
 import java.util.*
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.material.Scaffold
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -56,6 +59,8 @@ fun HomeScreenTopLevel(
     HomeScreen(navController, modifier = Modifier, dataViewModel)
 }
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "UnusedMaterialScaffoldPaddingParameter")
+@OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreen(
@@ -111,10 +116,15 @@ fun HomeScreen(
                 navigationIcon = {
                     IconButton(onClick = {
                         FirebaseAuth.getInstance().signOut().run {
+
                             navController.navigate(Screen.Login.route)
-                            Toast.makeText(context, "You have been logged out.", Toast.LENGTH_SHORT).show()
-                            }
+                            Toast.makeText(
+                                context,
+                                "You have been logged out.",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
+                    }
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.ic_logout_icon),
@@ -178,7 +188,7 @@ fun HomeScreen(
                                         mealOfTheDay?.id?.let {
                                             recipeId = it
                                             dataViewModel.saveString(recipeId!!, RECIPE_ID)
-                                            Log.d("TEST", "$recipeId")
+                                            //Log.d("TEST", "$recipeId")
                                         }
                                         navController.navigate(Screen.Recipe.route)
                                     }
@@ -383,8 +393,8 @@ fun HomeScreen(
             }
         }
     }
-
 }
+
 
 /**
  * Fetches recipes from the "recipesready" collection in Firestore based on the given category to retrieve documents
