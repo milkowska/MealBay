@@ -2,6 +2,7 @@ package uk.ac.aber.dcs.cs39440.mealbay.ui.home
 
 import android.os.Build
 import android.util.Log
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -44,6 +45,7 @@ import uk.ac.aber.dcs.cs39440.mealbay.model.Recipe
 import java.time.LocalDateTime
 import java.util.*
 import androidx.compose.foundation.lazy.items
+import androidx.compose.ui.platform.LocalContext
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -58,7 +60,7 @@ fun HomeScreenTopLevel(
 @Composable
 fun HomeScreen(
     navController: NavHostController,
-    modifier : Modifier,
+    modifier: Modifier,
     dataViewModel: DataViewModel = hiltViewModel()
 ) {
     val mealViewModel = viewModel<MealViewModel>()
@@ -83,6 +85,8 @@ fun HomeScreen(
             "Vegetarian"
         )
     }
+    val context = LocalContext.current
+
     LaunchedEffect(Unit) {
         val updateJob = launch {
             while (true) {
@@ -108,8 +112,10 @@ fun HomeScreen(
                     IconButton(onClick = {
                         FirebaseAuth.getInstance().signOut().run {
                             navController.navigate(Screen.Login.route)
+                            Toast.makeText(context, "You have been logged out.", Toast.LENGTH_SHORT).show()
+                            }
                         }
-                    }) {
+                    ) {
                         Icon(
                             painter = painterResource(R.drawable.ic_logout_icon),
                             contentDescription = stringResource(id = R.string.logout)

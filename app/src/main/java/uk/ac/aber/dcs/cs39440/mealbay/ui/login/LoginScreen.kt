@@ -14,6 +14,7 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -51,6 +52,7 @@ fun LoginScreen(
     val context = LocalContext.current
     var currentUserID by rememberSaveable { mutableStateOf("") }
 
+
     Surface(
         modifier = Modifier
             .fillMaxSize()
@@ -82,21 +84,34 @@ fun LoginScreen(
                         dataViewModel.saveString(user.uid, CURRENT_USER_ID) // Store the user ID in the view model
                         Log.d("userUID", " the user uid is ${user.uid}")
                         navController.navigate(Screen.Home.route)
-                    }) // if successful, goes to home page.
-                {
-                    //if failed, displays a message
-                    Toast.makeText(context, "Wrong credentials. Try again!", Toast.LENGTH_SHORT)
-                        .show()
-                }
+                    },
+                    onError = { error ->
+                        Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+                    }
+                )
             }
             else {
-                UserForm(loading = false, isCreateAccount = true) { email, password ->
+               /* UserForm(loading = false, isCreateAccount = true) { email, password ->
                     viewModel.createUserWithEmailAndPassword(email, password) { user ->
                         dataViewModel.saveString(user.uid, CURRENT_USER_ID)
-
                         navController.navigate(Screen.Home.route)
                     }
+                }*/
+                UserForm(loading = false, isCreateAccount = true) { email, password ->
+                    Log.d("UserForm", "Attempting to create user with email: $email")
+                    viewModel.createUserWithEmailAndPassword(email, password,
+                        onSuccess = { user ->
+                            Log.d("UserForm", "User creation succeeded")
+                            dataViewModel.saveString(user.uid, CURRENT_USER_ID)
+                            navController.navigate(Screen.Home.route)
+                        },
+                        onError = { errorMessage ->
+                            Log.d("UserForm", "User creation failed: $errorMessage")
+                            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+                        }
+                    )
                 }
+
             }
 
             Spacer(modifier = Modifier.height(50.dp))
@@ -148,7 +163,7 @@ fun UserForm(
     val passwordFocusRequest = FocusRequester.Default
     val keyboardController = LocalSoftwareKeyboardController.current
     val valid = remember(email.value, password.value) {
-        email.value.trim().isNotEmpty() && password.value.trim().isNotEmpty()
+        email.value.trim().isNotEmpty() && password.value.trim().isNotEmpty() && (password.value.trim().length >=6 )
     }
 
     val modifier = Modifier
@@ -180,7 +195,8 @@ fun UserForm(
             onAction = KeyboardActions {
                 if (!valid) return@KeyboardActions
                 onDone(email.value.trim(), password.value.trim())
-            }
+            },
+
         )
 
         SendButton(
@@ -211,7 +227,7 @@ fun SendButton(
         modifier = Modifier
             .padding(10.dp)
             .fillMaxWidth(),
-        enabled = !loading && validInputs,
+        enabled = !loading && validInputs ,
     ) {
         if (loading) CircularProgressIndicator(modifier = Modifier.size(30.dp))
         else Text(text = textId, modifier = Modifier.padding(5.dp))

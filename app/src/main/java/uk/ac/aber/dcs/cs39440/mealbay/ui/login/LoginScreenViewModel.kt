@@ -1,6 +1,8 @@
 package uk.ac.aber.dcs.cs39440.mealbay.ui.login
 
 import android.util.Log
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -26,6 +28,7 @@ class LoginScreenViewModel : ViewModel() {
         _userId.value = userId
     }
 
+
     fun signInWithEmailAndPassword(
         email: String,
         password: String,
@@ -46,17 +49,17 @@ class LoginScreenViewModel : ViewModel() {
                     is FirebaseAuthInvalidUserException -> {
                         // handle invalid user exception
                         onError("Invalid email address")
-                        Log.d("FBA", "Invalid email address")
+                        Log.d("FBA", "Invalid email address!")
                     }
                     is FirebaseAuthInvalidCredentialsException -> {
                         // handle invalid credentials exception
-                        onError("Invalid password")
+                        onError("Invalid credentials!")
                         Log.d("FBA", "Invalid password")
                     }
                     is RuntimeExecutionException -> {
                         // handle runtime exception
                         if (exception.cause is FirebaseAuthInvalidUserException) {
-                            onError("Invalid email address")
+                            onError("Invalid email address!")
                         } else {
                             onError("Error signing in")
                         }
@@ -73,7 +76,8 @@ class LoginScreenViewModel : ViewModel() {
     fun createUserWithEmailAndPassword(
         email: String,
         password: String,
-        onSuccess: (FirebaseUser) -> Unit
+        onSuccess: (FirebaseUser) -> Unit,
+        onError: (String) -> Unit
     ) {
         if (_loading.value == false) {
             _loading.value = true
@@ -87,10 +91,20 @@ class LoginScreenViewModel : ViewModel() {
                             onSuccess(user)
                         }
                     } else {
-                        Log.d("FB", "createUserWithEmailAndPassword: ${task.result.toString()}")
+                        val errorMessage = when (val exception = task.exception) {
+                            is FirebaseAuthInvalidCredentialsException -> {
+                                "Invalid email address!"
+                            }
+                            else -> {
+                                "Error creating user!"
+                            }
+                        }
+                        onError(errorMessage)
                     }
                     _loading.value = false
                 }
+        } else {
+            Log.d("createUserWith", "Function called while loading")
         }
     }
 
