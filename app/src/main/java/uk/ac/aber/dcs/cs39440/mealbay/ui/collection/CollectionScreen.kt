@@ -38,6 +38,7 @@ import uk.ac.aber.dcs.cs39440.mealbay.storage.CURRENT_USER_ID
 import uk.ac.aber.dcs.cs39440.mealbay.ui.components.TopLevelScaffold
 import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
 import  androidx.compose.material3.AlertDialog
+
 @Composable
 fun CollectionScreenTopLevel(
     navController: NavHostController,
@@ -291,7 +292,7 @@ fun DisplayCollections(
         LazyColumn {
             items(collections.value) { documentSnapshot ->
                 val collectionName = documentSnapshot.getString("name") ?: "Unnamed"
-                val collectionSize = 0 // You need to fetch the collection size from Firestore
+                val collectionSize = 0 // need to fetch the collection size from Firestore
 
                 Row(
                     modifier = Modifier
@@ -301,7 +302,7 @@ fun DisplayCollections(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
 
-                ) {
+                    ) {
                     Column {
                         Text(text = collectionName, fontSize = 18.sp)
                         Text(text = "$collectionSize recipes", fontSize = 14.sp)
@@ -313,13 +314,10 @@ fun DisplayCollections(
                     }) {
                         Icon(Icons.Default.Delete, contentDescription = "Delete Collection")
                     }
-
-
                 }
             }
-
-
         }
+
         if (openAlertDialog.value) {
             AlertDialog(
                 onDismissRequest = {
@@ -352,3 +350,4 @@ fun DisplayCollections(
         }
     }
 }
+

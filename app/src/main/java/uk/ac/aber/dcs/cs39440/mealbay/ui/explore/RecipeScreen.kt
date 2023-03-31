@@ -61,6 +61,7 @@ fun RecipeScreen(
     dataViewModel: DataViewModel = hiltViewModel(),
     mealViewModel: MealViewModel = viewModel()
 ) {
+
     var id = dataViewModel.getString(RECIPE_ID)
     Log.d("MYTAG", "the id is $id or ${dataViewModel.getString(RECIPE_ID)}")
     if (id != null) {
@@ -168,15 +169,7 @@ fun ShowRecipeContent(
                     )
                 }
             ) {
-                /*if (showCollections) {
-            CollectionList(
-                collections = collectionsFetched.value,
-                onItemClick = { collection ->
-                    // Handle the collection item click here
-                    println("Clicked on: ${collection.id}")
-                }
-            )
-        }*/
+
                 LazyColumn {
                     item {
                         Image(

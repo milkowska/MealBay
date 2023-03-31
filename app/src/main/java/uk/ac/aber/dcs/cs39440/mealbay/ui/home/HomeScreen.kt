@@ -41,14 +41,12 @@ import uk.ac.aber.dcs.cs39440.mealbay.ui.explore.MealViewModel
 import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
 import java.time.LocalTime
 import androidx.compose.runtime.getValue
-import com.google.firebase.firestore.FirebaseFirestore
-import uk.ac.aber.dcs.cs39440.mealbay.model.Recipe
 import java.time.LocalDateTime
 import java.util.*
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.rememberScaffoldState
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.material.Scaffold
+import uk.ac.aber.dcs.cs39440.mealbay.storage.CURRENT_CATEGORY
+import androidx.lifecycle.viewModelScope
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -91,6 +89,7 @@ fun HomeScreen(
         )
     }
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         val updateJob = launch {
@@ -193,7 +192,24 @@ fun HomeScreen(
                                         navController.navigate(Screen.Recipe.route)
                                     }
                             ) {
-                                val (photo, title, rating) = createRefs()
+                                val (photo, title, rating, progress) = createRefs()
+
+                                Box(
+                                    modifier = Modifier
+                                        .constrainAs(progress) {
+                                            top.linkTo(parent.top)
+                                            start.linkTo(parent.start)
+                                            end.linkTo(parent.end)
+                                            bottom.linkTo(parent.bottom)
+                                        }
+                                        .fillMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    if (mealOfTheDay == null) {
+                                        CircularProgressIndicator()
+                                    }
+                                }
+
                                 Box(
                                     modifier = Modifier
                                         .constrainAs(photo) {
@@ -371,8 +387,14 @@ fun HomeScreen(
                                 categoryRow.forEach { category ->
                                     ElevatedButton(
                                         onClick = {
-                                            fetchRecipesByCategory(category)
-                                            Log.d("CategoryClicked", "category is $category")
+
+                                                //mealViewModel.fetchRecipesByCategory(category)
+                                                //fetchRecipesByCategory(category)
+                                                dataViewModel.saveString(category, CURRENT_CATEGORY)
+
+                                                navController.navigate(Screen.Filtered.route)
+                                                Log.d("CategoryClicked", "category is $category")
+
                                         },
                                         modifier = Modifier
                                             .weight(1f)
@@ -395,13 +417,13 @@ fun HomeScreen(
     }
 }
 
-
 /**
  * Fetches recipes from the "recipesready" collection in Firestore based on the given category to retrieve documents
  * where the "category" field matches the provided category.
  *
  * @param category The category used to filter recipes from the collection.
- */
+ *//*
+
 fun fetchRecipesByCategory(category: String) {
     val db = FirebaseFirestore.getInstance()
     val query = db.collection("recipesready")
@@ -420,3 +442,4 @@ fun fetchRecipesByCategory(category: String) {
             Log.w("fetchRecipesByCategory", "Error fetching recipes by category: ", exception)
         }
 }
+*/

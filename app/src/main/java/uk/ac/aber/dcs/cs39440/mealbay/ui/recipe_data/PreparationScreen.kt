@@ -75,7 +75,6 @@ fun PreparationScreen(
                 .fillMaxWidth()
                 .padding(20.dp)
                 .height(300.dp),
-            //maxLines = Int.MAX_VALUE,
             label = { Text(stringResource(id = R.string.enter_details)) }
         )
 

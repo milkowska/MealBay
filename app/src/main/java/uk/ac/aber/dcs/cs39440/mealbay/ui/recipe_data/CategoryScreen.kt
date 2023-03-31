@@ -154,21 +154,6 @@ fun CategoryScreen(
                 if (userID != null) {
                     savePrivateRecipe(userID, newRecipe)
                 }
-
-
-              /*  saveRecipeToFirestore(
-                    recipe = newRecipe,
-                    onSuccess = { documentId ->
-                        Log.d(
-                            "SUCCESSFUL",
-                            "The recipe ${newRecipe.title} has been added successfully with document ID: $documentId"
-                        )
-                    },
-                    onFailure = { exception ->
-                        Log.d("FAILED", "The recipe ${newRecipe.title} has not been added.")
-                        // Handle the error case
-                    }
-                )*/
             }
         }
 
