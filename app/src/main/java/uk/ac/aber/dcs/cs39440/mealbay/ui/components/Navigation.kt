@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import uk.ac.aber.dcs.cs39440.mealbay.ui.collection.CollectionDisplayScreen
 import uk.ac.aber.dcs.cs39440.mealbay.ui.collection.CollectionScreenTopLevel
 import uk.ac.aber.dcs.cs39440.mealbay.ui.recipe_data.CreateRecipeScreen
 import uk.ac.aber.dcs.cs39440.mealbay.ui.explore.ExploreScreen
@@ -51,5 +52,6 @@ fun Navigation() {
         composable(Screen.Category.route) { CategoryScreen(navController) }
         composable(Screen.Custom.route) { PrivateCustomRecipesScreen(navController) }
         composable(Screen.Filtered.route) { FilteredByCategoryScreen(navController) }
+        composable(Screen.ColDisplay.route) { CollectionDisplayScreen(navController) }
     }
 }

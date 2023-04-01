@@ -14,6 +14,7 @@ sealed class Screen(val route: String) {
     object Category: Screen("category")
     object Custom: Screen("custom")
     object Filtered: Screen("filtered")
+    object ColDisplay: Screen("ColDisplay")
 }
 
 val screens = listOf(

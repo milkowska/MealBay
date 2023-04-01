@@ -38,6 +38,10 @@ import uk.ac.aber.dcs.cs39440.mealbay.storage.CURRENT_USER_ID
 import uk.ac.aber.dcs.cs39440.mealbay.ui.components.TopLevelScaffold
 import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
 import  androidx.compose.material3.AlertDialog
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+import uk.ac.aber.dcs.cs39440.mealbay.model.Recipe
+import uk.ac.aber.dcs.cs39440.mealbay.storage.COLLECTION_NAME
 
 @Composable
 fun CollectionScreenTopLevel(
@@ -55,6 +59,9 @@ fun CollectionScreen(
 
     val isUserCollectionEmpty by dataViewModel.isUserCollectionEmpty.observeAsState(initial = true)
     var userId = dataViewModel.getString(CURRENT_USER_ID)
+
+
+
 
     LaunchedEffect(userId) {
         if (userId != null) {
@@ -83,7 +90,9 @@ fun CollectionScreen(
                             onDeleteClick = { collectionId ->
                                 deleteCollection(userId, collectionId)
                             },
-                            onCollectionClick = { collectionId -> navController.navigate(Screen.Home.route) }
+                            onCollectionClick = { collectionId ->
+                                navController.navigate(Screen.ColDisplay.route)
+                            }
                         )
                     }
                 } else {
@@ -93,6 +102,35 @@ fun CollectionScreen(
         }
     }
 }
+
+/*
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun addRecipeToCollection(collectionID: String, recipe: Recipe, userId: String) {
+    val userCollectionsRef = userId?.let {
+        Firebase.firestore
+            .collection("users")
+            .document(it)
+            .collection("collections")
+    }
+
+    val recipeRef = userCollectionsRef
+        .document(collectionID)
+        .collection("recipes")
+        .document() // Creates a new document with a unique ID
+
+    recipeRef.set(recipe)
+        .addOnSuccessListener {
+            Log.d("ADDRECIPE", "Recipe added with ID: ${recipeRef.id}")
+        }
+        .addOnFailureListener { e ->
+            Log.w("ADDRECIPE", "Error adding recipe", e)
+        }
+}
+*/
+
+
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -260,7 +298,8 @@ fun deleteCollection(userId: String, collectionId: String) {
 fun DisplayCollections(
     userId: String,
     onDeleteClick: (String) -> Unit,
-    onCollectionClick: (String) -> Unit
+    onCollectionClick: (String) -> Unit,
+    dataViewModel: DataViewModel = hiltViewModel()
 ) {
     val collections = remember { mutableStateOf(listOf<DocumentSnapshot>()) }
     val isLoading = remember { mutableStateOf(true) }
@@ -294,11 +333,13 @@ fun DisplayCollections(
                 val collectionName = documentSnapshot.getString("name") ?: "Unnamed"
                 val collectionSize = 0 // need to fetch the collection size from Firestore
 
+
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(8.dp)
-                        .clickable { onCollectionClick(documentSnapshot.id) },
+                        .clickable { onCollectionClick(documentSnapshot.id)
+                            dataViewModel.saveString(collectionName, COLLECTION_NAME)},
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
 

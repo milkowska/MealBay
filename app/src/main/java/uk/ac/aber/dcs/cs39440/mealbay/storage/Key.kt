@@ -5,6 +5,7 @@ package uk.ac.aber.dcs.cs39440.mealbay.storage
  */
 const val RECIPE_ID = "RECIPE_ID"
 const val COLLECTION_EMPTY = "COLLECTION_EMPTY"
+const val COLLECTION_NAME = "COLLECTION_NAME"
 
 const val CURRENT_CATEGORY = "CURRENT_CATEGORY"
 const val CURRENT_USER_ID = "CURRENT_USER_ID"

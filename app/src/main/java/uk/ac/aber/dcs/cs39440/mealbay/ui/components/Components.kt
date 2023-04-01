@@ -154,6 +154,7 @@ fun RecipeList(
     Column(
         Modifier
             .fillMaxSize()
+            .padding(top = 30.dp)
     ) {
         Log.d("recipeListSize", "Size: ${recipeList.size}")
         LazyColumn {

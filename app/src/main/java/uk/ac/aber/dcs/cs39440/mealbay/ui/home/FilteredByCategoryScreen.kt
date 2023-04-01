@@ -2,6 +2,8 @@ package uk.ac.aber.dcs.cs39440.mealbay.ui.home
 
 import android.annotation.SuppressLint
 import android.util.Log
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -9,9 +11,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.MutableLiveData
@@ -38,7 +45,7 @@ fun FilteredByCategoryScreen(
     val category = dataViewModel.getString(CURRENT_CATEGORY)
    val recipeList = category?.let { mealViewModel.fetchRecipesByCategory(it) }
     val recipeListLiveData = category?.let { getRecipesByCategory(it) }
-    //val recipeList by recipeListLiveData?.observeAsState(emptyList())
+    val (isLoading, setIsLoading) = remember { mutableStateOf(true) }
 
     Scaffold(
         topBar = {
@@ -61,8 +68,23 @@ fun FilteredByCategoryScreen(
             )
         }) {
 
+        if (isLoading) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Spacer(modifier = Modifier.height(20.dp))
+
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .size(29.dp)
+                )
+            }
+        }
 
         if (recipeList != null) {
+
+            setIsLoading(false)
             RecipeList(
                 context = LocalContext.current,
                 recipeList = recipeList,
@@ -70,9 +92,7 @@ fun FilteredByCategoryScreen(
                 dataViewModel = dataViewModel
             )
         }
-
     }
-
 }
 
 fun getRecipesByCategory(category: String): MutableLiveData<List<Recipe>> {

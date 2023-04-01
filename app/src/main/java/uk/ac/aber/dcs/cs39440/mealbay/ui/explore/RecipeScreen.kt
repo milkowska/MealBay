@@ -40,6 +40,8 @@ import androidx.compose.material.Card
 import androidx.compose.material.icons.filled.Close
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 
 import uk.ac.aber.dcs.cs39440.mealbay.model.Recipe
 import uk.ac.aber.dcs.cs39440.mealbay.storage.CURRENT_USER_ID
@@ -123,7 +125,6 @@ fun ShowRecipeContent(
             val ingredients = recipe.ingredients
             val preparation = recipe.preparation
 
-
             LaunchedEffect(userId) {
                 val db = FirebaseFirestore.getInstance()
                 if (userId != null) {
@@ -147,7 +148,6 @@ fun ShowRecipeContent(
                     dataViewModel.checkUserCollectionEmpty(userId)
                 }
             }
-
 
             Scaffold(
                 topBar = {
@@ -254,10 +254,13 @@ fun ShowRecipeContent(
                         ) {
                             Text(
                                 stringResource(R.string.ingredients),
-                                fontSize = 25.sp
-
+                                fontSize = 25.sp,
+                                color = Color(0xFF9C4234)
                             )
                         }
+                    }
+                    item {
+                        Spacer(modifier = Modifier.height(20.dp))
                     }
                     items(recipe.ingredients.size) { index ->
                         val item = recipe.ingredients[index]
@@ -266,7 +269,9 @@ fun ShowRecipeContent(
                         splitItems.forEach { splitItem ->
                             Text(
                                 buildAnnotatedString {
-                                    append("  • ") // bullet point
+                                    withStyle(SpanStyle(color = Color(0xFF9C4234))) {
+                                        append("  • ") // bullet point
+                                    }
                                     withStyle(SpanStyle(fontSize = 20.sp)) {
                                         append(splitItem) // item text
                                     }
@@ -289,6 +294,7 @@ fun ShowRecipeContent(
                             Text(
                                 stringResource(R.string.preparation),
                                 fontSize = 25.sp,
+                                color = Color(0xFF9C4234),
                                 modifier = Modifier.padding(start = 20.dp),
                             )
                         }
@@ -299,7 +305,7 @@ fun ShowRecipeContent(
 
                         Text(
                             buildAnnotatedString {
-                                withStyle(SpanStyle(fontSize = 22.sp)) {
+                                withStyle(SpanStyle(fontSize = 22.sp, color = Color(0xFF9C4234))) {
                                     append("  ${index + 1}) ")
                                 }
                                 withStyle(SpanStyle(fontSize = 19.sp)) {
@@ -309,6 +315,10 @@ fun ShowRecipeContent(
                             }
                         )
                     }
+                    item {
+                        Spacer(modifier = Modifier.height(10.dp))
+                    }
+
                 }
 
 
@@ -324,23 +334,28 @@ fun ShowRecipeContent(
                 shape = RoundedCornerShape(16.dp)
             ) {
                 Box(contentAlignment = Alignment.Center) {
-                Column {
-                    IconButton(
-                        onClick = { setShowCollections(false) },
-                        modifier = Modifier
-                            .align(Alignment.End)
-                            .padding(end = 4.dp, top = 4.dp)
-                    ) {
-                        Icon(Icons.Default.Close, contentDescription = "Close")
-                    }
+                    Column {
+                        IconButton(
+                            onClick = { setShowCollections(false) },
+                            modifier = Modifier
+                                .align(Alignment.End)
+                                .padding(end = 4.dp, top = 4.dp)
+                        ) {
+                            Icon(Icons.Default.Close, contentDescription = "Close")
+                        }
 
-                        CollectionList(
-                            collections = collectionsFetched.value,
-                            onItemClick = { collection ->
-                                // Handle the collection item click here
-                                println("Clicked on: ${collection.id}")
-                            }
-                        )
+                        dataViewModel.getString(RECIPE_ID)?.let {
+                            CollectionList(
+                                collections = collectionsFetched.value,
+                                onItemClick = { collection, recipeId ->
+                                    if (userId != null) {
+                                        addRecipeToCollection(collection.id, recipeId, userId)
+                                        Log.d("AAA", "${collection.id}, recipe:  $recipeId, user:  $userId ")
+                                    }
+                                },
+                                recipeId = it
+                            )
+                        }
                     }
                 }
             }
@@ -351,7 +366,8 @@ fun ShowRecipeContent(
 @Composable
 fun CollectionList(
     collections: List<DocumentSnapshot>,
-    onItemClick: (DocumentSnapshot) -> Unit
+    onItemClick: (DocumentSnapshot, String) -> Unit,
+    recipeId: String
 ) {
     Box(contentAlignment = Alignment.Center) {
         Card(
@@ -371,11 +387,40 @@ fun CollectionList(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(8.dp)
-                            .clickable { onItemClick(collection) }
+                            .clickable {
+                                onItemClick(collection, recipeId)
+                            }
                     )
                 }
             }
 
         }
     }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+fun addRecipeToCollection(collectionID: String, recipeId: String, userId: String) {
+    val userCollectionsRef = userId?.let {
+        Firebase.firestore
+            .collection("users")
+            .document(it)
+            .collection("collections")
+    }
+
+    val recipeRef = userCollectionsRef
+        .document(collectionID)
+        .collection("recipes")
+        .document(recipeId) // Use the recipeId as the document ID
+
+    val data = mapOf(
+        "recipeId" to recipeId
+    )
+
+    recipeRef.set(data)
+        .addOnSuccessListener {
+            Log.d("ADDRECIPE", "Recipe added with ID: ${recipeRef.id}")
+        }
+        .addOnFailureListener { e ->
+            Log.w("ADDRECIPE", "Error adding recipe", e)
+        }
 }

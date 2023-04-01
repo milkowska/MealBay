@@ -8,28 +8,31 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
+import uk.ac.aber.dcs.cs39440.mealbay.model.DataViewModel
+import uk.ac.aber.dcs.cs39440.mealbay.storage.COLLECTION_NAME
 
-@Composable
-fun CollectionDisplayScreen() {
-
-}
-
-/*
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun EmptyCollectionScreen() {
+fun CollectionDisplayScreen(
+    navController: NavHostController,
+    dataViewModel: DataViewModel = hiltViewModel()
+) {
+    var collection = dataViewModel.getString(COLLECTION_NAME)
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    recipe.title?.let {
+                    if (collection != null) {
                         Text(
-                            text = it,
+                            text = collection,
                             fontSize = 20.sp
                         )
                     }
+
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
@@ -39,7 +42,7 @@ private fun EmptyCollectionScreen() {
                 backgroundColor = Color(0xFFFFDAD4)
             )
         }
-    ){
+    ) {
 
     }
-}*/
+}
