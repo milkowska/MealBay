@@ -42,7 +42,11 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Snackbar
+import androidx.compose.material.SnackbarHost
+import androidx.compose.material.SnackbarHostState
+import kotlinx.coroutines.launch
 import uk.ac.aber.dcs.cs39440.mealbay.model.Recipe
 import uk.ac.aber.dcs.cs39440.mealbay.storage.CURRENT_USER_ID
 import uk.ac.aber.dcs.cs39440.mealbay.storage.RECIPE_ID
@@ -96,7 +100,7 @@ fun FetchRecipeByID(
     }
 }
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "UnusedMaterialScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun ShowRecipeContent(
@@ -114,6 +118,8 @@ fun ShowRecipeContent(
         val (showCollections, setShowCollections) = remember { mutableStateOf(false) }
         val collectionsFetched = remember { mutableStateOf(listOf<DocumentSnapshot>()) }
         val isLoading = remember { mutableStateOf(true) }
+        val scaffoldState = rememberScaffoldState()
+        val scope = rememberCoroutineScope()
 
         Column(
             modifier = Modifier
@@ -167,8 +173,10 @@ fun ShowRecipeContent(
                         },
                         backgroundColor = Color(0xFFFFDAD4)
                     )
-                }
-            ) {
+                },
+                scaffoldState = scaffoldState,
+
+                ) {
 
                 LazyColumn {
                     item {
@@ -318,10 +326,7 @@ fun ShowRecipeContent(
                     item {
                         Spacer(modifier = Modifier.height(10.dp))
                     }
-
                 }
-
-
             }
         }
         if (showCollections) {
@@ -350,7 +355,17 @@ fun ShowRecipeContent(
                                 onItemClick = { collection, recipeId ->
                                     if (userId != null) {
                                         addRecipeToCollection(collection.id, recipeId, userId)
-                                        Log.d("AAA", "${collection.id}, recipe:  $recipeId, user:  $userId ")
+                                        setShowCollections(false)
+                                        Log.d(
+                                            "AAA",
+                                            "${collection.id}, recipe:  $recipeId, user:  $userId "
+                                        )
+                                        scope.launch {
+                                            scaffoldState.snackbarHostState.showSnackbar(
+                                                "Recipe has been added to the collection."
+
+                                            )
+                                        }
                                     }
                                 },
                                 recipeId = it
@@ -372,13 +387,11 @@ fun CollectionList(
     Box(contentAlignment = Alignment.Center) {
         Card(
             modifier = Modifier
-                .width(300.dp) // Set the width constraint
-                .height(400.dp) // Set the height constraint
+                .width(300.dp)
+                .height(400.dp)
                 .padding(16.dp),
             backgroundColor = Color(0xFFFFB4A7),
-
-            ) {
-
+        ) {
             LazyColumn {
                 items(collections) { collection ->
                     val collectionName = collection.getString("name") ?: "Unnamed"
@@ -393,7 +406,6 @@ fun CollectionList(
                     )
                 }
             }
-
         }
     }
 }
@@ -410,7 +422,7 @@ fun addRecipeToCollection(collectionID: String, recipeId: String, userId: String
     val recipeRef = userCollectionsRef
         .document(collectionID)
         .collection("recipes")
-        .document(recipeId) // Use the recipeId as the document ID
+        .document(recipeId) // recipeId -> the document ID
 
     val data = mapOf(
         "recipeId" to recipeId

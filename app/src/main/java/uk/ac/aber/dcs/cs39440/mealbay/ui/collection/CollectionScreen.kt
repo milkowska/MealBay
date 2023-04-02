@@ -41,6 +41,7 @@ import  androidx.compose.material3.AlertDialog
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import uk.ac.aber.dcs.cs39440.mealbay.model.Recipe
+import uk.ac.aber.dcs.cs39440.mealbay.storage.COLLECTION_ID
 import uk.ac.aber.dcs.cs39440.mealbay.storage.COLLECTION_NAME
 
 @Composable
@@ -59,7 +60,6 @@ fun CollectionScreen(
 
     val isUserCollectionEmpty by dataViewModel.isUserCollectionEmpty.observeAsState(initial = true)
     var userId = dataViewModel.getString(CURRENT_USER_ID)
-
 
 
 
@@ -102,34 +102,6 @@ fun CollectionScreen(
         }
     }
 }
-
-/*
-
-@OptIn(ExperimentalMaterialApi::class)
-@Composable
-fun addRecipeToCollection(collectionID: String, recipe: Recipe, userId: String) {
-    val userCollectionsRef = userId?.let {
-        Firebase.firestore
-            .collection("users")
-            .document(it)
-            .collection("collections")
-    }
-
-    val recipeRef = userCollectionsRef
-        .document(collectionID)
-        .collection("recipes")
-        .document() // Creates a new document with a unique ID
-
-    recipeRef.set(recipe)
-        .addOnSuccessListener {
-            Log.d("ADDRECIPE", "Recipe added with ID: ${recipeRef.id}")
-        }
-        .addOnFailureListener { e ->
-            Log.w("ADDRECIPE", "Error adding recipe", e)
-        }
-}
-*/
-
 
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -331,15 +303,17 @@ fun DisplayCollections(
         LazyColumn {
             items(collections.value) { documentSnapshot ->
                 val collectionName = documentSnapshot.getString("name") ?: "Unnamed"
-                val collectionSize = 0 // need to fetch the collection size from Firestore
-
+                val collectionSize = 0 //TODO need to fetch the collection size from Firestore
 
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(8.dp)
-                        .clickable { onCollectionClick(documentSnapshot.id)
-                            dataViewModel.saveString(collectionName, COLLECTION_NAME)},
+                        .clickable {
+                            onCollectionClick(documentSnapshot.id)
+                            dataViewModel.saveString(collectionName, COLLECTION_NAME)
+                            dataViewModel.saveString(documentSnapshot.id, COLLECTION_ID)
+                        },
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
 
