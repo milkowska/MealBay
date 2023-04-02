@@ -76,5 +76,6 @@
     <string name="recipe_already">Recipe already in the collection</string>
     <string name="recipe_already_two">This recipe is already in the selected collection.</string>
     <string name="ok">OK</string>
+    <string name="no_recipes">There are no recipes in this collection!</string>
 
 </resources>

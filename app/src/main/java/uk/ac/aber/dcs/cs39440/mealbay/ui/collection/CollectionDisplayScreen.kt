@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -18,6 +19,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -27,6 +30,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -35,6 +39,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.tasks.await
+import uk.ac.aber.dcs.cs39440.mealbay.R
 import uk.ac.aber.dcs.cs39440.mealbay.model.DataViewModel
 import uk.ac.aber.dcs.cs39440.mealbay.model.Recipe
 import uk.ac.aber.dcs.cs39440.mealbay.storage.*
@@ -73,6 +78,7 @@ fun CollectionDisplayScreen(
         }
     }
 }
+
 @Composable
 fun CollectionList(
     userId: String,
@@ -98,22 +104,51 @@ fun CollectionList(
 
     if (isLoading.value) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
+            CircularProgressIndicator(color = Color(0xFFFFDDB4))
         }
     } else {
-        LazyColumn {
-            items(recipes) { recipe ->
-                RecipeItem(recipe) {
-                    recipe.id?.let {
-                        dataViewModel.saveString(it, RECIPE_ID)
-                        Log.d("debug", "${recipe.id}, ${recipe.title}")
-                    }
-                    navController.navigate(Screen.Recipe.route)
+        if (recipes.isEmpty()) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+
+                Text(text = stringResource(id = R.string.no_recipes), fontSize = 22.sp)
+
+                Image(
+                    painter = painterResource(R.drawable.nodata),
+                    contentDescription = "Empty Collection Image",
+                    modifier = Modifier
+                        .size(200.dp)
+                        .padding(top = 16.dp)
+                )
+            }
+        } else {
+            LazyColumn {
+                items(recipes) { recipe ->
+                    RecipeItem(recipe, onClick = {
+                        recipe.id?.let {
+                            dataViewModel.saveString(it, RECIPE_ID)
+                            Log.d("debug", "${recipe.id}, ${recipe.title}")
+                        }
+                        navController.navigate(Screen.Recipe.route)
+                    }, onDelete = {
+                            //TODO add logcat nit working
+                        if (selectedCollectionId != null) {
+                            recipe.id?.let {
+                                deleteRecipeFromCollection(userId, selectedCollectionId,
+                                    it
+                                )
+                            }
+                        }
+                        })
                 }
             }
         }
     }
 }
+
 
 suspend fun getRecipeIdsForCollection(collectionId: String, userId: String): List<String> {
     val firestore = Firebase.firestore
@@ -140,6 +175,7 @@ suspend fun getRecipeIdsForCollection(collectionId: String, userId: String): Lis
         emptyList()
     }
 }
+
 suspend fun getRecipesByIds(recipeIds: List<String>): List<Recipe> {
     val firestore = Firebase.firestore
     val recipesRef = firestore.collection("recipesready")
@@ -160,7 +196,8 @@ suspend fun getRecipesByIds(recipeIds: List<String>): List<Recipe> {
             }
         }
 
-        recipesDeferred.awaitAll().filterNotNull() // filterNotNull function is called on the result to remove any null values.
+        recipesDeferred.awaitAll()
+            .filterNotNull() // filterNotNull function is called on the result to remove any null values.
     } catch (e: Exception) {
         Log.e("GET_RECIPES_BY_IDS", "Error fetching recipes", e)
         emptyList()
@@ -170,7 +207,8 @@ suspend fun getRecipesByIds(recipeIds: List<String>): List<Recipe> {
 @Composable
 fun RecipeItem(
     recipe: Recipe,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onDelete: () -> Unit
 ) {
     ConstraintLayout(
         modifier = Modifier
@@ -178,7 +216,7 @@ fun RecipeItem(
             .fillMaxWidth()
             .clickable { onClick() }
     ) {
-        val (photo, title, rating) = createRefs()
+        val (photo, title, category, deleteButton) = createRefs()
 
         Box(
             modifier = Modifier
@@ -220,7 +258,7 @@ fun RecipeItem(
             text = "Category: ${recipe.category}",
             modifier = Modifier
                 .padding(top = 2.dp, start = 4.dp, end = 4.dp, bottom = 4.dp)
-                .constrainAs(rating) {
+                .constrainAs(category) {
                     start.linkTo(title.start)
                     end.linkTo(title.end)
                     top.linkTo(title.bottom, 0.dp)
@@ -228,5 +266,36 @@ fun RecipeItem(
             fontSize = 16.sp,
             textAlign = TextAlign.Center
         )
+
+        IconButton(
+            onClick = { onDelete() },
+            modifier = Modifier
+                .constrainAs(deleteButton) {
+                    start.linkTo(category.start)
+                    end.linkTo(category.end)
+                    top.linkTo(category.bottom, 8.dp)
+                }
+        ) {
+            Icon(Icons.Default.Delete, contentDescription = "Delete Recipe")
+        }
     }
 }
+
+
+fun deleteRecipeFromCollection(userId: String, collectionId: String, recipeId: String) {
+    val db = FirebaseFirestore.getInstance()
+    db.collection("users")
+        .document(userId)
+        .collection("collections")
+        .document(collectionId)
+        .collection("recipes")
+        .document(recipeId)
+        .delete()
+        .addOnSuccessListener {
+            Log.d("deleteRecipe", "DocumentSnapshot successfully deleted!")
+        }
+        .addOnFailureListener { e ->
+            Log.w("deleteRecipe", "Error deleting document", e)
+        }
+}
+

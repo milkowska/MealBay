@@ -10,10 +10,15 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Icon
+import androidx.compose.material.TextButton
+import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.*
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -38,10 +43,10 @@ import uk.ac.aber.dcs.cs39440.mealbay.model.DataViewModel
 import uk.ac.aber.dcs.cs39440.mealbay.storage.CURRENT_USER_ID
 import uk.ac.aber.dcs.cs39440.mealbay.ui.components.TopLevelScaffold
 import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
-import  androidx.compose.material3.AlertDialog
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.tasks.await
 import uk.ac.aber.dcs.cs39440.mealbay.model.Recipe
 import uk.ac.aber.dcs.cs39440.mealbay.storage.COLLECTION_ID
 import uk.ac.aber.dcs.cs39440.mealbay.storage.COLLECTION_NAME
@@ -105,13 +110,12 @@ fun CollectionScreen(
                                     navController.navigate(Screen.ColDisplay.route)
                                 },
                                 dataViewModel = dataViewModel,
-                                coroutineScope = coroutineScope,
-                                sheetState = sheetState
-
+                              //  coroutineScope = coroutineScope,
+                               // sheetState = sheetState
                             )
                         }
                     } else {
-                        EmptyCollectionScreen(dataViewModel, coroutineScope, sheetState)
+                        EmptyCollectionScreen( coroutineScope, sheetState)
                     }
 
                     FloatingActionButton(
@@ -140,7 +144,7 @@ fun CollectionScreen(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun EmptyCollectionScreen(
-    dataViewModel: DataViewModel = hiltViewModel(),
+    //dataViewModel: DataViewModel = hiltViewModel(),
     coroutineScope: CoroutineScope,
     sheetState: ModalBottomSheetState
 ) {
@@ -217,7 +221,7 @@ fun BottomSheet(dataViewModel: DataViewModel = hiltViewModel()) {
         mutableStateOf(false)
     }
     val userID = dataViewModel.getString(CURRENT_USER_ID)
-
+    val maxCharsLonger = 34
     Column(
         modifier = Modifier.padding(32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -237,17 +241,24 @@ fun BottomSheet(dataViewModel: DataViewModel = hiltViewModel()) {
                 Text(text = stringResource(R.string.name_this_collection))
             },
             onValueChange = {
+                if (it.length <= maxCharsLonger) {
                 collectionName = it
                 isErrorInTextField = collectionName.isEmpty()
-            },
+            } },
             modifier = Modifier.width(360.dp),
             singleLine = true,
             isError = isErrorInTextField,
+            trailingIcon = {
+                Text(
+                    text = "${maxCharsLonger - collectionName.length}",
+                    modifier = Modifier.padding(end = 8.dp)
+                )
+            }
         )
 
         Spacer(modifier = Modifier.height(100.dp))
 
-        ElevatedButton(
+        FilledTonalButton(
             enabled = collectionName.isNotEmpty(),
             onClick = {
                 if (collectionName.trim() == "") {
@@ -265,7 +276,6 @@ fun BottomSheet(dataViewModel: DataViewModel = hiltViewModel()) {
         ) {
             Text(stringResource(R.string.save))
         }
-
     }
 }
 
@@ -309,11 +319,9 @@ fun DisplayCollections(
     userId: String,
     onDeleteClick: (String) -> Unit,
     onCollectionClick: (String) -> Unit,
-    dataViewModel: DataViewModel = hiltViewModel(),
-    sheetState: ModalBottomSheetState,
-    coroutineScope: CoroutineScope
+    dataViewModel: DataViewModel = hiltViewModel()
 ) {
-    val collections = remember { mutableStateOf(listOf<DocumentSnapshot>()) }
+    val collections = remember { mutableStateOf(listOf<Pair<DocumentSnapshot, Int>>()) }
     val isLoading = remember { mutableStateOf(true) }
     val openAlertDialog = remember { mutableStateOf(false) }
     val selectedCollectionId = remember { mutableStateOf("") }
@@ -331,14 +339,19 @@ fun DisplayCollections(
                 if (error != null) {
                     Log.w("DisplayCollections", "Error fetching collections", error)
                 } else {
-                    value?.let {
-                        collections.value = it.documents
-                        isLoading.value = false
+                    value?.let { querySnapshot ->
+                        coroutineScope.launch {
+                            val fetchedCollections = querySnapshot.documents.map { documentSnapshot ->
+                                val collectionSize = getCollectionSize(userId, documentSnapshot.id)
+                                documentSnapshot to collectionSize
+                            }
+                            collections.value = fetchedCollections
+                            isLoading.value = false
+                        }
                     }
                 }
             }
     }
-
     if (isLoading.value) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()
@@ -346,9 +359,8 @@ fun DisplayCollections(
     } else {
         Box(modifier = Modifier.fillMaxSize()) {
             LazyColumn {
-                items(collections.value) { documentSnapshot ->
+                items(collections.value) { (documentSnapshot, collectionSize) ->
                     val collectionName = documentSnapshot.getString("name") ?: "Unnamed"
-                    val collectionSize = 0 //TODO need to fetch the collection size from Firestore
 
                     Row(
                         modifier = Modifier
@@ -365,7 +377,8 @@ fun DisplayCollections(
                         ) {
                         Column {
                             Text(text = collectionName, fontSize = 18.sp)
-                            Text(text = "$collectionSize recipes", fontSize = 14.sp)
+                            Text(text = if (collectionSize == 1) "$collectionSize recipe" else "$collectionSize recipes", fontSize = 14.sp)
+
                         }
 
                         IconButton(onClick = {
@@ -393,7 +406,6 @@ fun DisplayCollections(
                     Icons.Filled.Add,
                     contentDescription = stringResource(id = R.string.create_collection)
                 )
-
             }
 
             if (openAlertDialog.value) {
@@ -427,5 +439,25 @@ fun DisplayCollections(
                 )
             }
         }
+    }
+}
+suspend fun getCollectionSize(userId: String, collectionId: String): Int {
+    val firestore = Firebase.firestore
+    val userCollectionsRef = firestore
+        .collection("users")
+        .document(userId)
+        .collection("collections")
+
+    return try {
+        val snapshot = userCollectionsRef
+            .document(collectionId)
+            .collection("recipes")
+            .get()
+            .await()
+
+        snapshot.size()
+    } catch (e: Exception) {
+        Log.e("GET_COLLECTION_SIZE", "Error fetching collection size", e)
+        0
     }
 }

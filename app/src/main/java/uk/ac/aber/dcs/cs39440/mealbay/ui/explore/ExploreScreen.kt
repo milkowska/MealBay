@@ -161,7 +161,6 @@ fun firebaseUI(
                                         recipeId = it
                                         dataViewModel.saveString(recipeId!!, RECIPE_ID)
                                         Log.d("TEST", "$recipeId")
-
                                     }
                                     navController.navigate(Screen.Recipe.route)
                                 }
@@ -175,7 +174,6 @@ fun firebaseUI(
 
                                     }
                             ) {
-                                // Display the recipe photo
                                 recipeList[index]?.photo?.let {
                                     Image(
                                         painter = rememberImagePainter(it),
