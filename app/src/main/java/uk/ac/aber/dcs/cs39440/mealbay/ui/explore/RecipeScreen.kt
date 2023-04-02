@@ -51,6 +51,10 @@ import uk.ac.aber.dcs.cs39440.mealbay.model.Recipe
 import uk.ac.aber.dcs.cs39440.mealbay.storage.CURRENT_USER_ID
 import uk.ac.aber.dcs.cs39440.mealbay.storage.RECIPE_ID
 
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
+
+
 @Composable
 fun RecipeScreenTopLevel(
     navController: NavHostController,
@@ -120,6 +124,7 @@ fun ShowRecipeContent(
         val isLoading = remember { mutableStateOf(true) }
         val scaffoldState = rememberScaffoldState()
         val scope = rememberCoroutineScope()
+        val showDialog = remember { mutableStateOf(false) }
 
         Column(
             modifier = Modifier
@@ -177,7 +182,6 @@ fun ShowRecipeContent(
                 scaffoldState = scaffoldState,
 
                 ) {
-
                 LazyColumn {
                     item {
                         Image(
@@ -272,7 +276,7 @@ fun ShowRecipeContent(
                     }
                     items(recipe.ingredients.size) { index ->
                         val item = recipe.ingredients[index]
-                        val splitItems = item.split("|") // Split the string using the delimiter
+                        val splitItems = item.split("|")
 
                         splitItems.forEach { splitItem ->
                             Text(
@@ -329,6 +333,7 @@ fun ShowRecipeContent(
                 }
             }
         }
+
         if (showCollections) {
             Card(
                 modifier = Modifier
@@ -352,30 +357,86 @@ fun ShowRecipeContent(
                         dataViewModel.getString(RECIPE_ID)?.let {
                             CollectionList(
                                 collections = collectionsFetched.value,
+
                                 onItemClick = { collection, recipeId ->
                                     if (userId != null) {
-                                        addRecipeToCollection(collection.id, recipeId, userId)
-                                        setShowCollections(false)
+                                        checkAndAddRecipeToCollection(
+                                            collection.id,
+                                            recipeId,
+                                            userId,
+                                            showDialog
+                                        )
                                         Log.d(
                                             "AAA",
                                             "${collection.id}, recipe:  $recipeId, user:  $userId "
                                         )
-                                        scope.launch {
-                                            scaffoldState.snackbarHostState.showSnackbar(
-                                                "Recipe has been added to the collection."
-
-                                            )
-                                        }
                                     }
                                 },
                                 recipeId = it
                             )
                         }
+
+
                     }
+                }
+
+                if (showDialog.value) {
+                    AlertDialog(
+                        onDismissRequest = { showDialog.value = false },
+                        title = { Text(text = "Recipe already in the collection") },
+                        text = { Text("This recipe is already in the selected collection.") },
+                        shape = RoundedCornerShape(10.dp),
+                        backgroundColor = Color(0xFFFFDAD6),
+                        confirmButton = {
+                            Button(
+                                onClick = { showDialog.value = false },
+                                colors = ButtonDefaults.buttonColors(
+                                    backgroundColor = Color(0xFFA54537),
+                                    contentColor = Color.White
+                                ),
+                                modifier = Modifier
+                                    .width(80.dp)
+                                    .padding(end = 5.dp, bottom = 5.dp),
+                                content = { Text("OK") }
+                            )
+                        },
+                    )
                 }
             }
         }
     }
+
+
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+fun checkAndAddRecipeToCollection(
+    collectionID: String,
+    recipeId: String,
+    userId: String,
+    showDialog: MutableState<Boolean>
+) {
+    val userCollectionsRef = Firebase.firestore
+        .collection("users")
+        .document(userId)
+        .collection("collections")
+
+    val recipeRef = userCollectionsRef
+        .document(collectionID)
+        .collection("recipes")
+        .document(recipeId)
+
+    recipeRef.get()
+        .addOnSuccessListener { document ->
+            if (document.exists()) {
+                showDialog.value = true
+            } else {
+                addRecipeToCollection(collectionID, recipeId, userId)
+            }
+        }
+        .addOnFailureListener { e ->
+            Log.w("CHECKRECIPE", "Error checking recipe", e)
+        }
 }
 
 @Composable
@@ -389,26 +450,33 @@ fun CollectionList(
             modifier = Modifier
                 .width(300.dp)
                 .height(400.dp)
-                .padding(16.dp),
-            backgroundColor = Color(0xFFFFB4A7),
+                .padding(start = 16.dp, bottom = 50.dp),
+            backgroundColor = Color(0xFFFFDED8),
         ) {
-            LazyColumn {
+
+            LazyColumn(
+                modifier = Modifier.padding(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
                 items(collections) { collection ->
                     val collectionName = collection.getString("name") ?: "Unnamed"
-                    Text(
-                        text = collectionName,
+                    Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(8.dp)
-                            .clickable {
-                                onItemClick(collection, recipeId)
-                            }
-                    )
+                            .clickable { onItemClick(collection, recipeId) }
+                            .height(48.dp)
+                            .padding(horizontal = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(text = collectionName)
+                    }
+                    Divider()
                 }
             }
         }
     }
 }
+
 
 @OptIn(ExperimentalMaterialApi::class)
 fun addRecipeToCollection(collectionID: String, recipeId: String, userId: String) {

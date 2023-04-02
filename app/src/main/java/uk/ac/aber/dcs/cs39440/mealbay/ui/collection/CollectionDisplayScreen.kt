@@ -95,6 +95,7 @@ fun CollectionList(
         recipes.clear()
         recipeIds?.let { getRecipesByIds(it) }?.let { recipes.addAll(it) }
     }
+
     LazyColumn {
         items(recipes) { recipe ->
             RecipeItem(recipe) {
@@ -102,8 +103,6 @@ fun CollectionList(
                     dataViewModel.saveString(it, RECIPE_ID)
                     Log.d("debug", "${recipe.id}, ${recipe.title}")
                 }
-
-                // Handle click on the recipe item
                 navController.navigate(Screen.Recipe.route)
             }
         }
