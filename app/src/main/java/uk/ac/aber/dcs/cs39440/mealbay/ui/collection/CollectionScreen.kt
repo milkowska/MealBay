@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Surface
@@ -40,6 +41,7 @@ import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
 import  androidx.compose.material3.AlertDialog
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.CoroutineScope
 import uk.ac.aber.dcs.cs39440.mealbay.model.Recipe
 import uk.ac.aber.dcs.cs39440.mealbay.storage.COLLECTION_ID
 import uk.ac.aber.dcs.cs39440.mealbay.storage.COLLECTION_NAME
@@ -51,17 +53,21 @@ fun CollectionScreenTopLevel(
     CollectionScreen(navController, modifier = Modifier)
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun CollectionScreen(
     navController: NavHostController,
     modifier: Modifier,
     dataViewModel: DataViewModel = hiltViewModel()
 ) {
-
     val isUserCollectionEmpty by dataViewModel.isUserCollectionEmpty.observeAsState(initial = true)
-    var userId = dataViewModel.getString(CURRENT_USER_ID)
+    val userId = dataViewModel.getString(CURRENT_USER_ID)
 
-
+    val sheetState = rememberModalBottomSheetState(
+        initialValue = ModalBottomSheetValue.Hidden,
+        confirmStateChange = { it != ModalBottomSheetValue.HalfExpanded }
+    )
+    val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(userId) {
         if (userId != null) {
@@ -69,44 +75,75 @@ fun CollectionScreen(
         }
     }
 
-    TopLevelScaffold(
-        navController = navController,
-    ) { innerPadding ->
-        Surface(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize()
-        ) {
-            Column(
-                modifier = modifier
-                    .fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+    BackHandler(sheetState.isVisible) {
+        coroutineScope.launch { sheetState.hide() }
+    }
+
+    ModalBottomSheetLayout(
+        sheetState = sheetState,
+        sheetContent = { BottomSheet() },
+        modifier = Modifier.fillMaxSize(),
+        sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+    ) {
+        TopLevelScaffold(
+            navController = navController,
+        ) { innerPadding ->
+            Surface(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize()
             ) {
-                if (!isUserCollectionEmpty) {
-                    if (userId != null) {
-                        DisplayCollections(
-                            userId = userId,
-                            onDeleteClick = { collectionId ->
-                                deleteCollection(userId, collectionId)
-                            },
-                            onCollectionClick = { collectionId ->
-                                navController.navigate(Screen.ColDisplay.route)
+                Box(modifier = Modifier.fillMaxSize()) {
+                    if (!isUserCollectionEmpty) {
+                        if (userId != null) {
+                            DisplayCollections(
+                                userId = userId,
+                                onDeleteClick = { collectionId ->
+                                    deleteCollection(userId, collectionId)
+                                },
+                                onCollectionClick = { collectionId ->
+                                    navController.navigate(Screen.ColDisplay.route)
+                                },
+                                dataViewModel = dataViewModel,
+                                coroutineScope = coroutineScope,
+                                sheetState = sheetState
+
+                            )
+                        }
+                    } else {
+                        EmptyCollectionScreen(dataViewModel, coroutineScope, sheetState)
+                    }
+
+                    FloatingActionButton(
+                        backgroundColor = (Color(0xFFFFDAD4)),
+                        onClick = {
+                            coroutineScope.launch {
+                                if (sheetState.isVisible) sheetState.hide()
+                                else sheetState.show()
                             }
+                        },
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .align(Alignment.BottomEnd)
+                    ) {
+                        Icon(
+                            Icons.Filled.Add,
+                            contentDescription = stringResource(id = R.string.create_collection)
                         )
                     }
-                } else {
-                    EmptyCollectionScreen(dataViewModel)
                 }
             }
         }
     }
 }
 
-
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun EmptyCollectionScreen(dataViewModel: DataViewModel = hiltViewModel()) {
+fun EmptyCollectionScreen(
+    dataViewModel: DataViewModel = hiltViewModel(),
+    coroutineScope: CoroutineScope,
+    sheetState: ModalBottomSheetState
+) {
     val sheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
         confirmStateChange = { it != ModalBottomSheetValue.HalfExpanded }
@@ -266,17 +303,24 @@ fun deleteCollection(userId: String, collectionId: String) {
         }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun DisplayCollections(
     userId: String,
     onDeleteClick: (String) -> Unit,
     onCollectionClick: (String) -> Unit,
-    dataViewModel: DataViewModel = hiltViewModel()
+    dataViewModel: DataViewModel = hiltViewModel(),
+    sheetState: ModalBottomSheetState,
+    coroutineScope: CoroutineScope
 ) {
     val collections = remember { mutableStateOf(listOf<DocumentSnapshot>()) }
     val isLoading = remember { mutableStateOf(true) }
     val openAlertDialog = remember { mutableStateOf(false) }
     val selectedCollectionId = remember { mutableStateOf("") }
+    val coroutineScope = rememberCoroutineScope()
+    val sheetState = rememberModalBottomSheetState(
+        initialValue = ModalBottomSheetValue.Hidden,
+        confirmStateChange = { it != ModalBottomSheetValue.HalfExpanded })
 
     LaunchedEffect(userId) {
         val db = FirebaseFirestore.getInstance()
@@ -300,69 +344,88 @@ fun DisplayCollections(
             CircularProgressIndicator()
         }
     } else {
-        LazyColumn {
-            items(collections.value) { documentSnapshot ->
-                val collectionName = documentSnapshot.getString("name") ?: "Unnamed"
-                val collectionSize = 0 //TODO need to fetch the collection size from Firestore
+        Box(modifier = Modifier.fillMaxSize()) {
+            LazyColumn {
+                items(collections.value) { documentSnapshot ->
+                    val collectionName = documentSnapshot.getString("name") ?: "Unnamed"
+                    val collectionSize = 0 //TODO need to fetch the collection size from Firestore
 
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
-                        .clickable {
-                            onCollectionClick(documentSnapshot.id)
-                            dataViewModel.saveString(collectionName, COLLECTION_NAME)
-                            dataViewModel.saveString(documentSnapshot.id, COLLECTION_ID)
-                        },
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                            .clickable {
+                                onCollectionClick(documentSnapshot.id)
+                                dataViewModel.saveString(collectionName, COLLECTION_NAME)
+                                dataViewModel.saveString(documentSnapshot.id, COLLECTION_ID)
+                            },
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
 
-                    ) {
-                    Column {
-                        Text(text = collectionName, fontSize = 18.sp)
-                        Text(text = "$collectionSize recipes", fontSize = 14.sp)
-                    }
+                        ) {
+                        Column {
+                            Text(text = collectionName, fontSize = 18.sp)
+                            Text(text = "$collectionSize recipes", fontSize = 14.sp)
+                        }
 
-                    IconButton(onClick = {
-                        openAlertDialog.value = true
-                        selectedCollectionId.value = documentSnapshot.id
-                    }) {
-                        Icon(Icons.Default.Delete, contentDescription = "Delete Collection")
+                        IconButton(onClick = {
+                            openAlertDialog.value = true
+                            selectedCollectionId.value = documentSnapshot.id
+                        }) {
+                            Icon(Icons.Default.Delete, contentDescription = "Delete Collection")
+                        }
                     }
                 }
             }
-        }
+            FloatingActionButton(
+                backgroundColor = (Color(0xFFFFDAD4)),
+                onClick = {
+                    coroutineScope.launch {
+                        if (sheetState.isVisible) sheetState.hide()
+                        else sheetState.show()
+                    }
+                },
+                modifier = Modifier
+                    .padding(16.dp)
+                    .align(Alignment.BottomEnd)
+            ) {
+                Icon(
+                    Icons.Filled.Add,
+                    contentDescription = stringResource(id = R.string.create_collection)
+                )
 
-        if (openAlertDialog.value) {
-            AlertDialog(
-                onDismissRequest = {
-                    openAlertDialog.value = false
-                },
-                title = {
-                    Text(
-                        text = stringResource(R.string.are_you_sure),
-                    )
-                },
-                text = {
-                    Text(
-                        text = stringResource(R.string.pressing_confirm),
-                    )
-                },
-                confirmButton = {
-                    TextButton(onClick = {
-                        onDeleteClick(selectedCollectionId.value)
+            }
+
+            if (openAlertDialog.value) {
+                AlertDialog(
+                    onDismissRequest = {
                         openAlertDialog.value = false
-                    }) {
-                        Text("Confirm")
+                    },
+                    title = {
+                        Text(
+                            text = stringResource(R.string.are_you_sure),
+                        )
+                    },
+                    text = {
+                        Text(
+                            text = stringResource(R.string.pressing_confirm),
+                        )
+                    },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            onDeleteClick(selectedCollectionId.value)
+                            openAlertDialog.value = false
+                        }) {
+                            Text("Confirm")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { openAlertDialog.value = false }) {
+                            Text("Cancel")
+                        }
                     }
-                },
-                dismissButton = {
-                    TextButton(onClick = { openAlertDialog.value = false }) {
-                        Text("Cancel")
-                    }
-                }
-            )
+                )
+            }
         }
     }
 }
-

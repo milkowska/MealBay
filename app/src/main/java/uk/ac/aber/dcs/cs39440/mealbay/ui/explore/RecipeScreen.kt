@@ -357,7 +357,6 @@ fun ShowRecipeContent(
                         dataViewModel.getString(RECIPE_ID)?.let {
                             CollectionList(
                                 collections = collectionsFetched.value,
-
                                 onItemClick = { collection, recipeId ->
                                     if (userId != null) {
                                         checkAndAddRecipeToCollection(
@@ -365,7 +364,12 @@ fun ShowRecipeContent(
                                             recipeId,
                                             userId,
                                             showDialog
-                                        )
+                                        ) {
+                                            scope.launch {
+                                                scaffoldState.snackbarHostState.showSnackbar("Recipe has been added to the collection.")
+                                            }
+                                            setShowCollections(false)
+                                        }
                                         Log.d(
                                             "AAA",
                                             "${collection.id}, recipe:  $recipeId, user:  $userId "
@@ -375,16 +379,14 @@ fun ShowRecipeContent(
                                 recipeId = it
                             )
                         }
-
-
                     }
                 }
 
                 if (showDialog.value) {
                     AlertDialog(
                         onDismissRequest = { showDialog.value = false },
-                        title = { Text(text = "Recipe already in the collection") },
-                        text = { Text("This recipe is already in the selected collection.") },
+                        title = { Text(text = stringResource(id = R.string.recipe_already)) },
+                        text = { Text(text = stringResource(id = R.string.recipe_already_two)) },
                         shape = RoundedCornerShape(10.dp),
                         backgroundColor = Color(0xFFFFDAD6),
                         confirmButton = {
@@ -397,7 +399,7 @@ fun ShowRecipeContent(
                                 modifier = Modifier
                                     .width(80.dp)
                                     .padding(end = 5.dp, bottom = 5.dp),
-                                content = { Text("OK") }
+                                content = { Text(stringResource(id = R.string.ok)) }
                             )
                         },
                     )
@@ -405,8 +407,6 @@ fun ShowRecipeContent(
             }
         }
     }
-
-
 }
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -414,7 +414,8 @@ fun checkAndAddRecipeToCollection(
     collectionID: String,
     recipeId: String,
     userId: String,
-    showDialog: MutableState<Boolean>
+    showDialog: MutableState<Boolean>,
+    onSuccess: () -> Unit
 ) {
     val userCollectionsRef = Firebase.firestore
         .collection("users")
@@ -431,7 +432,7 @@ fun checkAndAddRecipeToCollection(
             if (document.exists()) {
                 showDialog.value = true
             } else {
-                addRecipeToCollection(collectionID, recipeId, userId)
+                addRecipeToCollection(collectionID, recipeId, userId, onSuccess)
             }
         }
         .addOnFailureListener { e ->
@@ -453,7 +454,6 @@ fun CollectionList(
                 .padding(start = 16.dp, bottom = 50.dp),
             backgroundColor = Color(0xFFFFDED8),
         ) {
-
             LazyColumn(
                 modifier = Modifier.padding(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -479,7 +479,12 @@ fun CollectionList(
 
 
 @OptIn(ExperimentalMaterialApi::class)
-fun addRecipeToCollection(collectionID: String, recipeId: String, userId: String) {
+fun addRecipeToCollection(
+    collectionID: String,
+    recipeId: String,
+    userId: String,
+    onSuccess: () -> Unit
+) {
     val userCollectionsRef = userId?.let {
         Firebase.firestore
             .collection("users")
@@ -499,6 +504,7 @@ fun addRecipeToCollection(collectionID: String, recipeId: String, userId: String
     recipeRef.set(data)
         .addOnSuccessListener {
             Log.d("ADDRECIPE", "Recipe added with ID: ${recipeRef.id}")
+            onSuccess()
         }
         .addOnFailureListener { e ->
             Log.w("ADDRECIPE", "Error adding recipe", e)

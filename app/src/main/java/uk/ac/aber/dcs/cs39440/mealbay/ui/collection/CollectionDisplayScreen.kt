@@ -12,10 +12,8 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -32,6 +30,10 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.tasks.await
 import uk.ac.aber.dcs.cs39440.mealbay.model.DataViewModel
 import uk.ac.aber.dcs.cs39440.mealbay.model.Recipe
@@ -47,8 +49,8 @@ fun CollectionDisplayScreen(
 ) {
     var collection = dataViewModel.getString(COLLECTION_NAME)
     var userId = dataViewModel.getString(CURRENT_USER_ID)
-    Scaffold(
-        topBar = {
+    Scaffold {
+        Column {
             TopAppBar(
                 title = {
                     if (collection != null) {
@@ -57,7 +59,6 @@ fun CollectionDisplayScreen(
                             fontSize = 20.sp
                         )
                     }
-
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
@@ -66,44 +67,49 @@ fun CollectionDisplayScreen(
                 },
                 backgroundColor = Color(0xFFFFDAD4)
             )
-        }
-    ) {
-        if (userId != null) {
-            CollectionList(userId, navController)
+            if (userId != null) {
+                CollectionList(userId, navController)
+            }
         }
     }
 }
-
 @Composable
 fun CollectionList(
-    //  collections: List<DocumentSnapshot>,
-    //onItemClick: (DocumentSnapshot, String) -> Unit,
     userId: String,
     navController: NavHostController,
     dataViewModel: DataViewModel = hiltViewModel(),
-
-    ) {
-    val recipes = remember { mutableStateListOf<Recipe>() }
+) {
     val selectedCollectionId = dataViewModel.getString(COLLECTION_ID)
 
     Log.d("DEBUG", "Selected collection ID: $selectedCollectionId")
 
-    LaunchedEffect(userId) {
+    val recipes = remember { mutableStateListOf<Recipe>() }
+    val isLoading = remember { mutableStateOf(true) }
+
+    LaunchedEffect(userId, selectedCollectionId) {
+        isLoading.value = true
         val recipeIds = selectedCollectionId?.let {
             getRecipeIdsForCollection(it, userId)
         }
         recipes.clear()
         recipeIds?.let { getRecipesByIds(it) }?.let { recipes.addAll(it) }
+        isLoading.value = false
     }
 
-    LazyColumn {
-        items(recipes) { recipe ->
-            RecipeItem(recipe) {
-                recipe.id?.let {
-                    dataViewModel.saveString(it, RECIPE_ID)
-                    Log.d("debug", "${recipe.id}, ${recipe.title}")
+    if (isLoading.value) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+    } else {
+        LazyColumn {
+            items(recipes) { recipe ->
+                RecipeItem(recipe) {
+                    recipe.id?.let {
+                        dataViewModel.saveString(it, RECIPE_ID)
+                        Log.d("debug", "${recipe.id}, ${recipe.title}")
+                    }
+                    navController.navigate(Screen.Recipe.route)
                 }
-                navController.navigate(Screen.Recipe.route)
             }
         }
     }
@@ -134,32 +140,32 @@ suspend fun getRecipeIdsForCollection(collectionId: String, userId: String): Lis
         emptyList()
     }
 }
-
 suspend fun getRecipesByIds(recipeIds: List<String>): List<Recipe> {
     val firestore = Firebase.firestore
     val recipesRef = firestore.collection("recipesready")
 
     return try {
-        val recipes = mutableListOf<Recipe>()
+        val recipesDeferred = recipeIds.map { recipeId ->
+            CoroutineScope(Dispatchers.IO).async {
+                val recipeSnapshot = recipesRef.document(recipeId).get().await()
+                val recipe = recipeSnapshot.toObject(Recipe::class.java)
 
-        for (recipeId in recipeIds) {
-            val recipeSnapshot = recipesRef.document(recipeId).get().await()
-            val recipe = recipeSnapshot.toObject(Recipe::class.java)
-
-            if (recipe != null) {
-                // Set the recipe ID manually
-                recipe.id = recipeId
-                recipes.add(recipe)
+                if (recipe != null) {
+                    // Set the recipe ID manually
+                    recipe.id = recipeId
+                    recipe
+                } else {
+                    null
+                }
             }
         }
 
-        recipes
+        recipesDeferred.awaitAll().filterNotNull() // filterNotNull function is called on the result to remove any null values.
     } catch (e: Exception) {
         Log.e("GET_RECIPES_BY_IDS", "Error fetching recipes", e)
         emptyList()
     }
 }
-
 
 @Composable
 fun RecipeItem(
