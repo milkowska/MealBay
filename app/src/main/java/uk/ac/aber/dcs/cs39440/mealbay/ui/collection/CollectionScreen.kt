@@ -51,6 +51,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.tasks.await
 import uk.ac.aber.dcs.cs39440.mealbay.storage.COLLECTION_ID
 import uk.ac.aber.dcs.cs39440.mealbay.storage.COLLECTION_NAME
+import uk.ac.aber.dcs.cs39440.mealbay.storage.LAST_COLLECTION_NAME
 import uk.ac.aber.dcs.cs39440.mealbay.ui.theme.Railway
 
 @Composable
@@ -69,7 +70,7 @@ fun CollectionScreen(
 ) {
     val isUserCollectionEmpty by dataViewModel.isUserCollectionEmpty.observeAsState(initial = true)
     val userId = dataViewModel.getString(CURRENT_USER_ID)
-
+    val scaffoldState = rememberScaffoldState()
     val sheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
         confirmStateChange = { it != ModalBottomSheetValue.HalfExpanded }
@@ -112,8 +113,7 @@ fun CollectionScreen(
                                     navController.navigate(Screen.ColDisplay.route)
                                 },
                                 dataViewModel = dataViewModel,
-                                //  coroutineScope = coroutineScope,
-                                // sheetState = sheetState
+
                             )
                         }
                     } else {
@@ -146,7 +146,6 @@ fun CollectionScreen(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun EmptyCollectionScreen(
-    //dataViewModel: DataViewModel = hiltViewModel(),
     coroutineScope: CoroutineScope,
     sheetState: ModalBottomSheetState
 ) {
@@ -258,7 +257,8 @@ fun BottomSheet(dataViewModel: DataViewModel = hiltViewModel()) {
                     text = "${maxCharsLonger - collectionName.length}",
                     modifier = Modifier.padding(end = 8.dp)
                 )
-            }
+            },
+
         )
 
         Spacer(modifier = Modifier.height(100.dp))
@@ -273,6 +273,7 @@ fun BottomSheet(dataViewModel: DataViewModel = hiltViewModel()) {
                     if (userID != null) {
                         savePrivateCollection(userID, collectionName)
                     }
+                    dataViewModel.saveString(collectionName, LAST_COLLECTION_NAME)
                     collectionName = ""
                 }
             }, modifier = Modifier
@@ -361,7 +362,7 @@ fun DisplayCollections(
     }
     if (isLoading.value) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
+            CircularProgressIndicator(color = Color(0xFF9C4234))
         }
     } else {
         Box(modifier = Modifier.fillMaxSize()) {

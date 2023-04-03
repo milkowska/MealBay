@@ -14,6 +14,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -58,7 +60,7 @@ fun EmailInput(
         enabled = enabled,
         keyboardType = KeyboardType.Email,
         imeAction = imeAction, //  to be performed when the user presses the action button on the email input field. This action will move the focus to the next input field in the form
-        onAction = onAction
+        onAction = onAction,
     )
 
 }
@@ -85,6 +87,15 @@ fun TextInputField(
             .padding(all = 10.dp)
             .fillMaxWidth(),
         enabled = enabled,
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            textColor = Color(0xFF000000),
+            errorCursorColor = Color(0xFF9C4234),
+            unfocusedBorderColor = Color(0xFF9C4234),
+            focusedBorderColor = Color(0xFF9C4234),
+            focusedLabelColor = Color(0xFF9C4234),
+            unfocusedLabelColor = Color(0xFF9C4234),
+            cursorColor = Color(0xFF9C4234)
+        ),
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType, imeAction = imeAction),
         keyboardActions = onAction
     )
@@ -120,6 +131,15 @@ fun PasswordInput(
             keyboardType = KeyboardType.Password,
             imeAction = imeAction
         ),
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            textColor = Color(0xFF000000),
+            errorCursorColor = Color(0xFF9C4234),
+            unfocusedBorderColor = Color(0xFF9C4234),
+            focusedBorderColor = Color(0xFF9C4234),
+            focusedLabelColor = Color(0xFF9C4234),
+            unfocusedLabelColor = Color(0xFF9C4234),
+            cursorColor = Color(0xFF9C4234)
+        ),
         visualTransformation = visualTransformation,
         trailingIcon = { PasswordVisibility(passwordVisibility = passwordVisibility) },
         keyboardActions = KeyboardActions(onDone = {
@@ -131,12 +151,15 @@ fun PasswordInput(
     )
 }
 
-
 @Composable
 fun PasswordVisibility(passwordVisibility: MutableState<Boolean>) {
     val visible = passwordVisibility.value
     IconButton(onClick = { passwordVisibility.value = !visible }) {
-        Icons.Default.Close
+        Icon(
+            imageVector = if (visible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+            contentDescription = if (visible) "Hide password" else "Show password"
+        )
+      //  Icons.Default.Close
     }
 }
 
