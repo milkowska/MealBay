@@ -340,7 +340,7 @@ fun ShowRecipeContent(
                     .padding(16.dp)
                     .size(width = 350.dp, height = 450.dp)
                     .align(Alignment.Center),
-                backgroundColor = Color(0xFFFFB4A4),
+                backgroundColor = Color(0xFFFFDED8),
                 shape = RoundedCornerShape(16.dp)
             ) {
                 Box(contentAlignment = Alignment.Center) {
@@ -349,7 +349,7 @@ fun ShowRecipeContent(
                             onClick = { setShowCollections(false) },
                             modifier = Modifier
                                 .align(Alignment.End)
-                                .padding(end = 4.dp, top = 4.dp)
+                                .padding(end = 0.dp, top = 4.dp)
                         ) {
                             Icon(Icons.Default.Close, contentDescription = "Close")
                         }
@@ -393,7 +393,7 @@ fun ShowRecipeContent(
                             Button(
                                 onClick = { showDialog.value = false },
                                 colors = ButtonDefaults.buttonColors(
-                                    backgroundColor = Color(0xFFA54537),
+                                    backgroundColor = Color(0xFFDB7465),
                                     contentColor = Color.White
                                 ),
                                 modifier = Modifier
@@ -451,8 +451,8 @@ fun CollectionList(
             modifier = Modifier
                 .width(300.dp)
                 .height(400.dp)
-                .padding(start = 16.dp, bottom = 50.dp),
-            backgroundColor = Color(0xFFFFDED8),
+                .padding(start = 5.dp, bottom = 40.dp, end = 5.dp),
+            backgroundColor = Color(0xFFDBB2AA),
         ) {
             LazyColumn(
                 modifier = Modifier.padding(8.dp),

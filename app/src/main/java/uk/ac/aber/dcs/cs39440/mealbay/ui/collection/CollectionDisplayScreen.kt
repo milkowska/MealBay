@@ -12,6 +12,7 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -29,11 +30,9 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
-import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -44,6 +43,7 @@ import uk.ac.aber.dcs.cs39440.mealbay.model.DataViewModel
 import uk.ac.aber.dcs.cs39440.mealbay.model.Recipe
 import uk.ac.aber.dcs.cs39440.mealbay.storage.*
 import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
+import uk.ac.aber.dcs.cs39440.mealbay.ui.theme.Railway
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -91,6 +91,7 @@ fun CollectionList(
 
     val recipes = remember { mutableStateListOf<Recipe>() }
     val isLoading = remember { mutableStateOf(true) }
+    val openDialog = remember { mutableStateOf(false) }
 
     LaunchedEffect(userId, selectedCollectionId) {
         isLoading.value = true
@@ -109,20 +110,37 @@ fun CollectionList(
     } else {
         if (recipes.isEmpty()) {
             Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 10.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Top,
             ) {
 
-                Text(text = stringResource(id = R.string.no_recipes), fontSize = 22.sp)
+                Text(
+                    text = stringResource(id = R.string.no_recipes),
+                    fontSize = 19.sp,
+                    modifier = Modifier
+                        .padding(25.dp)
+                        .align(Alignment.CenterHorizontally)
+                )
 
                 Image(
-                    painter = painterResource(R.drawable.nodata),
+                    painter = painterResource(R.drawable.nodatahere),
                     contentDescription = "Empty Collection Image",
                     modifier = Modifier
-                        .size(200.dp)
-                        .padding(top = 16.dp)
+                        .size(340.dp)
+
                 )
+
+                Text(
+                    text = stringResource(id = R.string.gohere),
+                    fontSize = 19.sp,
+                    modifier = Modifier
+                        .padding(start = 25.dp, end = 25.dp)
+                        .align(Alignment.CenterHorizontally)
+                )
+                Spacer(modifier = Modifier.height(35.dp))
             }
         } else {
             LazyColumn {
@@ -134,17 +152,66 @@ fun CollectionList(
                         }
                         navController.navigate(Screen.Recipe.route)
                     }, onDelete = {
-                            //TODO add logcat nit working
-                        if (selectedCollectionId != null) {
-                            recipe.id?.let {
-                                deleteRecipeFromCollection(userId, selectedCollectionId,
-                                    it
-                                )
-                            }
-                        }
-                        })
+                        openDialog.value = true
+                    })
                 }
             }
+            if (openDialog.value) {
+                AlertDialog(
+                    onDismissRequest = {
+                        openDialog.value = false
+                    },
+                    title = {
+                        Text(
+                            text = stringResource(R.string.are_you_sure),
+                            fontFamily = Railway,
+                            fontSize = 22.sp,
+                        )
+                    },
+                    text = {
+                        Text(
+                            text = stringResource(R.string.pressing_confirm_two),
+                            fontFamily = Railway,
+                            fontSize = 16.sp
+                        )
+                    },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            openDialog.value = false
+                            val recipeToRemove =
+                                recipes.find { it.id == dataViewModel.getString(RECIPE_ID) }
+
+                            if (selectedCollectionId != null && recipeToRemove != null) {
+                                deleteRecipeFromCollection(
+                                    userId, selectedCollectionId,
+                                    recipeToRemove.id!!
+                                ) {
+                                    // Refresh the recipes list
+                                    recipes.remove(recipeToRemove)
+                                }
+                            }
+                        }) {
+                            Text(
+                                text = stringResource(id = R.string.confirm),
+                                fontFamily = Railway,
+                                fontSize = 16.sp
+                            )
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = {
+                            openDialog.value = false
+                        }) {
+                            Text(
+                                text = stringResource(id = R.string.cancel),
+                                fontFamily = Railway,
+                                fontSize = 16.sp
+                            )
+                        }
+                    }
+                )
+            }
+
         }
     }
 }
@@ -229,7 +296,7 @@ fun RecipeItem(
                 painter = rememberImagePainter(recipe.photo),
                 contentDescription = "Recipe Image",
                 modifier = Modifier
-                    .height(120.dp)
+                    .height(130.dp)
                     .width(155.dp)
                     .fillMaxSize()
                     .clip(shape = RoundedCornerShape(8.dp))
@@ -257,7 +324,7 @@ fun RecipeItem(
         Text(
             text = "Category: ${recipe.category}",
             modifier = Modifier
-                .padding(top = 2.dp, start = 4.dp, end = 4.dp, bottom = 4.dp)
+                .padding(top = 2.dp, start = 4.dp, end = 4.dp, bottom = 0.dp)
                 .constrainAs(category) {
                     start.linkTo(title.start)
                     end.linkTo(title.end)
@@ -273,16 +340,20 @@ fun RecipeItem(
                 .constrainAs(deleteButton) {
                     start.linkTo(category.start)
                     end.linkTo(category.end)
-                    top.linkTo(category.bottom, 8.dp)
+                    top.linkTo(category.bottom)
                 }
         ) {
-            Icon(Icons.Default.Delete, contentDescription = "Delete Recipe")
+            Icon(Icons.Default.DeleteOutline, contentDescription = "Delete Recipe")
         }
     }
 }
 
-
-fun deleteRecipeFromCollection(userId: String, collectionId: String, recipeId: String) {
+fun deleteRecipeFromCollection(
+    userId: String,
+    collectionId: String,
+    recipeId: String,
+    onSuccess: () -> Unit
+) {
     val db = FirebaseFirestore.getInstance()
     db.collection("users")
         .document(userId)
@@ -293,9 +364,9 @@ fun deleteRecipeFromCollection(userId: String, collectionId: String, recipeId: S
         .delete()
         .addOnSuccessListener {
             Log.d("deleteRecipe", "DocumentSnapshot successfully deleted!")
+            onSuccess() // Refresh the list after successful deletion
         }
         .addOnFailureListener { e ->
             Log.w("deleteRecipe", "Error deleting document", e)
         }
 }
-

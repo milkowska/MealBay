@@ -1,6 +1,7 @@
 package uk.ac.aber.dcs.cs39440.mealbay.ui.collection
 
 import android.util.Log
+import androidx.compose.material.Divider
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
@@ -14,9 +15,10 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.TextButton
 import androidx.compose.material.TextField
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Surface
@@ -47,9 +49,9 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.tasks.await
-import uk.ac.aber.dcs.cs39440.mealbay.model.Recipe
 import uk.ac.aber.dcs.cs39440.mealbay.storage.COLLECTION_ID
 import uk.ac.aber.dcs.cs39440.mealbay.storage.COLLECTION_NAME
+import uk.ac.aber.dcs.cs39440.mealbay.ui.theme.Railway
 
 @Composable
 fun CollectionScreenTopLevel(
@@ -110,12 +112,12 @@ fun CollectionScreen(
                                     navController.navigate(Screen.ColDisplay.route)
                                 },
                                 dataViewModel = dataViewModel,
-                              //  coroutineScope = coroutineScope,
-                               // sheetState = sheetState
+                                //  coroutineScope = coroutineScope,
+                                // sheetState = sheetState
                             )
                         }
                     } else {
-                        EmptyCollectionScreen( coroutineScope, sheetState)
+                        EmptyCollectionScreen(coroutineScope, sheetState)
                     }
 
                     FloatingActionButton(
@@ -233,7 +235,7 @@ fun BottomSheet(dataViewModel: DataViewModel = hiltViewModel()) {
             fontSize = 23.sp,
             textAlign = TextAlign.Center
         )
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(30.dp))
 
         TextField(
             value = collectionName,
@@ -242,9 +244,12 @@ fun BottomSheet(dataViewModel: DataViewModel = hiltViewModel()) {
             },
             onValueChange = {
                 if (it.length <= maxCharsLonger) {
-                collectionName = it
-                isErrorInTextField = collectionName.isEmpty()
-            } },
+                    collectionName = it
+                    isErrorInTextField = collectionName.isEmpty()
+                }
+            },
+            colors = TextFieldDefaults.textFieldColors(
+                focusedIndicatorColor = Color(0xFF9C4234)),
             modifier = Modifier.width(360.dp),
             singleLine = true,
             isError = isErrorInTextField,
@@ -341,10 +346,12 @@ fun DisplayCollections(
                 } else {
                     value?.let { querySnapshot ->
                         coroutineScope.launch {
-                            val fetchedCollections = querySnapshot.documents.map { documentSnapshot ->
-                                val collectionSize = getCollectionSize(userId, documentSnapshot.id)
-                                documentSnapshot to collectionSize
-                            }
+                            val fetchedCollections =
+                                querySnapshot.documents.map { documentSnapshot ->
+                                    val collectionSize =
+                                        getCollectionSize(userId, documentSnapshot.id)
+                                    documentSnapshot to collectionSize
+                                }
                             collections.value = fetchedCollections
                             isLoading.value = false
                         }
@@ -375,19 +382,24 @@ fun DisplayCollections(
                         verticalAlignment = Alignment.CenterVertically,
 
                         ) {
-                        Column {
-                            Text(text = collectionName, fontSize = 18.sp)
-                            Text(text = if (collectionSize == 1) "$collectionSize recipe" else "$collectionSize recipes", fontSize = 14.sp)
-
+                        Column(modifier = Modifier.padding(start = 10.dp)) {
+                            Text(text = collectionName, fontSize = 19.sp)
+                            Text(
+                                text = if (collectionSize == 1) "$collectionSize recipe" else "$collectionSize recipes",
+                                fontSize = 14.sp
+                            )
                         }
 
                         IconButton(onClick = {
                             openAlertDialog.value = true
                             selectedCollectionId.value = documentSnapshot.id
                         }) {
-                            Icon(Icons.Default.Delete, contentDescription = "Delete Collection")
+                            Icon(Icons.Default.Close, contentDescription = "Delete Collection")
                         }
+
+
                     }
+                    Divider()
                 }
             }
             FloatingActionButton(
@@ -416,11 +428,15 @@ fun DisplayCollections(
                     title = {
                         Text(
                             text = stringResource(R.string.are_you_sure),
+                            fontFamily = Railway,
+                            fontSize = 22.sp
                         )
                     },
                     text = {
                         Text(
                             text = stringResource(R.string.pressing_confirm),
+                            fontFamily = Railway,
+                            fontSize = 16.sp
                         )
                     },
                     confirmButton = {
@@ -428,12 +444,20 @@ fun DisplayCollections(
                             onDeleteClick(selectedCollectionId.value)
                             openAlertDialog.value = false
                         }) {
-                            Text("Confirm")
+                            Text(
+                                text = stringResource(id = R.string.confirm),
+                                fontFamily = Railway,
+                                fontSize = 16.sp
+                            )
                         }
                     },
                     dismissButton = {
                         TextButton(onClick = { openAlertDialog.value = false }) {
-                            Text("Cancel")
+                            Text(
+                                text = stringResource(id = R.string.cancel),
+                                fontFamily = Railway,
+                                fontSize = 16.sp
+                            )
                         }
                     }
                 )
@@ -441,6 +465,7 @@ fun DisplayCollections(
         }
     }
 }
+
 suspend fun getCollectionSize(userId: String, collectionId: String): Int {
     val firestore = Firebase.firestore
     val userCollectionsRef = firestore

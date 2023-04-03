@@ -77,5 +77,8 @@
     <string name="recipe_already_two">This recipe is already in the selected collection.</string>
     <string name="ok">OK</string>
     <string name="no_recipes">There are no recipes in this collection!</string>
+    <string name="gohere">"To begin adding recipes, first select a recipe, click the 'Add' button, and then choose your desired collection. "</string>
+    <string name="pressing_confirm_two">If you proceed, this recipe will be removed from this collection.</string>
+    <string name="confirm">Confirm</string>
 
 </resources>
