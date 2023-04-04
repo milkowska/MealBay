@@ -37,6 +37,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import uk.ac.aber.dcs.cs39440.mealbay.model.DataViewModel
 import uk.ac.aber.dcs.cs39440.mealbay.storage.NEW_RECIPE_INGREDIENTS
 import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
+import androidx.compose.material3.AlertDialog
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -52,14 +53,14 @@ fun IngredientsScreen(
     val coroutineScope = rememberCoroutineScope()
     val ingredientsList = remember { mutableStateListOf<String>() }
     val openDialog = remember { mutableStateOf(false) }
-    var openDialogOnSave = remember { mutableStateOf(false) }
+    val openDialogOnSave = remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Text(
-                        text = "Ingredients",
+                        text = stringResource ( id = R.string.ingredients),
                         fontSize = 20.sp
                     )
                 },

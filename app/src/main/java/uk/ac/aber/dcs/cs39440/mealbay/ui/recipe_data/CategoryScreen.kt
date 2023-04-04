@@ -202,22 +202,6 @@ fun CategoryScreen(
 }
 
 
-fun saveRecipeToFirestore(
-    recipe: Recipe,
-    onSuccess: (String) -> Unit,
-    onFailure: (Exception) -> Unit
-) {
-    val db = FirebaseFirestore.getInstance()
-    val recipesRef = db.collection("recipesready")
-
-    recipesRef.add(recipe)
-        .addOnSuccessListener { documentReference ->
-            onSuccess(documentReference.id)
-        }
-        .addOnFailureListener { exception ->
-            onFailure(exception)
-        }
-}
 fun savePrivateRecipe(userId: String, recipe: Recipe) {
     val db = FirebaseFirestore.getInstance()
     db.collection("users")

@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import org.jetbrains.annotations.NotNull
 
+
 @Entity(tableName = "shopping_list")
 data class ShoppingListItem(
     @PrimaryKey(autoGenerate = true)
@@ -11,3 +12,4 @@ data class ShoppingListItem(
     var id: Int = 0,
     var item: String = "",
 )
+

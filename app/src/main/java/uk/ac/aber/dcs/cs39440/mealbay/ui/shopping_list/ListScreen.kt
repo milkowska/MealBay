@@ -1,20 +1,37 @@
 package uk.ac.aber.dcs.cs39440.mealbay.ui.shopping_list
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
+import androidx.compose.material3.AlertDialog
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.runtime.mutableStateListOf
+
 import androidx.compose.material3.*
+import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -23,255 +40,329 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
+import androidx.compose.material3.TextField
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.launch
 import uk.ac.aber.dcs.cs39440.mealbay.R
-import uk.ac.aber.dcs.cs39440.mealbay.model.ShoppingListItem
+import uk.ac.aber.dcs.cs39440.mealbay.model.DataViewModel
 import uk.ac.aber.dcs.cs39440.mealbay.model.ShoppingListViewModel
-import uk.ac.aber.dcs.cs39440.mealbay.ui.components.TopLevelScaffold
+import uk.ac.aber.dcs.cs39440.mealbay.storage.CURRENT_USER_ID
+import uk.ac.aber.dcs.cs39440.mealbay.storage.NEW_RECIPE_INGREDIENTS
+import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
+import uk.ac.aber.dcs.cs39440.mealbay.ui.recipe_data.BottomSheetHere
+import uk.ac.aber.dcs.cs39440.mealbay.ui.theme.Railway
+
 
 @Composable
 fun ListScreenTopLevel(
     navController: NavHostController,
     shoppingListViewModel: ShoppingListViewModel = viewModel(),
+    dataViewModel: DataViewModel = hiltViewModel(),
 ) {
-    val shoppingList by shoppingListViewModel.shoppingList.observeAsState(listOf())
-
-    ListScreen(
-        navController,
-        shoppingList = shoppingList,
-        doDelete = { shoppingListItem ->
-            shoppingListViewModel.deleteShoppingListItem(
-                shoppingListItem
-            )
-        },
-        doInsert = { shoppingListItem ->
-            shoppingListViewModel.insertShoppingListItem(
-                shoppingListItem
-            )
-        },
-        shoppingListViewModel
-    )
+    val userId = dataViewModel.getString(CURRENT_USER_ID)
+    if (userId != null) {
+        ListScreen(userId = userId)
+    }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun ListScreen(
-    navController: NavHostController,
-    shoppingList: List<ShoppingListItem> = listOf(),
-    doDelete: (ShoppingListItem) -> Unit = {},
-    doInsert: (ShoppingListItem) -> Unit = {},
-    shoppingListViewModel: ShoppingListViewModel = viewModel(),
+    dataViewModel: DataViewModel = hiltViewModel(),
+    userId: String
 ) {
-    var openDialog = remember { mutableStateOf(false) }
-    var item by rememberSaveable { mutableStateOf("") }
-    var context = LocalContext.current
-    val openAlertDialog = remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState(
+        initialValue = ModalBottomSheetValue.Hidden,
+        confirmStateChange = { it != ModalBottomSheetValue.HalfExpanded }
+    )
+    val coroutineScope = rememberCoroutineScope()
+    val shoppingList = remember { mutableStateListOf<String>() }
+    val openDialogOnSave = remember { mutableStateOf(false) }
 
-    TopLevelScaffold(
-        navController = navController,
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    openDialog.value = true
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = stringResource(id = R.string.my_shopping_list),
+                        fontSize = 20.sp,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
                 },
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Add,
-                    contentDescription = stringResource(R.string.add)
-                )
-            }
+                backgroundColor = Color(0xFFFFFFFF)
+            )
+        }) {
+        BackHandler(sheetState.isVisible) {
+            coroutineScope.launch { sheetState.hide() }
         }
-    ) { innerPadding ->
-        Surface(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize()
+
+        ModalBottomSheetLayout(
+            sheetState = sheetState,
+            sheetContent = { BottomSheetHere(shoppingList, userId) },
+            modifier = Modifier.fillMaxSize(),
+            sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
         ) {
 
             Column(
                 modifier = Modifier
-                    .fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
+                    .fillMaxSize()
+                    .padding(10.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                if (shoppingList.isEmpty()) {
 
-                if (openDialog.value) {
-                    Dialog(
-                        onDismissRequest = {
-                            openDialog.value = false
-                        }
+                    Spacer(modifier = Modifier.height(60.dp))
+
+                    Image(
+                        modifier = Modifier
+                            .size(260.dp),
+                        painter = painterResource(id = R.drawable.emptycart),
+                        contentDescription = stringResource(id = R.string.shopping_list_is_empty),
+                        contentScale = ContentScale.Crop
+                    )
+
+                    Spacer(modifier = Modifier.height(40.dp))
+
+                    Text(
+                        text = stringResource(id = R.string.empty_shopping_list),
+                        fontSize = 21.sp,
+                        textAlign = TextAlign.Center
+                    )
+
+                    Spacer(modifier = Modifier.height(60.dp))
+
+                } else {
+                    Spacer(modifier = Modifier.height(80.dp))
+
+                    LazyColumn(
+                        modifier = Modifier.weight(1f),
+                        contentPadding = PaddingValues(vertical = 16.dp, horizontal = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Surface(
-                            modifier = Modifier
-                                .width(300.dp)
-                                .height(250.dp),
-                            shape = MaterialTheme.shapes.large
-                        ) {
-                            Column(
-                                modifier = Modifier.padding(16.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.SpaceBetween
-
-                            ) {
-                                Text(
-                                    text = stringResource(R.string.add_element),
-                                    modifier = Modifier,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 23.sp,
-                                )
-                                Spacer(modifier = Modifier.height(10.dp))
-
-                                AddElement(
-                                    item = item,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(start = 10.dp, end = 10.dp)
-                                        .height(65.dp),
-                                    update = {
-                                        item = it
-                                    }
-                                )
-                                Spacer(modifier = Modifier.height(10.dp))
-
-                                FilledTonalButton(modifier = Modifier
-                                    .height(55.dp)
-                                    .fillMaxWidth()
-                                    .padding(start = 30.dp, end = 30.dp),
-                                    enabled = item.isNotEmpty(),
-                                    onClick = {
-                                        if (item.trim() == "") {
-                                            Toast.makeText(
-                                                context,
-                                                "Invalid input",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
-                                        } else {
-                                            doInsert(
-                                                ShoppingListItem(
-                                                    item = item.lowercase().trim()
-                                                )
-                                            )
-                                            Toast.makeText(
-                                                context,
-                                                "A new ingredient has been added!",
-                                                Toast.LENGTH_SHORT
-                                            )
-                                                .show()
-                                            item = ""
-                                        }
-                                    }
-                                )
-                                {
-                                    Text(
-                                        text = stringResource(id = R.string.save),
-                                        fontSize = 15.sp,
-                                    )
-                                }
-                                Spacer(modifier = Modifier.height(10.dp))
-
-                            }
+                        items(shoppingList) { ingredient ->
+                            Text(
+                                text = ingredient,
+                                fontSize = 16.sp,
+                                modifier = Modifier.fillMaxWidth()
+                            )
                         }
                     }
                 }
-                if (shoppingList.isEmpty()) {
-                    EmptyScreenContent(shoppingList)
-                } else {
-                    Column(modifier = Modifier.fillMaxSize()) {
-                        // Shopping list title
-                        Spacer(modifier = Modifier.height(19.dp))
-                        Text(
-                            text = stringResource(R.string.shopping_list),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(10.dp),
+                Row(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .weight(1f),
+                    horizontalArrangement = Arrangement.spacedBy(40.dp),
+                    verticalAlignment = Alignment.Bottom
+                ) {
 
-                            fontSize = 27.sp,
-                            textAlign = TextAlign.Center
-                        )
+                    ElevatedButton(
+                        onClick = {
+                            openDialogOnSave.value = true
 
-                        // Shopping list items
-                        LazyColumn(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .weight(1f),
-                            //contentPadding = PaddingValues(start = 20.dp)
-                        ) {
-                            items(shoppingList) { item ->
-                                ShoppingListItem(item) { doDelete(item) }
-                            }
-                        }
-
-                        // Clear all button
-                        ElevatedButton(
-                            modifier = Modifier
-                                .height(70.dp)
-                                .width(280.dp)
-                                .padding(start = 25.dp, bottom = 20.dp),
-                            enabled = shoppingList.isNotEmpty(),
-                            onClick = { openAlertDialog.value = true }
-                        ) {
-                            Text(text = stringResource(id = R.string.clear_all), fontSize = 16.sp)
-                        }
+                        },
+                        enabled = shoppingList.isNotEmpty(), // button is enabled once the ingredient list is created and not empty.
+                        modifier = Modifier
+                            .width(220.dp)
+                            .height(50.dp),
+                    ) {
+                        Text(text = stringResource(id = R.string.clear_all))
                     }
+                    if (openDialogOnSave.value) {
 
-                    if (openAlertDialog.value) {
                         AlertDialog(
                             onDismissRequest = {
-                                openAlertDialog.value = false
+                                openDialogOnSave.value = false
                             },
                             title = {
                                 Text(
-                                    text = stringResource(R.string.clear_the_list),
+                                    text = stringResource(R.string.are_you_sure),
+                                    fontFamily = Railway
                                 )
                             },
                             text = {
                                 Text(
-                                    stringResource(R.string.confirm_clearing),
+                                    stringResource(R.string.warning_three),
+                                    fontFamily = Railway,
+                                    fontSize = 15.sp
                                 )
                             },
-                            confirmButton = { ConfirmButton(openAlertDialog, context) },
-                            dismissButton = { DismissButton(openAlertDialog) }
+                            confirmButton = {
+                                TextButton(
+                                    onClick = {
+                                        clearShoppingList(userId)
+                                        shoppingList.clear()
+                                        openDialogOnSave.value = false
+                                    },
+                                ) {
+                                    Text(
+                                        stringResource(R.string.confirm),
+                                        fontFamily = Railway
+                                    )
+                                }
+                            },
+                            dismissButton = {
+                                TextButton(
+                                    onClick = {
+                                        openDialogOnSave.value = false
+                                    },
+                                ) {
+                                    Text(
+                                        stringResource(R.string.cancel),
+                                        fontFamily = Railway
+                                    )
+                                }
+                            }
                         )
                     }
+                    // The floating button is used to show the bottom sheet when clicked.
+                    FloatingActionButton(
+                        backgroundColor = (Color(0xFFFFDAD4)),
+                        onClick = {
+                            coroutineScope.launch {
+                                if (sheetState.isVisible) sheetState.hide()
+                                else sheetState.show()
+                            }
+                        },
+                    ) {
+                        Icon(Icons.Filled.Add, contentDescription = "Add an item")
+                    }
                 }
+
             }
         }
+
     }
 }
 
 
-// Shopping list item row
 @Composable
-fun ShoppingListItem(item: ShoppingListItem, onDelete: () -> Unit) {
-    Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .padding(10.dp)
-            .fillMaxWidth()
+fun BottomSheetHere(
+    shoppingList: SnapshotStateList<String>,
+    userId: String
+) {
+    val context = LocalContext.current
+    var item by rememberSaveable { mutableStateOf("") }
+    var isErrorInTextField by remember {
+        mutableStateOf(false)
+    }
+
+    Column(
+        modifier = Modifier.padding(32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+
     ) {
         Text(
-            text = item.item,
-            modifier = Modifier.weight(1f),
-            fontSize = 18.sp,
+            text = stringResource(id = R.string.add_an_item),
+            fontSize = 23.sp,
+            textAlign = TextAlign.Center
         )
-        IconButton(onClick = onDelete) {
-            Icon(
-                imageVector = Icons.Filled.Close,
-                contentDescription = stringResource(id = R.string.delete_icon)
-            )
+        Spacer(modifier = Modifier.height(20.dp))
+
+        TextField(
+            value = item,
+            label = {
+                Text(text = stringResource(R.string.add_ingredient))
+            },
+            onValueChange = {
+                item = it
+                isErrorInTextField = item.isEmpty()
+            },
+            modifier = Modifier.width(360.dp),
+            singleLine = true,
+            isError = isErrorInTextField,
+        )
+
+        Spacer(modifier = Modifier.height(100.dp))
+
+        ElevatedButton(
+            enabled = item.isNotEmpty(),
+            onClick = {
+                if (item.trim() == "") {
+                    Toast.makeText(context, "Invalid input", Toast.LENGTH_LONG).show()
+                    isErrorInTextField = true
+                } else if (item.trim().length < 3) {
+                    Toast.makeText(context, "The item length is too short!", Toast.LENGTH_LONG)
+                        .show()
+                    isErrorInTextField = true
+                } else {
+                    shoppingList.add(item)
+                    saveShoppingList(userId, shoppingList)
+                    item = ""
+                }
+            }, modifier = Modifier
+                .width(220.dp)
+                .height(50.dp)
+        ) {
+            Text(stringResource(R.string.add))
         }
     }
-    Divider(startIndent = 0.dp, thickness = 1.dp)
 }
+
+fun saveShoppingList(userId: String, shoppingList: SnapshotStateList<String>) {
+    val db = FirebaseFirestore.getInstance()
+    val list = shoppingList.toList()
+    val shoppingListRef = db.collection("users")
+        .document(userId)
+        .collection("shoppingList")
+        .document("defaultShoppingList") // document ID for the shopping list
+    shoppingListRef.set(mapOf("list" to list))
+        .addOnSuccessListener { documentReference ->
+            Log.d("saveShoppingList", "Shopping list saved for user $userId")
+        }
+        .addOnFailureListener { e ->
+            Log.w("saveShoppingList", "Error saving shopping list for user $userId", e)
+        }
+}
+
+fun clearShoppingList(userId: String) {
+    val db = FirebaseFirestore.getInstance()
+    val shoppingListRef = db.collection("users")
+        .document(userId)
+        .collection("shoppingList")
+        .document("defaultShoppingList")
+    shoppingListRef.update("list", listOf<String>())
+        .addOnSuccessListener {
+            Log.d("clearShoppingList", "Shopping list cleared for user $userId")
+        }
+        .addOnFailureListener { e ->
+            Log.w("clearShoppingList", "Error clearing shopping list for user $userId", e)
+        }
+}
+/*
+
+fun refreshShoppingList(userId: String, shoppingList: MutableStateList<String>) {
+    val db = FirebaseFirestore.getInstance()
+    val shoppingListRef = db.collection("users")
+        .document(userId)
+        .collection("shoppingList")
+        .document("default")
+    shoppingListRef.get()
+        .addOnSuccessListener { documentSnapshot ->
+            val list = documentSnapshot.get("list") as List<String>?
+            shoppingList.clear()
+            if (list != null) {
+                shoppingList.addAll(list)
+            }
+        }
+        .addOnFailureListener { e ->
+            Log.w("refreshShoppingList", "Error refreshing shopping list for user $userId", e)
+        }
+}
+*/
+
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun EmptyScreenContent(
-    shoppingList: List<ShoppingListItem> = listOf()
 ) {
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
@@ -304,72 +395,7 @@ private fun EmptyScreenContent(
 
         Spacer(modifier = Modifier.height(60.dp))
 
-        ElevatedButton(modifier = Modifier
-            .height(60.dp)
-            .width(350.dp)
-            .padding(top = 10.dp, end = 80.dp),
-            enabled = shoppingList.isNotEmpty(),
-            onClick = { /* nothing happens because button is always disabled for empty screen */ }
-        )
-        {
-            Text(
-                text = stringResource(id = R.string.clear_all),
-                fontSize = 16.sp,
-            )
-        }
     }
 }
 
-@Composable
-private fun ConfirmButton(
-    openAlertDialog: MutableState<Boolean>,
-    context: Context,
-    shoppingListViewModel: ShoppingListViewModel = viewModel(),
-) {
-    TextButton(
-        onClick = {
-            openAlertDialog.value = false
-            //clears the entire list
-            shoppingListViewModel.clearShoppingList()
 
-            Toast.makeText(
-                context,
-                "The shopping list has been cleared.",
-                Toast.LENGTH_SHORT
-            ).show()
-        },
-    ) {
-        Text(
-            stringResource(R.string.delete),
-        )
-    }
-}
-
-@Composable
-private fun DismissButton(openAlertDialog: MutableState<Boolean>) {
-    TextButton(
-        onClick = {
-            openAlertDialog.value = false
-        },
-    ) {
-        Text(
-            stringResource(R.string.cancel),
-        )
-    }
-}
-
-@Composable
-fun AddElement(
-    item: String,
-    modifier: Modifier,
-    update: (String) -> Unit
-) {
-    OutlinedTextField(
-        value = item,
-        label = {
-            Text(text = stringResource(R.string.add_element))
-        },
-        onValueChange = { update(it) },
-        modifier = modifier
-    )
-}

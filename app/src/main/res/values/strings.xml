@@ -80,5 +80,9 @@
     <string name="gohere">"To begin adding recipes, first select a recipe, click the 'Add' button, and then choose your desired collection. "</string>
     <string name="pressing_confirm_two">If you proceed, this recipe will be removed from this collection.</string>
     <string name="confirm">Confirm</string>
+    <string name="add_an_item">Add an item</string>
+    <string name="warning_three">If you proceed, the content of the shopping list will be cleared.</string>
+    <string name="empty_shopping_list">Your shopping list is currently empty. Click on the add button to add an ingredient.</string>
+    <string name="my_shopping_list">"My shopping list "</string>
 
 </resources>

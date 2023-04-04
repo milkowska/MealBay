@@ -183,7 +183,7 @@ fun UserForm(
             text = stringResource(id = R.string.create_account_description),
             fontSize = 16.sp,
             modifier = Modifier
-                .padding(start = 25.dp, end = 25.dp, bottom = 5.dp, )
+                .padding(start = 25.dp, end = 25.dp, bottom = 5.dp)
         )
 
         EmailInput(emailState = email, enabled = !loading, onAction = KeyboardActions {
