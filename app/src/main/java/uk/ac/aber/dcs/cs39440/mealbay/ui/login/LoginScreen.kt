@@ -115,7 +115,7 @@ fun LoginScreen(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(50.dp))
+                Spacer(modifier = Modifier.height(70.dp))
 
                 Row(
                     modifier = Modifier.padding(15.dp),
@@ -183,7 +183,7 @@ fun UserForm(
             text = stringResource(id = R.string.create_account_description),
             fontSize = 16.sp,
             modifier = Modifier
-                .padding(25.dp)
+                .padding(start = 25.dp, end = 25.dp, bottom = 5.dp, )
         )
 
         EmailInput(emailState = email, enabled = !loading, onAction = KeyboardActions {
@@ -228,8 +228,10 @@ fun SendButton(
     FilledTonalButton(
         onClick = onClick,
         modifier = Modifier
-            .padding(10.dp)
-            .fillMaxWidth(),
+            .padding(top = 17.dp, start = 10.dp, end = 10.dp)
+            .fillMaxWidth()
+            .height(50.dp),
+
         enabled = !loading && validInputs,
     ) {
         if (loading) CircularProgressIndicator(modifier = Modifier.size(30.dp))

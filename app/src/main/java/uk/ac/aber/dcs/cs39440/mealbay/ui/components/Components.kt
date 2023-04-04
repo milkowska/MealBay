@@ -90,10 +90,10 @@ fun TextInputField(
         colors = TextFieldDefaults.outlinedTextFieldColors(
             textColor = Color(0xFF000000),
             errorCursorColor = Color(0xFF9C4234),
-            unfocusedBorderColor = Color(0xFF9C4234),
+            unfocusedBorderColor = Color(0xFF000000),
             focusedBorderColor = Color(0xFF9C4234),
             focusedLabelColor = Color(0xFF9C4234),
-            unfocusedLabelColor = Color(0xFF9C4234),
+            unfocusedLabelColor = Color(0xFF000000),
             cursorColor = Color(0xFF9C4234)
         ),
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType, imeAction = imeAction),
@@ -134,10 +134,10 @@ fun PasswordInput(
         colors = TextFieldDefaults.outlinedTextFieldColors(
             textColor = Color(0xFF000000),
             errorCursorColor = Color(0xFF9C4234),
-            unfocusedBorderColor = Color(0xFF9C4234),
+            unfocusedBorderColor = Color(0xFF000000),
             focusedBorderColor = Color(0xFF9C4234),
             focusedLabelColor = Color(0xFF9C4234),
-            unfocusedLabelColor = Color(0xFF9C4234),
+            unfocusedLabelColor = Color(0xFF000000),
             cursorColor = Color(0xFF9C4234)
         ),
         visualTransformation = visualTransformation,
@@ -159,7 +159,6 @@ fun PasswordVisibility(passwordVisibility: MutableState<Boolean>) {
             imageVector = if (visible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
             contentDescription = if (visible) "Hide password" else "Show password"
         )
-      //  Icons.Default.Close
     }
 }
 
