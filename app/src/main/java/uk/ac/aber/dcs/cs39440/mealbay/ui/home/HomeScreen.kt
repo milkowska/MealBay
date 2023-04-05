@@ -348,6 +348,22 @@ fun HomeScreen(
                                 color = Color(0xFF9C4234)
                             )
 
+                            Text(
+                                text = stringResource(id = R.string.add_one),
+                                modifier = Modifier
+                                    .padding(bottom = 20.dp),
+                                fontSize = 16.sp,
+                                textAlign = TextAlign.Center
+                            )
+                            Image(
+                                painter = painterResource(id = R.drawable.food_paper),
+                                contentDescription = stringResource(id = R.string.food),
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(bottom = 20.dp),
+                                contentScale = ContentScale.FillWidth
+                            )
+
                             Divider(
                                 thickness = 0.5.dp,
                                 modifier = Modifier.padding(vertical = 10.dp)
@@ -364,10 +380,11 @@ fun HomeScreen(
                             Text(
                                 text = stringResource(id = R.string.collection_feature_description_one),
                                 modifier = Modifier
-                                    .padding(bottom = 4.dp),
+                                    .padding(bottom = 20.dp),
                                 fontSize = 16.sp,
                                 textAlign = TextAlign.Center
                             )
+
                             Image(
                                 painter = painterResource(id = R.drawable.board),
                                 contentDescription = stringResource(id = R.string.board),
@@ -416,19 +433,17 @@ fun HomeScreen(
 
                             Text(
                                 text = stringResource(id = R.string.shopping_list_feature_description),
-                                modifier = Modifier
-                                    .padding(bottom = 20.dp),
+
                                 fontSize = 16.sp,
                                 textAlign = TextAlign.Center
                             )
 
                             Image(
-                                painter = painterResource(id = R.drawable.listpic),
+                                painter = painterResource(id = R.drawable.tiny_chef_t),
                                 contentDescription = stringResource(id = R.string.list_picture),
                                 modifier = Modifier
-                                    .width(170.dp)
-                                    .height(210.dp),
-                                contentScale = ContentScale.Crop
+                                    .fillMaxSize(),
+                                contentScale = ContentScale.FillWidth
                             )
 
                             Text(

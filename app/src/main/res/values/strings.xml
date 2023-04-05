@@ -98,5 +98,7 @@
     <string name="board">Board with food picture</string>
     <string name="add_your_own">Add your own recipes!</string>
     <string name="meal_for_today">Don\'t know what to eat? Give it a try and explore today\'s meal, specially chosen to delight your taste buds!</string>
+    <string name="add_one">Feel free to add your own recipes if you can\'t find what you\'re looking for!</string>
+    <string name="food">food illustration</string>
 
 </resources>
