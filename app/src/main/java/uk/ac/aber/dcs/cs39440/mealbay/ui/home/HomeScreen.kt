@@ -46,7 +46,6 @@ import java.util.*
 import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.platform.LocalContext
 import uk.ac.aber.dcs.cs39440.mealbay.storage.CURRENT_CATEGORY
-import androidx.lifecycle.viewModelScope
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -175,8 +174,17 @@ fun HomeScreen(
                             Text(
                                 text = "Meal for this $formattedDayOfWeek",
                                 modifier = Modifier
-                                    .padding(2.dp),
-                                fontSize = 20.sp
+                                    .padding(20.dp),
+                                fontSize = 20.sp,
+                                color = Color(0xFF9C4234)
+                            )
+
+                            Text(
+                                text = stringResource(id = R.string.meal_for_today),
+                                modifier = Modifier
+                                    .padding(bottom = 4.dp),
+                                fontSize = 16.sp,
+                                textAlign = TextAlign.Center
                             )
 
                             ConstraintLayout(
@@ -187,7 +195,6 @@ fun HomeScreen(
                                         mealOfTheDay?.id?.let {
                                             recipeId = it
                                             dataViewModel.saveString(recipeId!!, RECIPE_ID)
-                                            //Log.d("TEST", "$recipeId")
                                         }
                                         navController.navigate(Screen.Recipe.route)
                                     }
@@ -222,11 +229,11 @@ fun HomeScreen(
                                             painter = rememberImagePainter(it),
                                             contentDescription = "Recipe Image",
                                             modifier = Modifier
-                                                .height(120.dp)
-                                                .width(155.dp)
+                                                .height(140.dp)
+                                                .width(165.dp)
                                                 .fillMaxSize()
-                                                .clip(shape = RoundedCornerShape(8.dp))
-                                                .padding(top = 10.dp),
+                                                .clip(shape = RoundedCornerShape(10.dp))
+                                                .padding(top = 20.dp),
                                             contentScale = ContentScale.Crop
                                         )
                                     }
@@ -274,26 +281,24 @@ fun HomeScreen(
 
                             Divider(
                                 thickness = 0.5.dp,
-                                modifier = Modifier.padding(vertical = 10.dp)
+                                modifier = Modifier.padding(vertical = 20.dp)
                             )
 
-                            Text(
-                                text = stringResource(id = R.string.latest),
-                                modifier = Modifier
-                                    .padding(2.dp),
-                                fontSize = 20.sp
-                            )
-
-                            Divider(
-                                thickness = 0.5.dp,
-                                modifier = Modifier.padding(vertical = 10.dp)
-                            )
 
                             Text(
                                 text = stringResource(id = R.string.explore),
                                 modifier = Modifier
-                                    .padding(2.dp),
-                                fontSize = 20.sp
+                                    .padding(bottom = 12.dp),
+                                fontSize = 20.sp,
+                                color = Color(0xFF9C4234)
+                            )
+
+                            Text(
+                                text = stringResource(id = R.string.search_description),
+                                modifier = Modifier
+                                    .padding(bottom = 4.dp),
+                                fontSize = 16.sp,
+                                textAlign = TextAlign.Center
                             )
 
                             Image(
@@ -302,26 +307,46 @@ fun HomeScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(330.dp)
-                                    .padding(10.dp),
+                                    .padding(25.dp),
                                 contentScale = ContentScale.Crop
                             )
 
                             Text(
-                                text = stringResource(id = R.string.home_description),
+                                text = stringResource(id = R.string.search_description_three),
                                 modifier = Modifier
-                                    .padding(2.dp),
-                                fontSize = 18.sp
+                                    .padding(bottom = 20.dp),
+                                fontSize = 16.sp,
+                                textAlign = TextAlign.Center
                             )
 
-                            FilledTonalButton(
-                                onClick = {
-                                    navController.navigate(Screen.Explore.route)
-                                }, modifier = Modifier
-                                    .padding(start = 16.dp)
-                                    .width(180.dp)
-                            ) {
-                                Text(stringResource(R.string.take_me_there))
-                            }
+                            Image(
+                                painter = painterResource(id = R.drawable.navbar_explore),
+                                contentDescription = stringResource(id = R.string.navigation_bar_picture),
+                                modifier = Modifier
+                                    .fillMaxSize(),
+                                contentScale = ContentScale.FillWidth
+                            )
+
+                            Text(
+                                text = stringResource(id = R.string.search_description_two),
+                                modifier = Modifier
+                                    .padding(top = 20.dp),
+                                fontSize = 16.sp,
+                                textAlign = TextAlign.Center
+                            )
+
+                            Divider(
+                                thickness = 0.5.dp,
+                                modifier = Modifier.padding(vertical = 15.dp)
+                            )
+
+                            Text(
+                                text = stringResource(id = R.string.add_your_own),
+                                modifier = Modifier
+                                    .padding(2.dp),
+                                fontSize = 20.sp,
+                                color = Color(0xFF9C4234)
+                            )
 
                             Divider(
                                 thickness = 0.5.dp,
@@ -329,23 +354,72 @@ fun HomeScreen(
                             )
 
                             Text(
-                                text = stringResource(id = R.string.check_the_latest_collection),
+                                text = stringResource(id = R.string.make_your_own),
                                 modifier = Modifier
-                                    .padding(2.dp),
-                                fontSize = 18.sp
+                                    .padding(bottom = 12.dp),
+                                fontSize = 20.sp,
+                                color = Color(0xFF9C4234)
+                            )
+
+                            Text(
+                                text = stringResource(id = R.string.collection_feature_description_one),
+                                modifier = Modifier
+                                    .padding(bottom = 4.dp),
+                                fontSize = 16.sp,
+                                textAlign = TextAlign.Center
+                            )
+                            Image(
+                                painter = painterResource(id = R.drawable.board),
+                                contentDescription = stringResource(id = R.string.board),
+                                modifier = Modifier
+                                    .width(190.dp)
+                                    .height(230.dp),
+                                contentScale = ContentScale.Crop
+                            )
+
+                            Text(
+                                text = stringResource(id = R.string.collection_feature_description_two),
+                                modifier = Modifier
+                                    .padding(bottom = 20.dp),
+                                fontSize = 16.sp,
+                                textAlign = TextAlign.Center
+                            )
+
+                            Image(
+                                painter = painterResource(id = R.drawable.navbar_collection),
+                                contentDescription = stringResource(id = R.string.navigation_bar_picture),
+                                modifier = Modifier
+                                    .fillMaxSize(),
+                                contentScale = ContentScale.FillWidth
+                            )
+
+                            Text(
+                                text = stringResource(id = R.string.collection_feature_description_three),
+                                modifier = Modifier
+                                    .padding(top = 12.dp, bottom = 12.dp),
+                                fontSize = 16.sp,
+                                textAlign = TextAlign.Center
                             )
 
                             Divider(
                                 thickness = 0.5.dp,
-                                modifier = Modifier.padding(vertical = 10.dp)
+                                modifier = Modifier.padding(vertical = 15.dp)
                             )
-
 
                             Text(
                                 text = stringResource(id = R.string.create_your_own),
                                 modifier = Modifier
-                                    .padding(2.dp),
-                                fontSize = 18.sp
+                                    .padding(bottom = 12.dp),
+                                fontSize = 20.sp,
+                                color = Color(0xFF9C4234)
+                            )
+
+                            Text(
+                                text = stringResource(id = R.string.shopping_list_feature_description),
+                                modifier = Modifier
+                                    .padding(bottom = 20.dp),
+                                fontSize = 16.sp,
+                                textAlign = TextAlign.Center
                             )
 
                             Image(
@@ -358,44 +432,40 @@ fun HomeScreen(
                             )
 
                             Text(
-                                text = stringResource(id = R.string.shopping_list_feature_description),
-                                modifier = Modifier
-                                    .padding(bottom = 4.dp),
-                                fontSize = 16.sp,
-                                textAlign = TextAlign.Center
-                            )
-                            Text(
                                 text = stringResource(id = R.string.shopping_list_feature_description_two),
                                 modifier = Modifier
-                                    .padding( bottom = 8.dp),
+                                    .padding(bottom = 20.dp),
                                 fontSize = 16.sp,
                                 textAlign = TextAlign.Center
                             )
+
                             Image(
                                 painter = painterResource(id = R.drawable.navbar_s),
-                                contentDescription = stringResource(id = R.string.list_picture),
+                                contentDescription = stringResource(id = R.string.navigation_bar_picture),
                                 modifier = Modifier
                                     .fillMaxSize(),
                                 contentScale = ContentScale.FillWidth
                             )
+
                             Text(
                                 text = stringResource(id = R.string.shopping_list_feature_description_three),
                                 modifier = Modifier
-                                    .padding( top = 8.dp),
+                                    .padding(top = 20.dp),
                                 fontSize = 16.sp,
                                 textAlign = TextAlign.Center
                             )
 
                             Divider(
                                 thickness = 0.5.dp,
-                                modifier = Modifier.padding(vertical = 10.dp)
+                                modifier = Modifier.padding(vertical = 15.dp)
                             )
 
                             Text(
                                 text = stringResource(id = R.string.discover),
                                 modifier = Modifier
-                                    .padding(2.dp),
-                                fontSize = 18.sp
+                                    .padding(bottom = 20.dp),
+                                fontSize = 20.sp,
+                                color = Color(0xFF9C4234)
                             )
                         }
                         items(categories.chunked(2)) { categoryRow ->
@@ -407,10 +477,10 @@ fun HomeScreen(
                                     ElevatedButton(
                                         onClick = {
 
-                                                dataViewModel.saveString(category, CURRENT_CATEGORY)
+                                            dataViewModel.saveString(category, CURRENT_CATEGORY)
 
-                                                navController.navigate(Screen.Filtered.route)
-                                                Log.d("CategoryClicked", "category is $category")
+                                            navController.navigate(Screen.Filtered.route)
+                                            Log.d("CategoryClicked", "category is $category")
 
                                         },
                                         modifier = Modifier
@@ -433,30 +503,3 @@ fun HomeScreen(
         }
     }
 }
-
-/**
- * Fetches recipes from the "recipesready" collection in Firestore based on the given category to retrieve documents
- * where the "category" field matches the provided category.
- *
- * @param category The category used to filter recipes from the collection.
- *//*
-
-fun fetchRecipesByCategory(category: String) {
-    val db = FirebaseFirestore.getInstance()
-    val query = db.collection("recipesready")
-        .whereEqualTo("category", category)
-
-    query.get()
-        .addOnSuccessListener { documents ->
-            val recipes = mutableListOf<Recipe>()
-            for (document in documents) {
-                val recipe = document.toObject(Recipe::class.java)
-                recipes.add(recipe)
-                Log.d("RecipesFetched", "$recipe")
-            }
-        }
-        .addOnFailureListener { exception ->
-            Log.w("fetchRecipesByCategory", "Error fetching recipes by category: ", exception)
-        }
-}
-*/

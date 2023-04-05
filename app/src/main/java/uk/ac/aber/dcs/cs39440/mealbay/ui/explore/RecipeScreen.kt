@@ -53,6 +53,7 @@ import uk.ac.aber.dcs.cs39440.mealbay.storage.RECIPE_ID
 
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
+import uk.ac.aber.dcs.cs39440.mealbay.ui.theme.Railway
 
 
 @Composable
@@ -245,7 +246,8 @@ fun ShowRecipeContent(
                                     Text(
                                         "Add",
                                         modifier = Modifier.padding(start = 4.dp),
-                                        fontSize = 17.sp
+                                        fontSize = 17.sp,
+                                        fontFamily = Railway,
                                     )
                                 }
                             }

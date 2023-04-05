@@ -141,6 +141,7 @@ fun ListScreen(
     val shoppingList = remember { mutableStateListOf<String>() }
     val openDialogOnSave = remember { mutableStateOf(false) }
     var emptyList by remember { mutableStateOf(true) }
+    val context = LocalContext.current
 
     BackHandler(sheetState.isVisible) {
         coroutineScope.launch { sheetState.hide() }
@@ -323,6 +324,7 @@ fun ListScreen(
                                 shoppingList.clear()
                                 updateEmptyListState()
                                 openDialogOnSave.value = false
+                                Toast.makeText(context, "Your shopping list has been cleared.", Toast.LENGTH_LONG).show()
                             },
                         ) {
                             Text(
@@ -349,7 +351,6 @@ fun ListScreen(
         Spacer(modifier = Modifier.height(80.dp))
     }
 }
-
 
 suspend fun fetchShoppingList(
     userId: String,

@@ -31,7 +31,9 @@
     <string name="rating_of_new_recipe">Give your rating</string>
     <string name="next">Next</string>
     <string name="preparation">Preparation</string>
-    <string name="home_description">Unleash your culinary creativity with the app\'s vast selection of delicious and convenient meal recipes, ready for you to explore and enjoy.</string>
+    <string name="search_description">Unleash your culinary creativity with the app\'s vast selection of delicious and convenient meal recipes, ready for you to explore and enjoy.</string>
+    <string name="search_description_two">Get started and discover your next favorite meal!</string>
+    <string name="search_description_three">Discover new recipes and create your own with ease by simply tapping the Search icon.</string>
     <string name="explore">Explore our recipes</string>
     <string name="latest">Latest recipe</string>
     <string name="meal_of_the_day">Meal of the day</string>
@@ -87,6 +89,14 @@
     <string name="clear">Clear</string>
     <string name="shopping_list_feature_description">Never forget a recipe ingredient again! With our shopping list feature, you can easily note down all the ingredients needed for your favorite recipes. </string>
     <string name="shopping_list_feature_description_two">Simply click on the shopping list icon on the navigation bar and add items with ease. </string>
-    <string name="shopping_list_feature_description_three"> Whether you\'re an experienced chef or a beginner cook, our shopping list functionality makes grocery shopping a breeze. Try it out now and elevate your recipe game!</string>
+    <string name="shopping_list_feature_description_three">Try it out now and elevate your recipe game!</string>
+    <string name="navigation_bar_picture">Navigation bar picture.</string>
+    <string name="collection_feature_description_one">Looking for a way to keep your recipes organized and easy to access?</string>
+    <string name="collection_feature_description_two">You can easily store your favorite recipes accessible with just a tap of the collection icon.</string>
+    <string name="collection_feature_description_three">Keep your recipes sorted!</string>
+    <string name="make_your_own">Make your own collection</string>
+    <string name="board">Board with food picture</string>
+    <string name="add_your_own">Add your own recipes!</string>
+    <string name="meal_for_today">Don\'t know what to eat? Give it a try and explore today\'s meal, specially chosen to delight your taste buds!</string>
 
 </resources>
