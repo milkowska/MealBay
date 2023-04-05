@@ -84,5 +84,9 @@
     <string name="warning_three">If you proceed, the content of the shopping list will be cleared.</string>
     <string name="empty_shopping_list">Your shopping list is currently empty. Click on the add button to add an ingredient.</string>
     <string name="my_shopping_list">"My shopping list "</string>
+    <string name="clear">Clear</string>
+    <string name="shopping_list_feature_description">Never forget a recipe ingredient again! With our shopping list feature, you can easily note down all the ingredients needed for your favorite recipes. </string>
+    <string name="shopping_list_feature_description_two">Simply click on the shopping list icon on the navigation bar and add items with ease. </string>
+    <string name="shopping_list_feature_description_three"> Whether you\'re an experienced chef or a beginner cook, our shopping list functionality makes grocery shopping a breeze. Try it out now and elevate your recipe game!</string>
 
 </resources>

@@ -340,6 +340,7 @@ fun HomeScreen(
                                 modifier = Modifier.padding(vertical = 10.dp)
                             )
 
+
                             Text(
                                 text = stringResource(id = R.string.create_your_own),
                                 modifier = Modifier
@@ -351,20 +352,39 @@ fun HomeScreen(
                                 painter = painterResource(id = R.drawable.listpic),
                                 contentDescription = stringResource(id = R.string.list_picture),
                                 modifier = Modifier
-                                    .width(200.dp)
-                                    .height(250.dp),
+                                    .width(170.dp)
+                                    .height(210.dp),
                                 contentScale = ContentScale.Crop
                             )
 
-                            FilledTonalButton(
-                                onClick = {
-                                    navController.navigate(Screen.List.route)
-                                }, modifier = Modifier
-                                    .padding(start = 16.dp)
-                                    .width(180.dp)
-                            ) {
-                                Text(stringResource(R.string.take_me_there))
-                            }
+                            Text(
+                                text = stringResource(id = R.string.shopping_list_feature_description),
+                                modifier = Modifier
+                                    .padding(bottom = 4.dp),
+                                fontSize = 16.sp,
+                                textAlign = TextAlign.Center
+                            )
+                            Text(
+                                text = stringResource(id = R.string.shopping_list_feature_description_two),
+                                modifier = Modifier
+                                    .padding( bottom = 8.dp),
+                                fontSize = 16.sp,
+                                textAlign = TextAlign.Center
+                            )
+                            Image(
+                                painter = painterResource(id = R.drawable.navbar_s),
+                                contentDescription = stringResource(id = R.string.list_picture),
+                                modifier = Modifier
+                                    .fillMaxSize(),
+                                contentScale = ContentScale.FillWidth
+                            )
+                            Text(
+                                text = stringResource(id = R.string.shopping_list_feature_description_three),
+                                modifier = Modifier
+                                    .padding( top = 8.dp),
+                                fontSize = 16.sp,
+                                textAlign = TextAlign.Center
+                            )
 
                             Divider(
                                 thickness = 0.5.dp,
@@ -378,7 +398,6 @@ fun HomeScreen(
                                 fontSize = 18.sp
                             )
                         }
-
                         items(categories.chunked(2)) { categoryRow ->
                             Row(
                                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -388,8 +407,6 @@ fun HomeScreen(
                                     ElevatedButton(
                                         onClick = {
 
-                                                //mealViewModel.fetchRecipesByCategory(category)
-                                                //fetchRecipesByCategory(category)
                                                 dataViewModel.saveString(category, CURRENT_CATEGORY)
 
                                                 navController.navigate(Screen.Filtered.route)
