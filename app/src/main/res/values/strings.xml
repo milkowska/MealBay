@@ -44,8 +44,8 @@
     <string name="list_picture">List picture</string>
     <string name="discover">Discover categories</string>
     <string name="breakfast">Breakfast</string>
-    <string name="no_collections">Your collections are empty!</string>
-    <string name="click_to_create">Add your first collection by clicking on the button below.</string>
+    <string name="no_collections">Your collection shelf is currently empty.</string>
+    <string name="click_to_create">Why not start by adding a collection that sparks your interest? Add your first collection by clicking on the button below. Let\'s get organizing!</string>
     <string name="create_new_recipe">Create new recipe</string>
     <string name="back">Back</string>
     <string name="people_cooking">People cooking image</string>

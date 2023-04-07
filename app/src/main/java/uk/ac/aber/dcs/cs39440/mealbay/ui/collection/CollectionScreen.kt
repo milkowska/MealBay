@@ -47,11 +47,9 @@ import uk.ac.aber.dcs.cs39440.mealbay.ui.components.TopLevelScaffold
 import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.tasks.await
 import uk.ac.aber.dcs.cs39440.mealbay.storage.COLLECTION_ID
 import uk.ac.aber.dcs.cs39440.mealbay.storage.COLLECTION_NAME
-import uk.ac.aber.dcs.cs39440.mealbay.storage.LAST_COLLECTION_NAME
 import uk.ac.aber.dcs.cs39440.mealbay.ui.theme.Railway
 
 @Composable
@@ -61,6 +59,10 @@ fun CollectionScreenTopLevel(
     CollectionScreen(navController, modifier = Modifier)
 }
 
+/**
+ * This screen is used to create or view existing private to the user collections. The user can press
+ * on any to see the contents. These are fetched from firebase.
+ */
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun CollectionScreen(
@@ -68,13 +70,18 @@ fun CollectionScreen(
     modifier: Modifier,
     dataViewModel: DataViewModel = hiltViewModel()
 ) {
-    val isUserCollectionEmpty by dataViewModel.isUserCollectionEmpty.observeAsState(initial = true)
+    // Getting user ID saved by view model
     val userId = dataViewModel.getString(CURRENT_USER_ID)
-    val scaffoldState = rememberScaffoldState()
+
+    // Observing if the user's collection is empty
+    val isUserCollectionEmpty by dataViewModel.isUserCollectionEmpty.observeAsState(initial = true)
+
+    // Set up a modal bottom sheet state for adding a new collection
     val sheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
         confirmStateChange = { it != ModalBottomSheetValue.HalfExpanded }
     )
+
     val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(userId) {
@@ -83,6 +90,7 @@ fun CollectionScreen(
         }
     }
 
+    // Handle dismissing when the sheet is visible
     BackHandler(sheetState.isVisible) {
         coroutineScope.launch { sheetState.hide() }
     }
@@ -102,6 +110,7 @@ fun CollectionScreen(
                     .fillMaxSize()
             ) {
                 Box(modifier = Modifier.fillMaxSize()) {
+                    // Display the user's collections if they are not empty
                     if (!isUserCollectionEmpty) {
                         if (userId != null) {
                             DisplayCollections(
@@ -113,11 +122,11 @@ fun CollectionScreen(
                                     navController.navigate(Screen.ColDisplay.route)
                                 },
                                 dataViewModel = dataViewModel,
-
                             )
                         }
                     } else {
-                        EmptyCollectionScreen(coroutineScope, sheetState)
+                        //If private collections are empty then display an empty screen
+                        EmptyCollectionScreen()
                     }
 
                     FloatingActionButton(
@@ -146,15 +155,15 @@ fun CollectionScreen(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun EmptyCollectionScreen(
-    coroutineScope: CoroutineScope,
-    sheetState: ModalBottomSheetState
 ) {
     val sheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
         confirmStateChange = { it != ModalBottomSheetValue.HalfExpanded }
     )
+
     val coroutineScope = rememberCoroutineScope()
 
+    // Handle dismissing when the sheet is visible
     BackHandler(sheetState.isVisible) {
         coroutineScope.launch { sheetState.hide() }
     }
@@ -164,12 +173,11 @@ fun EmptyCollectionScreen(
         sheetContent = { BottomSheet() },
         modifier = Modifier.fillMaxSize(),
         sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
-
-        ) {
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 24.dp)
+                .padding(top = 20.dp)
                 .padding(horizontal = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -180,60 +188,56 @@ fun EmptyCollectionScreen(
                 modifier = Modifier
                     .width(320.dp)
                     .height(320.dp)
-                    .padding(25.dp),
+                    .padding(20.dp),
             )
 
             Text(
                 text = stringResource(R.string.no_collections),
-                fontSize = 22.sp
+                fontSize = 22.sp,
+                textAlign = TextAlign.Center
             )
 
             Spacer(modifier = Modifier.height(20.dp))
 
             Text(
                 text = stringResource(R.string.click_to_create),
-                fontSize = 17.sp
+                fontSize = 17.sp,
+                textAlign = TextAlign.Center
             )
-            Spacer(modifier = Modifier.height(80.dp))
 
-            FloatingActionButton(
-                backgroundColor = (Color(0xFFFFDAD4)),
-                onClick = {
-                    coroutineScope.launch {
-                        if (sheetState.isVisible) sheetState.hide()
-                        else sheetState.show()
-                    }
-                },
-                modifier = Modifier
-                    .padding(10.dp)
-                    .width(200.dp)
-            ) {
-                Text(text = stringResource(id = R.string.create_collection))
-            }
+            Spacer(modifier = Modifier.height(80.dp))
         }
     }
 }
 
 @Composable
 fun BottomSheet(dataViewModel: DataViewModel = hiltViewModel()) {
+
     val context = LocalContext.current
     var collectionName by rememberSaveable { mutableStateOf("") }
     var isErrorInTextField by remember {
         mutableStateOf(false)
     }
+
+    // Getting the current user ID
     val userID = dataViewModel.getString(CURRENT_USER_ID)
-    val maxCharsLonger = 34
+    // Maximum allowed characters for the collection name
+    val maxCharsLength = 34
+    // Minimum allowed characters for the collection name
+    val minCharsLength = 3
+
     Column(
         modifier = Modifier.padding(32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
-
     ) {
+
         Text(
             text = stringResource(id = R.string.create_collection),
             fontSize = 23.sp,
             textAlign = TextAlign.Center
         )
+
         Spacer(modifier = Modifier.height(30.dp))
 
         TextField(
@@ -242,23 +246,23 @@ fun BottomSheet(dataViewModel: DataViewModel = hiltViewModel()) {
                 Text(text = stringResource(R.string.name_this_collection))
             },
             onValueChange = {
-                if (it.length <= maxCharsLonger) {
+                if (it.length <= maxCharsLength) {
                     collectionName = it
                     isErrorInTextField = collectionName.isEmpty()
                 }
             },
             colors = TextFieldDefaults.textFieldColors(
-                focusedIndicatorColor = Color(0xFF9C4234)),
+                focusedIndicatorColor = Color(0xFF9C4234)
+            ),
             modifier = Modifier.width(360.dp),
             singleLine = true,
             isError = isErrorInTextField,
             trailingIcon = {
                 Text(
-                    text = "${maxCharsLonger - collectionName.length}",
+                    text = "${maxCharsLength - collectionName.length}",
                     modifier = Modifier.padding(end = 8.dp)
                 )
             },
-
         )
 
         Spacer(modifier = Modifier.height(100.dp))
@@ -266,14 +270,15 @@ fun BottomSheet(dataViewModel: DataViewModel = hiltViewModel()) {
         FilledTonalButton(
             enabled = collectionName.isNotEmpty(),
             onClick = {
-                if (collectionName.trim() == "") {
-                    Toast.makeText(context, "Invalid input", Toast.LENGTH_LONG).show()
+                if (collectionName.trim().length < minCharsLength) {
+                    Toast.makeText(context, "The collection name is too short.", Toast.LENGTH_LONG)
+                        .show()
                     isErrorInTextField = true
                 } else {
                     if (userID != null) {
                         savePrivateCollection(userID, collectionName)
                     }
-                    dataViewModel.saveString(collectionName, LAST_COLLECTION_NAME)
+                    // Clearing collection name after saving it to database
                     collectionName = ""
                 }
             }, modifier = Modifier
@@ -285,14 +290,20 @@ fun BottomSheet(dataViewModel: DataViewModel = hiltViewModel()) {
     }
 }
 
+/**
+ *  This function saves a new private collection to Firebase Firestore.
+ */
 fun savePrivateCollection(userId: String, name: String) {
+    // Get an instance of the Firestore database.
     val db = FirebaseFirestore.getInstance()
-    val collectionData = hashMapOf("name" to name)
+    // Create a HashMap with the collection name.
+    val collectionName = hashMapOf("name" to name)
 
+    // Add the new collection to the Firestore database where path is users->userId->collections->collectionName.
     db.collection("users")
         .document(userId)
         .collection("collections")
-        .add(collectionData)
+        .add(collectionName)
         .addOnSuccessListener { documentReference ->
             Log.d(
                 "savePrivateCollection",
@@ -300,12 +311,17 @@ fun savePrivateCollection(userId: String, name: String) {
             )
         }
         .addOnFailureListener { e ->
-            Log.w("savePrivateCollection", "Error adding document", e)
+            Log.w("savePrivateCollection", "Error adding a document.", e)
         }
 }
 
+/**
+ *  This function deletes a private collection given the current user id and a collection ID.
+ */
 fun deleteCollection(userId: String, collectionId: String) {
     val db = FirebaseFirestore.getInstance()
+
+    // Deletes a collection in the database
     db.collection("users")
         .document(userId)
         .collection("collections")
@@ -319,6 +335,10 @@ fun deleteCollection(userId: String, collectionId: String) {
         }
 }
 
+/**
+ * This function is displaying the available collections if they exists, the size and name of them. New collection can
+ * still be created here
+ */
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun DisplayCollections(
@@ -331,11 +351,15 @@ fun DisplayCollections(
     val isLoading = remember { mutableStateOf(true) }
     val openAlertDialog = remember { mutableStateOf(false) }
     val selectedCollectionId = remember { mutableStateOf("") }
+
     val coroutineScope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
-        confirmStateChange = { it != ModalBottomSheetValue.HalfExpanded })
+        confirmStateChange = {
+            it != ModalBottomSheetValue.HalfExpanded
+        })
 
+    // Fetching collections from firebase first
     LaunchedEffect(userId) {
         val db = FirebaseFirestore.getInstance()
         db.collection("users")
@@ -360,6 +384,8 @@ fun DisplayCollections(
                 }
             }
     }
+
+    // Adding a Circular Progress Indicator if the data is still loading/fetching
     if (isLoading.value) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator(color = Color(0xFF9C4234))
@@ -368,6 +394,7 @@ fun DisplayCollections(
         Box(modifier = Modifier.fillMaxSize()) {
             LazyColumn {
                 items(collections.value) { (documentSnapshot, collectionSize) ->
+
                     val collectionName = documentSnapshot.getString("name") ?: "Unnamed"
 
                     Row(
@@ -398,11 +425,11 @@ fun DisplayCollections(
                             Icon(Icons.Default.Close, contentDescription = "Delete Collection")
                         }
 
-
                     }
                     Divider()
                 }
             }
+
             FloatingActionButton(
                 backgroundColor = (Color(0xFFFFDAD4)),
                 onClick = {
@@ -467,6 +494,9 @@ fun DisplayCollections(
     }
 }
 
+/**
+ * This function retrieves the size of the collection (in recipes)
+ */
 suspend fun getCollectionSize(userId: String, collectionId: String): Int {
     val firestore = Firebase.firestore
     val userCollectionsRef = firestore
