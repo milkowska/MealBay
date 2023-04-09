@@ -3,14 +3,11 @@ package uk.ac.aber.dcs.cs39440.mealbay.ui.home
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -29,7 +26,6 @@ import uk.ac.aber.dcs.cs39440.mealbay.R
 import uk.ac.aber.dcs.cs39440.mealbay.model.DataViewModel
 import uk.ac.aber.dcs.cs39440.mealbay.model.Recipe
 import uk.ac.aber.dcs.cs39440.mealbay.storage.CURRENT_CATEGORY
-import uk.ac.aber.dcs.cs39440.mealbay.storage.RECIPE_ID
 import uk.ac.aber.dcs.cs39440.mealbay.ui.components.RecipeList
 import uk.ac.aber.dcs.cs39440.mealbay.ui.explore.MealViewModel
 
@@ -43,7 +39,7 @@ fun FilteredByCategoryScreen(
     mealViewModel: MealViewModel = viewModel()
 ) {
     val category = dataViewModel.getString(CURRENT_CATEGORY)
-   val recipeList = category?.let { mealViewModel.fetchRecipesByCategory(it) }
+    val recipeList = category?.let { mealViewModel.fetchRecipesByCategory(it) }
     val recipeListLiveData = category?.let { getRecipesByCategory(it) }
     val (isLoading, setIsLoading) = remember { mutableStateOf(true) }
 

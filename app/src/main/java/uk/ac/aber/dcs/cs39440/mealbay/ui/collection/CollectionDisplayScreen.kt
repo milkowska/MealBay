@@ -122,7 +122,8 @@ fun CollectionList(
                     fontSize = 19.sp,
                     modifier = Modifier
                         .padding(25.dp)
-                        .align(Alignment.CenterHorizontally)
+                        .align(Alignment.CenterHorizontally),
+                    textAlign = TextAlign.Center
                 )
 
                 Image(
@@ -138,7 +139,8 @@ fun CollectionList(
                     fontSize = 19.sp,
                     modifier = Modifier
                         .padding(start = 25.dp, end = 25.dp)
-                        .align(Alignment.CenterHorizontally)
+                        .align(Alignment.CenterHorizontally),
+                    textAlign = TextAlign.Center
                 )
                 Spacer(modifier = Modifier.height(35.dp))
             }
@@ -215,7 +217,6 @@ fun CollectionList(
         }
     }
 }
-
 
 suspend fun getRecipeIdsForCollection(collectionId: String, userId: String): List<String> {
     val firestore = Firebase.firestore
