@@ -106,7 +106,7 @@ fun ExploreScreen(
             )
 
             if (!isLoading) {
-                firebaseUI(LocalContext.current, recipeList, navController, dataViewModel)
+                FirebaseUI(LocalContext.current, recipeList, navController, dataViewModel)
             }
         }
     }
@@ -137,7 +137,7 @@ fun FirebaseFetcher(
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun firebaseUI(
+fun FirebaseUI(
     context: Context,
     recipeList: List<Recipe>,
     navController: NavHostController,

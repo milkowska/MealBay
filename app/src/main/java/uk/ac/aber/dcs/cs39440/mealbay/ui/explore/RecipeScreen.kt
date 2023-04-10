@@ -73,7 +73,7 @@ fun RecipeScreen(
     mealViewModel: MealViewModel = viewModel()
 ) {
 
-    var id = dataViewModel.getString(RECIPE_ID)
+    val id = dataViewModel.getString(RECIPE_ID)
     Log.d("MYTAG", "the id is $id or ${dataViewModel.getString(RECIPE_ID)}")
     if (id != null) {
         FetchRecipeByID(navController, documentId = id, mealViewModel)

@@ -58,7 +58,10 @@ fun CreateRecipeScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { navController.navigate(Screen.Explore.route) }) {
+                    IconButton(onClick = {
+                        navController.popBackStack()
+                      //  navController.navigate(Screen.Explore.route)
+                    }) {
                         Icon(
                             Icons.Default.ArrowBack,
                             contentDescription = stringResource(id = R.string.back)
