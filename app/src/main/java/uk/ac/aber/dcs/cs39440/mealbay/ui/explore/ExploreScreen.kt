@@ -32,9 +32,12 @@ import uk.ac.aber.dcs.cs39440.mealbay.ui.components.TopLevelScaffold
 import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import uk.ac.aber.dcs.cs39440.mealbay.R
 import uk.ac.aber.dcs.cs39440.mealbay.model.DataViewModel
+import uk.ac.aber.dcs.cs39440.mealbay.storage.CURRENT_USER_ID
 import uk.ac.aber.dcs.cs39440.mealbay.storage.RECIPE_ID
 import uk.ac.aber.dcs.cs39440.mealbay.ui.theme.Railway
 
@@ -146,10 +149,14 @@ fun FirebaseUI(
     var recipeId: String?
 
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-        Column {
+        Column(modifier = Modifier
+            .padding(top = 30.dp)
+        ) {
+
             Box(modifier = Modifier.weight(1f)) {
+
                 LazyColumn {
-                    // setting data for each item
+                    // setting data for each item was by recipeList
                     itemsIndexed(recipeList) { index, item ->
 
                         ConstraintLayout(
@@ -236,7 +243,21 @@ fun FirebaseUI(
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
+                val userId = dataViewModel.getString(CURRENT_USER_ID)
+                val userHasRecipes = remember(userId) {
+                    var hasRecipes = false
+                    val firestore = Firebase.firestore
+                    val privateRecipesRef =
+                        userId?.let { firestore.collection("users").document(it).collection("privateRecipes") }
+                    privateRecipesRef?.get()?.addOnSuccessListener { querySnapshot ->
+                        hasRecipes = !querySnapshot.isEmpty
+                        Log.e("debug3", "$hasRecipes")
+                    }?.addOnFailureListener { exception ->
+                        Log.e("ERROR", "Error checking for user's recipes", exception)
+                    }
+                    hasRecipes
 
+                }
                 ElevatedButton(
                     onClick = {
                         navController.navigate(Screen.Create.route)
@@ -259,7 +280,8 @@ fun FirebaseUI(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(all = 15.dp)
-                        .weight(0.5f)
+                        .weight(0.5f),
+                   // enabled = !userHasRecipes
                 ) {
                     Text(
                         stringResource(R.string.your_recipes),

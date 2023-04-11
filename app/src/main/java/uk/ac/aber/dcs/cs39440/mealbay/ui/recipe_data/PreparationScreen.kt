@@ -2,6 +2,7 @@ package uk.ac.aber.dcs.cs39440.mealbay.ui.recipe_data
 
 
 import androidx.compose.material3.TextField
+import androidx.compose.material3.AlertDialog
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -23,6 +24,9 @@ import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
 import com.google.firebase.firestore.FirebaseFirestore
 import uk.ac.aber.dcs.cs39440.mealbay.model.Recipe
 import uk.ac.aber.dcs.cs39440.mealbay.storage.*
+import androidx.compose.material3.TextButton
+
+import uk.ac.aber.dcs.cs39440.mealbay.ui.theme.Railway
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
@@ -34,6 +38,7 @@ fun PreparationScreen(
 ) {
     var preparationDetails by rememberSaveable { mutableStateOf("") }
     var preparationList by rememberSaveable { mutableStateOf(emptyList<String>()) }
+    val openDialogOnSave = remember { mutableStateOf(false) }
 
     fun updateFirstElement(element: String) {
         if (preparationList.isEmpty()) {
@@ -90,9 +95,7 @@ fun PreparationScreen(
 
             ElevatedButton(
                 onClick = {
-                    updateFirstElement(preparationDetails)
-                    dataViewModel.saveStringList(preparationList, NEW_RECIPE_PREPARATION)
-                    navController.navigate(route = Screen.Category.route)
+                    openDialogOnSave.value = true
                 },
                 enabled = preparationDetails.isNotEmpty(), // button is enabled once the ingredient list is created and not empty.
                 modifier = Modifier
@@ -101,6 +104,54 @@ fun PreparationScreen(
             ) {
                 Text(text = stringResource(id = R.string.save))
             }
+        }
+        if (openDialogOnSave.value) {
+
+            AlertDialog(
+                onDismissRequest = {
+                    openDialogOnSave.value = false
+                },
+                title = {
+                    Text(
+                        text = stringResource(R.string.are_you_done),
+                        fontFamily = Railway
+                    )
+                },
+                text = {
+                    Text(
+                        stringResource(R.string.warning_four),
+                        fontFamily = Railway,
+                        fontSize = 15.sp
+                    )
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            openDialogOnSave.value = false
+                            updateFirstElement(preparationDetails)
+                            dataViewModel.saveStringList(preparationList, NEW_RECIPE_PREPARATION)
+                            navController.navigate(route = Screen.Category.route)
+                        },
+                    ) {
+                        Text(
+                            stringResource(R.string.proceed),
+                            fontFamily = Railway
+                        )
+                    }
+                },
+                dismissButton = {
+                    TextButton(
+                        onClick = {
+                            openDialogOnSave.value = false
+                        },
+                    ) {
+                        Text(
+                            stringResource(R.string.cancel),
+                            fontFamily = Railway
+                        )
+                    }
+                }
+            )
         }
     }
 }

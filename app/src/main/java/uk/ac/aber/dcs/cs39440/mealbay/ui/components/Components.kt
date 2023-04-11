@@ -14,6 +14,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -23,6 +24,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -35,10 +37,12 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
+import uk.ac.aber.dcs.cs39440.mealbay.R
 import uk.ac.aber.dcs.cs39440.mealbay.model.DataViewModel
 import uk.ac.aber.dcs.cs39440.mealbay.model.Recipe
 import uk.ac.aber.dcs.cs39440.mealbay.storage.RECIPE_ID
 import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
+import uk.ac.aber.dcs.cs39440.mealbay.ui.theme.Railway
 
 
 @Composable
@@ -167,7 +171,8 @@ fun RecipeList(
     context: Context,
     recipeList: List<Recipe>,
     navController: NavHostController,
-    dataViewModel: DataViewModel = hiltViewModel()
+    dataViewModel: DataViewModel = hiltViewModel(),
+    showButtons: Boolean
 ) {
     var recipeId: String?
 
@@ -176,87 +181,128 @@ fun RecipeList(
             .fillMaxSize()
             .padding(top = 30.dp)
     ) {
-        Log.d("recipeListSize", "Size: ${recipeList.size}")
-        LazyColumn {
-            // setting data for each item
-            itemsIndexed(recipeList) { index, item ->
+    //    Log.d("recipeListSize", "Size: ${recipeList.size}")
+        Box(modifier = Modifier.weight(1f)) {
 
-                ConstraintLayout(
-                    modifier = Modifier
-                        .padding(top = 5.dp, start = 10.dp, end = 10.dp)
-                        .fillMaxWidth()
-                        .clickable {
-                            recipeList[index].id?.let {
-                                recipeId = it
-                                dataViewModel.saveString(recipeId!!, RECIPE_ID)
-                                Log.d("TEST", "${recipeList[index].id}")
+            LazyColumn {
+                // setting data for each item
+                itemsIndexed(recipeList) { index, item ->
 
-                            }
-                            navController.navigate(Screen.Recipe.route)
-                        }
-                ) {
-                    val (photo, title, difficulty) = createRefs()
-                    Box(
+                    ConstraintLayout(
                         modifier = Modifier
-                            .constrainAs(photo) {
-                                start.linkTo(parent.start)
-                                top.linkTo(parent.top, 5.dp)
+                            .padding(top = 5.dp, start = 10.dp, end = 10.dp)
+                            .fillMaxWidth()
+                            .clickable {
+                                recipeList[index].id?.let {
+                                    recipeId = it
+                                    dataViewModel.saveString(recipeId!!, RECIPE_ID)
+                                    Log.d("TEST", "${recipeList[index].id}")
 
+                                }
+                                navController.navigate(Screen.Recipe.route)
                             }
                     ) {
-                        // Display the recipe photo
-                        recipeList[index]?.photo?.let {
-                            Image(
-                                painter = rememberImagePainter(it),
-                                contentDescription = "Recipe Image",
+                        val (photo, title, difficulty) = createRefs()
+                        Box(
+                            modifier = Modifier
+                                .constrainAs(photo) {
+                                    start.linkTo(parent.start)
+                                    top.linkTo(parent.top, 5.dp)
+
+                                }
+                        ) {
+                            // Display the recipe photo
+                            recipeList[index]?.photo?.let {
+                                Image(
+                                    painter = rememberImagePainter(it),
+                                    contentDescription = "Recipe Image",
+                                    modifier = Modifier
+                                        .height(120.dp)
+                                        .width(155.dp)
+                                        .fillMaxSize()
+                                        .clip(shape = RoundedCornerShape(8.dp))
+                                        .padding(top = 10.dp),
+                                    contentScale = ContentScale.Crop
+                                )
+                            }
+                        }
+                        recipeList[index]?.title?.let {
+                            androidx.compose.material3.Text(
+                                text = it,
                                 modifier = Modifier
-                                    .height(120.dp)
-                                    .width(155.dp)
-                                    .fillMaxSize()
-                                    .clip(shape = RoundedCornerShape(8.dp))
-                                    .padding(top = 10.dp),
-                                contentScale = ContentScale.Crop
+                                    .padding(2.dp)
+                                    .constrainAs(title) {
+                                        start.linkTo(photo.end, 16.dp)
+                                        end.linkTo(parent.end)
+                                        top.linkTo(photo.top, margin = 16.dp)
+                                        width = Dimension.fillToConstraints
+                                    },
+                                fontSize = 20.sp,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+
+                        recipeList[index]?.difficulty?.let {
+                            androidx.compose.material3.Text(
+                                text = "Difficulty: $it",
+                                modifier = Modifier
+                                    .padding(
+                                        top = 2.dp,
+                                        start = 4.dp,
+                                        end = 4.dp,
+                                        bottom = 4.dp
+                                    )
+                                    .constrainAs(difficulty) {
+                                        start.linkTo(title.start)
+                                        end.linkTo(title.end)
+                                        top.linkTo(
+                                            title.bottom,
+                                            0.dp
+                                        )
+                                    },
+                                fontSize = 16.sp,
+                                textAlign = TextAlign.Center
                             )
                         }
                     }
-                    recipeList[index]?.title?.let {
-                        androidx.compose.material3.Text(
-                            text = it,
-                            modifier = Modifier
-                                .padding(2.dp)
-                                .constrainAs(title) {
-                                    start.linkTo(photo.end, 16.dp)
-                                    end.linkTo(parent.end)
-                                    top.linkTo(photo.top, margin = 16.dp)
-                                    width = Dimension.fillToConstraints
-                                },
-                            fontSize = 20.sp,
-                            textAlign = TextAlign.Center
-                        )
-                    }
+                }
+            }
+        }
+        if(showButtons) {
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
 
-                    recipeList[index]?.difficulty?.let {
-                        androidx.compose.material3.Text(
-                            text = "Difficulty: $it",
-                            modifier = Modifier
-                                .padding(
-                                    top = 2.dp,
-                                    start = 4.dp,
-                                    end = 4.dp,
-                                    bottom = 4.dp
-                                )
-                                .constrainAs(difficulty) {
-                                    start.linkTo(title.start)
-                                    end.linkTo(title.end)
-                                    top.linkTo(
-                                        title.bottom,
-                                        0.dp
-                                    )
-                                },
-                            fontSize = 16.sp,
-                            textAlign = TextAlign.Center
-                        )
-                    }
+                ElevatedButton(
+                    onClick = {
+                        navController.navigate(Screen.Create.route)
+                    }, modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(all = 15.dp)
+                        .weight(0.5f)
+
+                ) {
+                    androidx.compose.material3.Text(
+                        stringResource(R.string.create_new),
+                        fontFamily = Railway
+                    )
+                }
+
+                ElevatedButton(
+                    onClick = {
+                        navController.navigate(Screen.Explore.route)
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(all = 15.dp)
+                        .weight(0.5f)
+                ) {
+                    androidx.compose.material3.Text(
+                        stringResource(R.string.other_recipes),
+                        fontFamily = Railway,
+                    )
                 }
             }
         }

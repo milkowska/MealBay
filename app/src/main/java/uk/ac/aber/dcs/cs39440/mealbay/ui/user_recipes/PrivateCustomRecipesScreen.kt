@@ -3,6 +3,7 @@ package uk.ac.aber.dcs.cs39440.mealbay.ui.user_recipes
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -10,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -38,7 +40,6 @@ fun PrivateCustomRecipesScreen(
 
     val userId = dataViewModel.getString(CURRENT_USER_ID)
 
-
     TopLevelScaffold(
         navController = navController,
     ) { innerPadding ->
@@ -48,6 +49,20 @@ fun PrivateCustomRecipesScreen(
                 .fillMaxSize()
         )
         {
+            if (isLoading) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .size(29.dp)
+                    )
+                }
+            }
+
             if (userId != null) {
                 fetchCustomRecipes(
                     userId = userId,
@@ -67,12 +82,12 @@ fun PrivateCustomRecipesScreen(
                     },
                     onEmpty = {
                         Log.d("TEST333", "NO CUSTOM")
-                        Toast.makeText(
+                        /*Toast.makeText(
                             context,
                             "You have no custom recipes yet.",
                             Toast.LENGTH_SHORT
-                        ).show()
-                        EmptyCustomRecipesScreen()
+                        ).show()*/
+                        EmptyCustomRecipesScreen(navController)
                     },
                     onFailure = {
                         setIsLoading(false)
@@ -85,45 +100,92 @@ fun PrivateCustomRecipesScreen(
                 )
 
                 if (!isLoading && customRecipeList.isNotEmpty()) {
-                    RecipeList(context, customRecipeList, navController, dataViewModel)
-                }
-
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-
-                    ElevatedButton(
-                        onClick = {
-                            navController.navigate(Screen.Create.route)
-                        }, modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(all = 15.dp)
-                            .weight(0.5f)
-
-                    ) {
-                        Text(
-                            stringResource(R.string.create_new),
-                            fontFamily = Railway
+                    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+                        RecipeList(
+                            context,
+                            customRecipeList,
+                            navController,
+                            dataViewModel,
+                            showButtons = true
                         )
                     }
+                }
 
-                    ElevatedButton(
-                        onClick = {
-                            navController.navigate(Screen.Explore.route)
-                        },
+                if(customRecipeList.isEmpty()) {
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(all = 15.dp)
-                            .weight(0.5f)
                     ) {
-                        Text(
-                            stringResource(R.string.your_recipes),
-                            fontFamily = Railway,
-                        )
+
+                        ElevatedButton(
+                            onClick = {
+                                navController.navigate(Screen.Create.route)
+                            }, modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(all = 15.dp)
+                                .weight(0.5f)
+
+                        ) {
+                            Text(
+                                stringResource(R.string.create_new),
+                                fontFamily = Railway
+                            )
+                        }
+
+                        ElevatedButton(
+                            onClick = {
+                                navController.navigate(Screen.Explore.route)
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(all = 15.dp)
+                                .weight(0.5f)
+                        ) {
+                            Text(
+                                stringResource(R.string.your_recipes),
+                                fontFamily = Railway,
+                            )
+                        }
                     }
                 }
+
+                /*  Row(
+                      horizontalArrangement = Arrangement.SpaceBetween,
+                      modifier = Modifier
+                          .fillMaxWidth()
+                  ) {
+
+                      ElevatedButton(
+                          onClick = {
+                              navController.navigate(Screen.Create.route)
+                          }, modifier = Modifier
+                              .fillMaxWidth()
+                              .padding(all = 15.dp)
+                              .weight(0.5f)
+
+                      ) {
+                          Text(
+                              stringResource(R.string.create_new),
+                              fontFamily = Railway
+                          )
+                      }
+
+                      ElevatedButton(
+                          onClick = {
+                              navController.navigate(Screen.Explore.route)
+                          },
+                          modifier = Modifier
+                              .fillMaxWidth()
+                              .padding(all = 15.dp)
+                              .weight(0.5f)
+                      ) {
+                          Text(
+                              stringResource(R.string.your_recipes),
+                              fontFamily = Railway,
+                          )
+                      }
+                  }*/
             }
         }
     }
@@ -134,7 +196,11 @@ fun CustomRecipesList(customRecipes: List<Recipe>) {
 
 }
 
-fun EmptyCustomRecipesScreen() {
+fun EmptyCustomRecipesScreen(
+    navController: NavHostController,
+
+) {
+
 
 
 }

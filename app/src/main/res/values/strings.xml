@@ -73,6 +73,7 @@
     <string name="success_picture">Success</string>
     <string name="are_you_done">Are you done?</string>
     <string name="warning_two">"After clicking the save button, you will no longer be able to modify the ingredients section. "</string>
+    <string name="warning_four">"After clicking the save button, you will no longer be able to modify the preparation section. "</string>
     <string name="your_recipes">Your recipes</string>
     <string name="pressing_confirm">If you proceed, the collection will be permanently deleted.</string>
     <string name="recipe_already">Recipe already in the collection</string>
@@ -100,5 +101,7 @@
     <string name="meal_for_today">Don\'t know what to eat? Give it a try and explore today\'s meal, specially chosen to delight your taste buds!</string>
     <string name="add_one">Feel free to add your own recipes if you can\'t find what you\'re looking for!</string>
     <string name="food">food illustration</string>
+    <string name="all_recipes">All recipes</string>
+    <string name="other_recipes">Other recipes</string>
 
 </resources>

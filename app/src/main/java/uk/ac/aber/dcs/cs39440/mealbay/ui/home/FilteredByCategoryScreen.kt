@@ -85,7 +85,8 @@ fun FilteredByCategoryScreen(
                 context = LocalContext.current,
                 recipeList = recipeList,
                 navController = navController,
-                dataViewModel = dataViewModel
+                dataViewModel = dataViewModel,
+                showButtons = false
             )
         }
     }
