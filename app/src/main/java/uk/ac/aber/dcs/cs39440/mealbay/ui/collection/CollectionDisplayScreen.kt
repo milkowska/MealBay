@@ -86,7 +86,6 @@ fun CollectionList(
     dataViewModel: DataViewModel = hiltViewModel(),
 ) {
     val selectedCollectionId = dataViewModel.getString(COLLECTION_ID)
-
     Log.d("DEBUG", "Selected collection ID: $selectedCollectionId")
 
     val recipes = remember { mutableStateListOf<Recipe>() }
@@ -99,7 +98,7 @@ fun CollectionList(
             getRecipeIdsForCollection(it, userId)
         }
         recipes.clear()
-        recipeIds?.let { getRecipesByIds(it) }?.let { recipes.addAll(it) }
+        recipeIds?.let { getRecipesByIds(it, userId) }?.let { recipes.addAll(it) }
         isLoading.value = false
     }
 
@@ -147,14 +146,16 @@ fun CollectionList(
         } else {
             LazyColumn {
                 items(recipes) { recipe ->
-                    RecipeItem(recipe, onClick = {
+                    RecipeItem(recipe,
+                        onClick = {
                         recipe.id?.let {
                             dataViewModel.saveString(it, RECIPE_ID)
-                            Log.d("debug", "${recipe.id}, ${recipe.title}")
+                            Log.d("debug2", "${recipe.id}, ${recipe.title}")
                         }
                         navController.navigate(Screen.Recipe.route)
-                    }, onDelete = {
+                    }, onDelete = {  recipeId ->
                         openDialog.value = true
+                        dataViewModel.saveString(recipeId, RECIPE_ID)
                     })
                 }
             }
@@ -180,9 +181,11 @@ fun CollectionList(
                     confirmButton = {
                         TextButton(onClick = {
                             openDialog.value = false
+                            val recipeId = dataViewModel.getString(RECIPE_ID)
                             val recipeToRemove =
-                                recipes.find { it.id == dataViewModel.getString(RECIPE_ID) }
-
+                                recipes.find { it.id == recipeId
+                                }
+                            Log.d("debug2", "${dataViewModel.getString(RECIPE_ID)}")
                             if (selectedCollectionId != null && recipeToRemove != null) {
                                 deleteRecipeFromCollection(
                                     userId, selectedCollectionId,
@@ -244,28 +247,37 @@ suspend fun getRecipeIdsForCollection(collectionId: String, userId: String): Lis
     }
 }
 
-suspend fun getRecipesByIds(recipeIds: List<String>): List<Recipe> {
+suspend fun getRecipesByIds(recipeIds: List<String>, userId: String): List<Recipe> {
     val firestore = Firebase.firestore
-    val recipesRef = firestore.collection("recipesready")
+    val recipesReadyRef = firestore.collection("recipesready")
+    val privateRecipesRef = firestore.collection("users").document(userId).collection("privateRecipes")
 
     return try {
         val recipesDeferred = recipeIds.map { recipeId ->
             CoroutineScope(Dispatchers.IO).async {
-                val recipeSnapshot = recipesRef.document(recipeId).get().await()
-                val recipe = recipeSnapshot.toObject(Recipe::class.java)
+                val recipesReadySnapshot = recipesReadyRef.document(recipeId).get().await()
+                val privateRecipesSnapshot = privateRecipesRef.document(recipeId).get().await()
 
-                if (recipe != null) {
-                    // Set the recipe ID manually
-                    recipe.id = recipeId
-                    recipe
-                } else {
-                    null
+                val recipe = when {
+                    recipesReadySnapshot.exists() -> {
+                        val recipe = recipesReadySnapshot.toObject(Recipe::class.java)
+                        recipe?.id = recipeId
+                        recipe
+                    }
+                    privateRecipesSnapshot.exists() -> {
+                        val recipe = privateRecipesSnapshot.toObject(Recipe::class.java)
+                        recipe?.id = recipeId
+                        recipe
+                    }
+                    else -> null
                 }
+
+                recipe
             }
         }
 
         recipesDeferred.awaitAll()
-            .filterNotNull() // filterNotNull function is called on the result to remove any null values.
+            .filterNotNull() // removes any null values
     } catch (e: Exception) {
         Log.e("GET_RECIPES_BY_IDS", "Error fetching recipes", e)
         emptyList()
@@ -276,7 +288,7 @@ suspend fun getRecipesByIds(recipeIds: List<String>): List<Recipe> {
 fun RecipeItem(
     recipe: Recipe,
     onClick: () -> Unit,
-    onDelete: () -> Unit
+    onDelete: (String) -> Unit
 ) {
     ConstraintLayout(
         modifier = Modifier
@@ -336,7 +348,7 @@ fun RecipeItem(
         )
 
         IconButton(
-            onClick = { onDelete() },
+            onClick = {  onDelete( recipe.id!! ) },
             modifier = Modifier
                 .constrainAs(deleteButton) {
                     start.linkTo(category.start)

@@ -74,9 +74,12 @@ fun RecipeScreen(
 ) {
 
     val id = dataViewModel.getString(RECIPE_ID)
+    val userId = dataViewModel.getString(CURRENT_USER_ID)
     Log.d("MYTAG", "the id is $id or ${dataViewModel.getString(RECIPE_ID)}")
     if (id != null) {
-        FetchRecipeByID(navController, documentId = id, mealViewModel)
+        if (userId != null) {
+            FetchRecipeByID(navController, documentId = id,userId = userId,  mealViewModel)
+        }
     }
 }
 
@@ -84,13 +87,14 @@ fun RecipeScreen(
 fun FetchRecipeByID(
     navController: NavHostController,
     documentId: String,
+    userId: String,
     mealViewModel: MealViewModel
 ) {
     val documentState = remember { mutableStateOf<Recipe?>(null) }
 
     // Observe the LiveData returned by getDocumentById and update the documentState object when it changes
     LaunchedEffect(documentId) {
-        mealViewModel.getDocumentById(documentId).observeForever { recipe ->
+        mealViewModel.getDocumentById(documentId, userId).observeForever { recipe ->
             Log.d("FetchRecipeByID", "result: $recipe")
             documentState.value = recipe
         }

@@ -9,9 +9,6 @@ import com.google.firebase.ktx.Firebase
 import uk.ac.aber.dcs.cs39440.mealbay.model.Recipe
 import androidx.lifecycle.MutableLiveData
 import java.util.*
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
-import kotlin.coroutines.suspendCoroutine
 
 
 class MealViewModel : ViewModel() {
@@ -50,7 +47,65 @@ class MealViewModel : ViewModel() {
             }
     }
 
+    fun getDocumentById(documentId: String, userId: String): MutableLiveData<Recipe?> {
+        val documentState = MutableLiveData<Recipe?>()
+        if (documentId.isBlank()) {
+            Log.d("ERR", "Invalid documentId")
+            documentState.value = null
+            return documentState
+        }
 
+        val recipesReadyDocRef = firestore.collection("recipesready").document(documentId)
+        val privateRecipesDocRef = firestore.collection("users").document(userId).collection("privateRecipes").document(documentId)
+
+        recipesReadyDocRef.get().addOnCompleteListener { recipesReadyTask ->
+            if (recipesReadyTask.isSuccessful) {
+                val recipesReadyDoc = recipesReadyTask.result
+                if (recipesReadyDoc != null && recipesReadyDoc.exists()) {
+                    val recipe = recipesReadyDoc.toObject(Recipe::class.java)
+                    documentState.value = recipe
+                    Log.d("SUC", "Document retrieved from recipesready collection: $recipe")
+                } else {
+                    privateRecipesDocRef.get().addOnCompleteListener { privateRecipesTask ->
+                        if (privateRecipesTask.isSuccessful) {
+                            val privateRecipesDoc = privateRecipesTask.result
+                            if (privateRecipesDoc != null && privateRecipesDoc.exists()) {
+                                val recipe = privateRecipesDoc.toObject(Recipe::class.java)
+                                documentState.value = recipe
+                                Log.d("SUC", "Document retrieved from privateRecipes collection: $recipe")
+                            } else {
+                                documentState.value = null
+                                Log.d("SUC", "Document not found")
+                            }
+                        } else {
+                            documentState.value = null
+                            Log.e("ERR", "Failed to retrieve document from privateRecipes collection", privateRecipesTask.exception)
+                        }
+                    }
+                }
+            } else {
+                privateRecipesDocRef.get().addOnCompleteListener { privateRecipesTask ->
+                    if (privateRecipesTask.isSuccessful) {
+                        val privateRecipesDoc = privateRecipesTask.result
+                        if (privateRecipesDoc != null && privateRecipesDoc.exists()) {
+                            val recipe = privateRecipesDoc.toObject(Recipe::class.java)
+                            documentState.value = recipe
+                            Log.d("SUC", "Document retrieved from privateRecipes collection: $recipe")
+                        } else {
+                            documentState.value = null
+                            Log.d("SUC", "Document not found")
+                        }
+                    } else {
+                        documentState.value = null
+                        Log.e("ERR", "Failed to retrieve document from privateRecipes collection", privateRecipesTask.exception)
+                    }
+                }
+            }
+        }
+
+        return documentState
+    }
+/*
     fun getDocumentById(documentId: String): MutableLiveData<Recipe?> {
         val documentState = MutableLiveData<Recipe?>()
         if (documentId.isBlank()) {
@@ -80,7 +135,8 @@ class MealViewModel : ViewModel() {
             }
 
         return documentState
-    }
+    }*/
+/*
 
     fun getUserPrivateRecipeById(userId: String, documentId: String): MutableLiveData<Recipe?> {
         val documentState = MutableLiveData<Recipe?>()
@@ -115,6 +171,7 @@ class MealViewModel : ViewModel() {
 
         return documentState
     }
+*/
 
     /**
      * Fetches recipes from the "recipesready" collection in Firestore based on the given category to retrieve documents
