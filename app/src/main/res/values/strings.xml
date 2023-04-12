@@ -103,5 +103,6 @@
     <string name="food">food illustration</string>
     <string name="all_recipes">All recipes</string>
     <string name="other_recipes">Other recipes</string>
+    <string name="no_recipes_created">It seems that you haven\'t created a recipe of your own yet. To add your very first recipe, you can press the button below and start adding the details of your recipe.</string>
 
 </resources>
