@@ -27,7 +27,13 @@ import uk.ac.aber.dcs.cs39440.mealbay.model.DataViewModel
 import uk.ac.aber.dcs.cs39440.mealbay.storage.*
 import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
 
-
+/**
+ * This composable function is displaying the screen where the user can interact and add values to the new recipe that he
+ * is creating. It prompts for a recipe name, total time of preparation, giving these two a length limit and difficulty and
+ * personal rating for this recipe by clicking on the amount of stars that is satisfactiory for the user ( there are five stars
+ * available, 1 is the smallest value while 5 is the largest). Once the data is collected correctly and the user presses a next
+ * button it navigates to the Ingredients screen.
+ */
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,16 +41,21 @@ fun CreateRecipeScreen(
     navController: NavHostController,
     dataViewModel: DataViewModel = hiltViewModel()
 ) {
+
+    // Variables that store recipe name, total time, difficulty and rating data for a new recipe that user creates
     var recipeName by rememberSaveable { mutableStateOf("") }
     var totalTime by rememberSaveable { mutableStateOf("") }
     var difficulty by rememberSaveable { mutableStateOf(0) }
     var rating by rememberSaveable { mutableStateOf(0) }
 
+    // for enabling the button that navigates to the next step only if all necessary data is entered
     val isButtonEnabled by remember { derivedStateOf { recipeName.isNotEmpty() && totalTime.isNotEmpty() && difficulty > 0 && rating > 0 } }
 
+    //Handling an error state in the text field
     var isErrorInTextField by remember {
         mutableStateOf(false)
     }
+
     val maxChars = 26
     val maxCharsLonger = 52
 
@@ -60,7 +71,6 @@ fun CreateRecipeScreen(
                 navigationIcon = {
                     IconButton(onClick = {
                         navController.popBackStack()
-                      //  navController.navigate(Screen.Explore.route)
                     }) {
                         Icon(
                             Icons.Default.ArrowBack,
@@ -96,6 +106,7 @@ fun CreateRecipeScreen(
                     modifier = Modifier.padding(10.dp)
                 )
 
+                // Text field to enter a title value for the recipe, limiting it to 52 characters long
                 TextField(
                     value = recipeName,
                     label = {
@@ -123,6 +134,7 @@ fun CreateRecipeScreen(
                     modifier = Modifier.padding(10.dp)
                 )
 
+                // Text field to enter a total time value for the recipe preparation, limiting it to 26 characters long
                 TextField(
                     value = totalTime,
                     label = {
@@ -146,26 +158,32 @@ fun CreateRecipeScreen(
                 )
 
                 Spacer(modifier = Modifier.height(20.dp))
+
                 Text(
                     text = stringResource(R.string.difficulty_of_new_recipe),
                     fontSize = 18.sp
                 )
+
+                // This rating bar is for setting a difficulty level from very easy to very hard
                 RatingBar(rating = difficulty) {
                     difficulty = it
                 }
 
                 Spacer(modifier = Modifier.height(10.dp))
+
                 Text(
                     text = stringResource(R.string.rating_of_new_recipe),
                     fontSize = 18.sp
                 )
 
+                // This rating bar is for setting a rating from 1 star to 5
                 RatingBar(rating = rating) {
                     rating = it
                 }
 
                 Spacer(modifier = Modifier.height(15.dp))
 
+                // A next button that saves the data of a recipe name, total time, difficulty and rating into dataViewModel
                 ElevatedButton(
                     onClick = {
                         dataViewModel.saveString(recipeName, NEW_RECIPE_TITLE)
@@ -194,7 +212,7 @@ fun CreateRecipeScreen(
 }
 
 /**
- * A custom RatingBar composable that displays a row of stars for rating selection.
+ * A composable function that displays a row of stars for rating selection.
  *
  * @param rating The current selected rating (1 to 5)
  * @param onRatingChanged A callback function that will be invoked when the user changes the rating by clicking a star
@@ -220,7 +238,7 @@ fun RatingBar(
 }
 
 /**
- * This function converts the difficulty as integer into a String value, so that one start equals very easy,
+ * This function converts the difficulty as integer into a String value, so that one start equals -> very easy,
  * 2 -> easy,
  * 3 -> medium,
  * 4 -> hard,

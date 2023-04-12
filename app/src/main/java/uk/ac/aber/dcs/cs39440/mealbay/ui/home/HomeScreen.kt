@@ -44,6 +44,7 @@ import androidx.compose.runtime.getValue
 import java.time.LocalDateTime
 import java.util.*
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.AppBarDefaults
 import androidx.compose.ui.platform.LocalContext
 import uk.ac.aber.dcs.cs39440.mealbay.storage.CURRENT_CATEGORY
 
@@ -110,7 +111,6 @@ fun HomeScreen(
         navController = navController,
         topBar = {
             TopAppBar(
-                title = { Text(text = stringResource(id = R.string.meal_bay)) },
                 navigationIcon = {
                     IconButton(onClick = {
                         FirebaseAuth.getInstance().signOut().run {
@@ -129,6 +129,13 @@ fun HomeScreen(
                             contentDescription = stringResource(id = R.string.logout)
                         )
                     }
+                },
+                title = {
+                    Text(
+                        text = stringResource(id = R.string.meal_bay),
+                        modifier = Modifier
+                            .padding(start = 20.dp)
+                    )
                 },
                 backgroundColor = Color(0xFFFFDAD4)
             )

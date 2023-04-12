@@ -33,7 +33,6 @@ import uk.ac.aber.dcs.cs39440.mealbay.ui.components.TopLevelScaffold
 import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
 import uk.ac.aber.dcs.cs39440.mealbay.ui.theme.Railway
 
-
 /**
  * This composable function is displaying either an empty screen if a private custom recipes collection does not exist/ is
  * empty or the list of recipes created by the user. When one recipe is clicked, it navigates to the recipe screen which

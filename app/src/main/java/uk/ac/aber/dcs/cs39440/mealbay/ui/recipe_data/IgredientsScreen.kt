@@ -39,6 +39,13 @@ import uk.ac.aber.dcs.cs39440.mealbay.storage.NEW_RECIPE_INGREDIENTS
 import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
 import androidx.compose.material3.AlertDialog
 
+
+/**
+ * This composable function is displaying the screen where the user can interact and add ingredients of the custom recipe
+ * he is currently creating. The list of ingredients is refreshed and shown on the screen while the user is adding them. The
+ * user can come back to the previous screen if an arrow icon is pressed on the top app bar and can go to further screen when
+ * a save button is clicked and then confirmed about the changes.
+ */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -46,14 +53,15 @@ fun IngredientsScreen(
     navController: NavController,
     dataViewModel: DataViewModel = hiltViewModel()
 ) {
+    // Handling a sheet state for Bottom Sheet, as either hidden or half-expanded
     val sheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
         confirmStateChange = { it != ModalBottomSheetValue.HalfExpanded }
     )
     val coroutineScope = rememberCoroutineScope()
     val ingredientsList = remember { mutableStateListOf<String>() }
-    val openDialog = remember { mutableStateOf(false) }
-    val openDialogOnSave = remember { mutableStateOf(false) }
+    val openAlertDialog = remember { mutableStateOf(false) }
+    val openAlertDialogOnSave = remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -66,7 +74,8 @@ fun IngredientsScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = {
-                        openDialog.value = true
+                        // Displaying an alert dialog to prevent the user to leave without saving the data
+                        openAlertDialog.value = true
                     }) {
                         Icon(
                             Icons.Default.ArrowBack,
@@ -77,16 +86,18 @@ fun IngredientsScreen(
                 backgroundColor = Color(0xFFFFFFFF)
             )
         }) {
+
+        // setting a back button handler to dismiss the bottom sheet when it is visible
         BackHandler(sheetState.isVisible) {
             coroutineScope.launch { sheetState.hide() }
         }
 
-        // Show a modal bottom sheet when the FAB is clicked
+        // Show a modal bottom sheet when the FAB is clicked to collect an ingredient data
         ModalBottomSheetLayout(
             sheetState = sheetState,
-            sheetContent = { BottomSheetHere(ingredientsList) },
+            sheetContent = { ModalBottomSheet(ingredientsList) },
             modifier = Modifier.fillMaxSize(),
-            sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+            sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
         ) {
 
             Column(
@@ -107,7 +118,7 @@ fun IngredientsScreen(
                     modifier = Modifier.padding(vertical = 10.dp)
                 )
 
-                //Displaying the ingredient list content as a scrollable column.
+                //Displaying the ingredient list content as a scrollable column which is updated on each ingredient creation
                 LazyColumn(
                     modifier = Modifier.weight(1f),
                     contentPadding = PaddingValues(vertical = 16.dp, horizontal = 8.dp),
@@ -122,11 +133,12 @@ fun IngredientsScreen(
                     }
                 }
 
-                if (openDialog.value) {
+                // This alert dialog is displayed when the user clicks an arrow icon on the top bar to warn him the data will be cleared if he proceeds
+                if (openAlertDialog.value) {
 
                     AlertDialog(
                         onDismissRequest = {
-                            openDialog.value = false
+                            openAlertDialog.value = false
                         },
                         title = {
                             Text(
@@ -144,7 +156,8 @@ fun IngredientsScreen(
                         confirmButton = {
                             TextButton(
                                 onClick = {
-                                    openDialog.value = false
+                                    openAlertDialog.value = false
+                                    //Navigating to a previous screen
                                     navController.popBackStack()
                                 },
                             ) {
@@ -157,7 +170,7 @@ fun IngredientsScreen(
                         dismissButton = {
                             TextButton(
                                 onClick = {
-                                    openDialog.value = false
+                                    openAlertDialog.value = false
                                 },
                             ) {
                                 Text(
@@ -168,11 +181,13 @@ fun IngredientsScreen(
                         }
                     )
                 }
-                if (openDialogOnSave.value) {
+
+                // This alert dialog is displayed when the user clicks a save button to warn the data can not be modified later if he proceeds
+                if (openAlertDialogOnSave.value) {
 
                     AlertDialog(
                         onDismissRequest = {
-                            openDialog.value = false
+                            openAlertDialog.value = false
                         },
                         title = {
                             Text(
@@ -190,8 +205,10 @@ fun IngredientsScreen(
                         confirmButton = {
                             TextButton(
                                 onClick = {
-                                    openDialog.value = false
+                                    openAlertDialog.value = false
+                                    //Saving ingredients using dataViewModel
                                     dataViewModel.saveStringList(ingredientsList, NEW_RECIPE_INGREDIENTS)
+                                    //Navigating to the preparation screen
                                     navController.navigate(route = Screen.Preparation.route)
                                 },
                             ) {
@@ -204,7 +221,7 @@ fun IngredientsScreen(
                         dismissButton = {
                             TextButton(
                                 onClick = {
-                                    openDialog.value = false
+                                    openAlertDialog.value = false
                                 },
                             ) {
                                 Text(
@@ -215,6 +232,7 @@ fun IngredientsScreen(
                         }
                     )
                 }
+
                 Row(
                     modifier = Modifier
                         .padding(16.dp)
@@ -225,7 +243,7 @@ fun IngredientsScreen(
 
                     ElevatedButton(
                         onClick = {
-                            openDialogOnSave.value = true
+                            openAlertDialogOnSave.value = true
                         },
                         enabled = ingredientsList.isNotEmpty(), // button is enabled once the ingredient list is created and not empty.
                         modifier = Modifier
@@ -253,9 +271,12 @@ fun IngredientsScreen(
     }
 }
 
-
+/**
+ * This composable function contains the content of the modal bottom sheet. It is called when the Floating Action
+ * Button is clicked and the data is collected if the user enters it into a text field and saves it.
+ */
 @Composable
-fun BottomSheetHere(ingredientsList: SnapshotStateList<String>) {
+fun ModalBottomSheet(ingredientsList: SnapshotStateList<String>) {
     val context = LocalContext.current
     var ingredient by rememberSaveable { mutableStateOf("") }
     var isErrorInTextField by remember {
@@ -282,7 +303,7 @@ fun BottomSheetHere(ingredientsList: SnapshotStateList<String>) {
             },
             onValueChange = {
                 ingredient = it
-                isErrorInTextField = ingredient.isEmpty()
+                isErrorInTextField = ingredient.isEmpty() 
             },
             modifier = Modifier.width(360.dp),
             singleLine = true,
@@ -299,8 +320,7 @@ fun BottomSheetHere(ingredientsList: SnapshotStateList<String>) {
                     isErrorInTextField = true
                 } else {
                     ingredientsList.add(ingredient)
-                    ingredient = ""
-
+                    ingredient = "" // clearing an ingredient value once added to a list
                 }
             }, modifier = Modifier
                 .width(220.dp)

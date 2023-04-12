@@ -1,6 +1,5 @@
 package uk.ac.aber.dcs.cs39440.mealbay.ui.recipe_data
 
-
 import androidx.compose.material3.TextField
 import androidx.compose.material3.AlertDialog
 import android.annotation.SuppressLint
@@ -21,13 +20,10 @@ import androidx.navigation.NavController
 import uk.ac.aber.dcs.cs39440.mealbay.R
 import uk.ac.aber.dcs.cs39440.mealbay.model.DataViewModel
 import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
-import com.google.firebase.firestore.FirebaseFirestore
-import uk.ac.aber.dcs.cs39440.mealbay.model.Recipe
 import uk.ac.aber.dcs.cs39440.mealbay.storage.*
 import androidx.compose.material3.TextButton
 
 import uk.ac.aber.dcs.cs39440.mealbay.ui.theme.Railway
-
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
