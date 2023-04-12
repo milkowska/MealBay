@@ -1,6 +1,5 @@
 package uk.ac.aber.dcs.cs39440.mealbay.ui.user_recipes
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -34,16 +33,29 @@ import uk.ac.aber.dcs.cs39440.mealbay.ui.components.TopLevelScaffold
 import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
 import uk.ac.aber.dcs.cs39440.mealbay.ui.theme.Railway
 
+
+/**
+ * This composable function is displaying either an empty screen if a private custom recipes collection does not exist/ is
+ * empty or the list of recipes created by the user. When one recipe is clicked, it navigates to the recipe screen which
+ * shows the actual data of this recipe.
+ * It displays a row of buttons which are responsible for creating a new recipe or navigating to the main explore page where
+ * the user can search for public recipes.
+ */
 @Composable
 fun PrivateCustomRecipesScreen(
     navController: NavHostController,
     dataViewModel: DataViewModel = hiltViewModel()
 ) {
+
+    //to handle moments while the data is being fetched from the database before displaying it on the screen
     val (isLoading, setIsLoading) = remember { mutableStateOf(true) }
     val (isEmpty, setIsEmpty) = remember { mutableStateOf(false) }
+
+    //storing private recipes collection
     val (customRecipeList, setCustomRecipeList) = remember { mutableStateOf(listOf<Recipe>()) }
     val context = LocalContext.current
 
+    //getting the current user id
     val userId = dataViewModel.getString(CURRENT_USER_ID)
 
     TopLevelScaffold(
@@ -55,6 +67,8 @@ fun PrivateCustomRecipesScreen(
                 .fillMaxSize()
         )
         {
+
+            //Displaying a Circular progress indicator while the data is being fetched
             if (isLoading) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
@@ -70,6 +84,7 @@ fun PrivateCustomRecipesScreen(
             }
 
             if (userId != null) {
+                // fetching the private (custom) recipes data given the user ID.
                 fetchCustomRecipes(
                     userId = userId,
                     onSuccess = { queryDocumentSnapshots ->
@@ -79,19 +94,16 @@ fun PrivateCustomRecipesScreen(
                             val r: Recipe? = documentSnapshot.toObject(Recipe::class.java)
                             if (r != null) {
                                 r.id = documentSnapshot.id
-                                Log.d("TEST333", "${r.title}")
                             }
                             r
                         }
+                        //saving the data into a local variable
                         setCustomRecipeList(customRecipes)
-
                     },
+                    // If the collection is empty or does not exist
                     onEmpty = {
-                        Log.d("TEST333", "NO CUSTOM")
-
                         setIsLoading(false)
                         setIsEmpty(true)
-                        //EmptyCustomRecipesScreen(navController)
                     },
                     onFailure = {
                         setIsLoading(false)
@@ -103,6 +115,7 @@ fun PrivateCustomRecipesScreen(
                     }
                 )
 
+                // Displaying the private recipes data
                 if (!isLoading && customRecipeList.isNotEmpty()) {
                     setIsEmpty(false)
                     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
@@ -116,13 +129,13 @@ fun PrivateCustomRecipesScreen(
                     }
                 }
 
+                // Informing the user when the data is empty as it was not created before
                 if (customRecipeList.isEmpty() && isEmpty) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Bottom,
-                                modifier = Modifier
-                                .fillMaxWidth()
-                           // .padding(bottom = 4.dp)
+                        modifier = Modifier
+                            .fillMaxWidth()
                     ) {
 
                         Spacer(modifier = Modifier.height(20.dp))
@@ -150,6 +163,7 @@ fun PrivateCustomRecipesScreen(
                                 .fillMaxWidth()
                         ) {
 
+                            //This button navigates user to creating the custom recipe screen
                             ElevatedButton(
                                 onClick = {
                                     navController.navigate(Screen.Create.route)
@@ -157,7 +171,6 @@ fun PrivateCustomRecipesScreen(
                                     .fillMaxWidth()
                                     .padding(all = 15.dp)
                                     .weight(0.5f)
-
                             ) {
                                 Text(
                                     stringResource(R.string.create_new),
@@ -165,6 +178,7 @@ fun PrivateCustomRecipesScreen(
                                 )
                             }
 
+                            //This button navigates to the explore screen where all public recipes can be seen
                             ElevatedButton(
                                 onClick = {
                                     navController.navigate(Screen.Explore.route)
@@ -182,18 +196,16 @@ fun PrivateCustomRecipesScreen(
                         }
                     }
                 }
-
             }
         }
     }
 }
 
-@Composable
-fun CustomRecipesList(customRecipes: List<Recipe>) {
-
-}
-
-
+/**
+ * This function fetches the data from Firebase Datastore given the current user ID.
+ * If the private collection of custom recipes exists, the data is fetched, if the data is empty a callback
+ * function onEmpty is executed or onFailure if there is any failure during reading and fetching the data.
+ */
 @Composable
 fun fetchCustomRecipes(
     userId: String,
@@ -201,6 +213,7 @@ fun fetchCustomRecipes(
     onFailure: (Exception) -> Unit,
     onEmpty: () -> Unit,
 ) {
+
     val db: FirebaseFirestore = FirebaseFirestore.getInstance()
 
     DisposableEffect(userId) {
@@ -217,7 +230,6 @@ fun fetchCustomRecipes(
                         onEmpty()
                     }
                 }
-
         onDispose {
             listenerRegistration.remove()
         }
