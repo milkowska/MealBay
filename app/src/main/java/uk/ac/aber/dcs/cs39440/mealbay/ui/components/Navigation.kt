@@ -20,7 +20,7 @@ import uk.ac.aber.dcs.cs39440.mealbay.ui.recipe_data.CategoryScreen
 import uk.ac.aber.dcs.cs39440.mealbay.ui.recipe_data.IngredientsScreen
 import uk.ac.aber.dcs.cs39440.mealbay.ui.recipe_data.PreparationScreen
 import uk.ac.aber.dcs.cs39440.mealbay.ui.shopping_list.ListScreenTopLevel
-import uk.ac.aber.dcs.cs39440.mealbay.ui.user_recipes.PrivateCustomRecipesScreen
+import uk.ac.aber.dcs.cs39440.mealbay.ui.explore.PrivateCustomRecipesScreen
 
 /**
  * A Composable function that sets up the navigation flow of the app using Jetpack Navigation.

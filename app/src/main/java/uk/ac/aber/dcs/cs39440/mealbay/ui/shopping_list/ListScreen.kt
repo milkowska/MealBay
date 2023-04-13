@@ -2,7 +2,6 @@ package uk.ac.aber.dcs.cs39440.mealbay.ui.shopping_list
 
 import android.util.Log
 import  androidx.compose.runtime.mutableStateListOf
-
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
@@ -33,7 +32,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.material3.TextField
-
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
@@ -47,9 +45,13 @@ import uk.ac.aber.dcs.cs39440.mealbay.R
 import uk.ac.aber.dcs.cs39440.mealbay.model.DataViewModel
 import uk.ac.aber.dcs.cs39440.mealbay.storage.CURRENT_USER_ID
 import uk.ac.aber.dcs.cs39440.mealbay.ui.components.TopLevelScaffold
+import uk.ac.aber.dcs.cs39440.mealbay.ui.components.minCharsLength
 import uk.ac.aber.dcs.cs39440.mealbay.ui.theme.Railway
 
-
+/**
+ * This is a composable function that is a top-level entry point for the Shopping List feature. It retrieves the current
+ * id of the user that is saved using data view model.
+ */
 @Composable
 fun ListScreenTopLevel(
     navController: NavHostController,
@@ -61,8 +63,12 @@ fun ListScreenTopLevel(
     }
 }
 
+/**
+ *  This composable function uses a modal bottom sheet that contains a text field where the user can enter a shopping list
+ *  value. The value must be at least 3 characters long to be successfully added to a list.
+ */
 @Composable
-fun BottomSheetHere(
+fun BottomSheet(
     shoppingList: SnapshotStateList<String>,
     userId: String,
     onListChanged: () -> Unit,
@@ -108,7 +114,7 @@ fun BottomSheetHere(
                 if (item.trim() == "") {
                     Toast.makeText(context, "Invalid input", Toast.LENGTH_LONG).show()
                     isErrorInTextField = true
-                } else if (item.trim().length < 3) {
+                } else if (item.trim().length < minCharsLength) {
                     Toast.makeText(context, "The item length is too short!", Toast.LENGTH_LONG)
                         .show()
                     isErrorInTextField = true
@@ -127,6 +133,10 @@ fun BottomSheetHere(
     }
 }
 
+/**
+ * This composable function is used to display the shopping list UI. The list can be cleared at any time and it is
+ * saved into a private collection in firebase datastore.
+ */
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ListScreen(
@@ -143,6 +153,7 @@ fun ListScreen(
     var emptyList by remember { mutableStateOf(true) }
     val context = LocalContext.current
 
+    // Handle back press when the bottom sheet is open
     BackHandler(sheetState.isVisible) {
         coroutineScope.launch { sheetState.hide() }
     }
@@ -150,7 +161,7 @@ fun ListScreen(
     LaunchedEffect(userId) {
         fetchShoppingList(userId, shoppingList) { emptyList = shoppingList.isEmpty() }
     }
-
+    // Function to update the empty list state
     fun updateEmptyListState() {
         emptyList = shoppingList.isEmpty()
     }
@@ -158,7 +169,7 @@ fun ListScreen(
     ModalBottomSheetLayout(
         sheetState = sheetState,
         sheetContent = {
-            BottomSheetHere(
+            BottomSheet(
                 shoppingList,
                 userId,
                 onListChanged = ::updateEmptyListState
@@ -186,6 +197,7 @@ fun ListScreen(
                     LazyColumn(
                         modifier = Modifier.fillMaxSize()
                     ) {
+                        // Show an empty cart image and message if the list is empty
                         if (emptyList) {
                             item {
                                 Spacer(modifier = Modifier.height(30.dp))
@@ -324,7 +336,11 @@ fun ListScreen(
                                 shoppingList.clear()
                                 updateEmptyListState()
                                 openDialogOnSave.value = false
-                                Toast.makeText(context, "Your shopping list has been cleared.", Toast.LENGTH_LONG).show()
+                                Toast.makeText(
+                                    context,
+                                    "Your shopping list has been cleared.",
+                                    Toast.LENGTH_LONG
+                                ).show()
                             },
                         ) {
                             Text(
@@ -352,6 +368,12 @@ fun ListScreen(
     }
 }
 
+/**
+ *  fetchShoppingList function is executed asynchronously to retrieve the user's shopping list from the Firestore
+ *  database and updates a local SnapshotStateList object representing the shopping list. The function first retrieves
+ *  a reference to the user's default shopping list document in Firestore using the user ID then it attaches a snapshot
+ *  listener to this document to listen for any changes made to the shopping list.
+ */
 suspend fun fetchShoppingList(
     userId: String,
     shoppingList: SnapshotStateList<String>,
@@ -382,8 +404,16 @@ suspend fun fetchShoppingList(
     }
 }
 
+/**
+ * saveShoppingList function saves a shopping list for a specific user by updating the "items" field in the document of the
+ * user's default shopping list in Firestore. It takes in the user ID and a SnapshotStateList of strings representing
+ * the shopping list.
+ */
 fun saveShoppingList(userId: String, shoppingList: SnapshotStateList<String>) {
+
     val db = FirebaseFirestore.getInstance()
+
+    //Path reference to a private collection storing a shopping list
     val listRef = db.collection("users")
         .document(userId)
         .collection("shoppingList")
@@ -398,6 +428,10 @@ fun saveShoppingList(userId: String, shoppingList: SnapshotStateList<String>) {
         }
 }
 
+/**
+ *  clearShoppingList function clears the shopping list of a user with the given userId. It first gets a reference to
+ *  the user's shopping list in Firestore, then updates the "items" field to an empty list.
+ */
 fun clearShoppingList(userId: String) {
     val db = FirebaseFirestore.getInstance()
     val listRef = db.collection("users")

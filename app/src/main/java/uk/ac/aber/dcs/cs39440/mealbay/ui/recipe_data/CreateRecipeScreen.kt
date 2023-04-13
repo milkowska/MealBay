@@ -46,7 +46,6 @@ fun CreateRecipeScreen(
     navController: NavHostController,
     dataViewModel: DataViewModel = hiltViewModel()
 ) {
-
     // Variables that store recipe name, total time, difficulty and rating data for a new recipe that user creates
     var recipeName by rememberSaveable { mutableStateOf("") }
     var totalTime by rememberSaveable { mutableStateOf("") }

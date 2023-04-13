@@ -45,6 +45,7 @@ import uk.ac.aber.dcs.cs39440.mealbay.ui.theme.Railway
  * firebase. If the data is still being fetched, a circular progress indicator is displayed. Once the data is retrieved
  * a recipe data function is called to display the data in a specific structure.
  */
+
 @SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalCoroutinesApi::class)
 @Composable

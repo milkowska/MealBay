@@ -25,16 +25,22 @@ import androidx.navigation.NavController
 import kotlinx.coroutines.delay
 import uk.ac.aber.dcs.cs39440.mealbay.R
 import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
+import androidx.compose.animation.core.Animatable
 
+/**
+ * This composable function displays a "splashed" logo of the app that is visible on each opening application.
+ */
 @SuppressLint("RememberReturnType")
 @Preview
 @Composable
 fun SplashScreen(navController: NavController = NavController(context = LocalContext.current)) {
 
+    // Create an Animatable object to animate the scale of the surface
     val scale = remember {
-        androidx.compose.animation.core.Animatable(0f)
+        Animatable(0f)
     }
 
+    // Use LaunchedEffect to animate the scale and navigate to the login screen after a delay
     LaunchedEffect(key1 = true) {
         scale.animateTo(
             targetValue = 1f,
@@ -47,13 +53,13 @@ fun SplashScreen(navController: NavController = NavController(context = LocalCon
         navController.navigate(Screen.Login.route)
     }
 
+    // Display a surface with a scaled logo image in the center of the screen
     Surface(
         modifier = Modifier
             .fillMaxSize()
             .scale(scale.value),
         shape = RectangleShape
-    )
-    {
+    ) {
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,

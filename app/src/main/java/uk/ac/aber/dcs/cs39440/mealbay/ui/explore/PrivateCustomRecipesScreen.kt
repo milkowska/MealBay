@@ -1,4 +1,4 @@
-package uk.ac.aber.dcs.cs39440.mealbay.ui.user_recipes
+package uk.ac.aber.dcs.cs39440.mealbay.ui.explore
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -45,7 +45,6 @@ fun PrivateCustomRecipesScreen(
     navController: NavHostController,
     dataViewModel: DataViewModel = hiltViewModel()
 ) {
-
     //to handle moments while the data is being fetched from the database before displaying it on the screen
     val (isLoading, setIsLoading) = remember { mutableStateOf(true) }
     val (isEmpty, setIsEmpty) = remember { mutableStateOf(false) }
