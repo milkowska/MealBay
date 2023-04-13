@@ -1,7 +1,6 @@
 package uk.ac.aber.dcs.cs39440.mealbay.ui.explore
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -41,16 +40,11 @@ import uk.ac.aber.dcs.cs39440.mealbay.storage.CURRENT_USER_ID
 import uk.ac.aber.dcs.cs39440.mealbay.storage.RECIPE_ID
 import uk.ac.aber.dcs.cs39440.mealbay.ui.theme.Railway
 
-
-@Composable
-fun ExploreScreenTopLevel(
-    navController: NavHostController,
-    dataViewModel: DataViewModel = hiltViewModel()
-) {
-    ExploreScreen(navController, dataViewModel = dataViewModel)
-}
-
-
+/**
+ * This is a composable function that is used to display the public recipe collection called recipesready stored in the
+ * firebase. If the data is still being fetched, a circular progress indicator is displayed. Once the data is retrieved
+ * a recipe data function is called to display the data in a specific structure.
+ */
 @SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalCoroutinesApi::class)
 @Composable
@@ -71,6 +65,7 @@ fun ExploreScreen(
             val (recipeList, setRecipeList) = remember { mutableStateOf(listOf<Recipe>()) }
             val context = LocalContext.current
 
+            // While the data is being retrieved the circular progress indicator appears
             if (isLoading) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
@@ -85,6 +80,7 @@ fun ExploreScreen(
                 }
             }
 
+            // Fetching recipe data and mapping it to Recipe object
             FirebaseFetcher(
                 onSuccess = { queryDocumentSnapshots ->
                     setIsLoading(false)
@@ -108,13 +104,20 @@ fun ExploreScreen(
                 }
             )
 
+            // Displaying the data in a specific layout
             if (!isLoading) {
-                FirebaseUI(LocalContext.current, recipeList, navController, dataViewModel)
+                RecipeData(recipeList, navController, dataViewModel)
             }
         }
     }
 }
 
+/**
+ * This is a composable function that sets up a listener to a Firebase Firestore collection called "recipesready" and
+ * fetches the data ordering it by field "title". It takes two parameters: onSuccess and onFailure, which are lambdas that will be
+ * executed when the listener is successful or when it fails, respectively.
+ * The DisposableEffect is used to remove the listener when the composable function is disposed.
+ */
 @Composable
 fun FirebaseFetcher(
     onSuccess: (QuerySnapshot) -> Unit,
@@ -124,7 +127,7 @@ fun FirebaseFetcher(
 
     DisposableEffect(Unit) {
         val listenerRegistration =
-            db.collection("recipesready").addSnapshotListener { value, error ->
+            db.collection("recipesready").orderBy("title").addSnapshotListener { value, error ->
                 if (error != null) {
                     onFailure()
                 } else if (value != null && !value.isEmpty) {
@@ -140,8 +143,7 @@ fun FirebaseFetcher(
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun FirebaseUI(
-    context: Context,
+fun RecipeData(
     recipeList: List<Recipe>,
     navController: NavHostController,
     dataViewModel: DataViewModel = hiltViewModel()
@@ -149,8 +151,9 @@ fun FirebaseUI(
     var recipeId: String?
 
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-        Column(modifier = Modifier
-            .padding(top = 30.dp)
+        Column(
+            modifier = Modifier
+                .padding(top = 30.dp)
         ) {
 
             Box(modifier = Modifier.weight(1f)) {
@@ -248,7 +251,9 @@ fun FirebaseUI(
                     var hasRecipes = false
                     val firestore = Firebase.firestore
                     val privateRecipesRef =
-                        userId?.let { firestore.collection("users").document(it).collection("privateRecipes") }
+                        userId?.let {
+                            firestore.collection("users").document(it).collection("privateRecipes")
+                        }
                     privateRecipesRef?.get()?.addOnSuccessListener { querySnapshot ->
                         hasRecipes = !querySnapshot.isEmpty
                         Log.e("debug3", "$hasRecipes")
@@ -258,6 +263,7 @@ fun FirebaseUI(
                     hasRecipes
 
                 }
+
                 ElevatedButton(
                     onClick = {
                         navController.navigate(Screen.Create.route)
@@ -281,12 +287,12 @@ fun FirebaseUI(
                         .fillMaxWidth()
                         .padding(all = 15.dp)
                         .weight(0.5f),
-                   // enabled = !userHasRecipes
+                    // enabled = !userHasRecipes
                 ) {
                     Text(
                         stringResource(R.string.your_recipes),
                         fontFamily = Railway,
-                        )
+                    )
                 }
             }
         }

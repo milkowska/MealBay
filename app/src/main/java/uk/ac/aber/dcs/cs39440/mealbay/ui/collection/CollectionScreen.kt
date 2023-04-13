@@ -50,6 +50,8 @@ import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
 import uk.ac.aber.dcs.cs39440.mealbay.storage.COLLECTION_ID
 import uk.ac.aber.dcs.cs39440.mealbay.storage.COLLECTION_NAME
+import uk.ac.aber.dcs.cs39440.mealbay.ui.components.maxCharsLengthForCollection
+import uk.ac.aber.dcs.cs39440.mealbay.ui.components.minCharsLength
 import uk.ac.aber.dcs.cs39440.mealbay.ui.theme.Railway
 
 @Composable
@@ -221,10 +223,6 @@ fun BottomSheet(dataViewModel: DataViewModel = hiltViewModel()) {
 
     // Getting the current user ID
     val userID = dataViewModel.getString(CURRENT_USER_ID)
-    // Maximum allowed characters for the collection name
-    val maxCharsLength = 34
-    // Minimum allowed characters for the collection name
-    val minCharsLength = 3
 
     Column(
         modifier = Modifier.padding(32.dp),
@@ -246,7 +244,7 @@ fun BottomSheet(dataViewModel: DataViewModel = hiltViewModel()) {
                 Text(text = stringResource(R.string.name_this_collection))
             },
             onValueChange = {
-                if (it.length <= maxCharsLength) {
+                if (it.length <= maxCharsLengthForCollection) {
                     collectionName = it
                     isErrorInTextField = collectionName.isEmpty()
                 }
@@ -259,7 +257,7 @@ fun BottomSheet(dataViewModel: DataViewModel = hiltViewModel()) {
             isError = isErrorInTextField,
             trailingIcon = {
                 Text(
-                    text = "${maxCharsLength - collectionName.length}",
+                    text = "${maxCharsLengthForCollection - collectionName.length}",
                     modifier = Modifier.padding(end = 8.dp)
                 )
             },

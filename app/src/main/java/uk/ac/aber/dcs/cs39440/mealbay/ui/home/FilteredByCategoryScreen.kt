@@ -13,7 +13,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -82,7 +81,6 @@ fun FilteredByCategoryScreen(
 
             setIsLoading(false)
             RecipeList(
-                context = LocalContext.current,
                 recipeList = recipeList,
                 navController = navController,
                 dataViewModel = dataViewModel,
@@ -92,6 +90,12 @@ fun FilteredByCategoryScreen(
     }
 }
 
+/**
+ * getRecipesByCategory function gets a reference to the Firestore database and uses a query to retrieve documents
+ * from the "recipesready" collection that have the specified category value. It maps the retrieved documents to Recipe
+ * objects, setting the ID of each recipe from the document ID, and updates the value of the recipesLiveData
+ * object with the resulting list.
+ */
 fun getRecipesByCategory(category: String): MutableLiveData<List<Recipe>> {
     val recipesLiveData = MutableLiveData<List<Recipe>>()
     val db = FirebaseFirestore.getInstance()
@@ -112,7 +116,6 @@ fun getRecipesByCategory(category: String): MutableLiveData<List<Recipe>> {
             recipesLiveData.value = null
             println("Failed to get recipes by category: ${exception.message}")
         }
-
 
     return recipesLiveData
 }

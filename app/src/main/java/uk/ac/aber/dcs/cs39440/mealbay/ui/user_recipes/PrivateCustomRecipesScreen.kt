@@ -119,7 +119,6 @@ fun PrivateCustomRecipesScreen(
                     setIsEmpty(false)
                     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
                         RecipeList(
-                            context,
                             customRecipeList,
                             navController,
                             dataViewModel,
@@ -220,6 +219,7 @@ fun fetchCustomRecipes(
             db.collection("users")
                 .document(userId)
                 .collection("privateRecipes")
+                .orderBy("title")
                 .addSnapshotListener { value, error ->
                     if (error != null) {
                         onFailure(error)

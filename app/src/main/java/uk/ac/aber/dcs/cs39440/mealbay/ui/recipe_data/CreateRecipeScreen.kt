@@ -1,6 +1,7 @@
 package uk.ac.aber.dcs.cs39440.mealbay.ui.recipe_data
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -16,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -25,6 +27,9 @@ import androidx.navigation.NavHostController
 import uk.ac.aber.dcs.cs39440.mealbay.R
 import uk.ac.aber.dcs.cs39440.mealbay.model.DataViewModel
 import uk.ac.aber.dcs.cs39440.mealbay.storage.*
+import uk.ac.aber.dcs.cs39440.mealbay.ui.components.maxRecipeNameCharsLength
+import uk.ac.aber.dcs.cs39440.mealbay.ui.components.maxTotalTimeCharsLength
+import uk.ac.aber.dcs.cs39440.mealbay.ui.components.minCharsLength
 import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
 
 /**
@@ -47,6 +52,7 @@ fun CreateRecipeScreen(
     var totalTime by rememberSaveable { mutableStateOf("") }
     var difficulty by rememberSaveable { mutableStateOf(0) }
     var rating by rememberSaveable { mutableStateOf(0) }
+    val context = LocalContext.current
 
     // for enabling the button that navigates to the next step only if all necessary data is entered
     val isButtonEnabled by remember { derivedStateOf { recipeName.isNotEmpty() && totalTime.isNotEmpty() && difficulty > 0 && rating > 0 } }
@@ -55,9 +61,6 @@ fun CreateRecipeScreen(
     var isErrorInTextField by remember {
         mutableStateOf(false)
     }
-
-    val maxChars = 26
-    val maxCharsLonger = 52
 
     Scaffold(
         topBar = {
@@ -113,7 +116,7 @@ fun CreateRecipeScreen(
                         Text(text = stringResource(R.string.title))
                     },
                     onValueChange = {
-                        if (it.length <= maxCharsLonger) {
+                        if (it.length <= maxRecipeNameCharsLength) {
                             recipeName = it
                             isErrorInTextField = recipeName.isEmpty()
                         }
@@ -123,7 +126,7 @@ fun CreateRecipeScreen(
                     isError = isErrorInTextField,
                     trailingIcon = {
                         Text(
-                            text = "${maxCharsLonger - recipeName.length}",
+                            text = "${maxRecipeNameCharsLength - recipeName.length}",
                             modifier = Modifier.padding(end = 8.dp)
                         )
                     }
@@ -141,7 +144,7 @@ fun CreateRecipeScreen(
                         Text(text = stringResource(R.string.total_time))
                     },
                     onValueChange = {
-                        if (it.length <= maxChars) {
+                        if (it.length <= maxTotalTimeCharsLength) {
                             totalTime = it
                             isErrorInTextField = totalTime.isEmpty()
                         }
@@ -151,7 +154,7 @@ fun CreateRecipeScreen(
                     isError = isErrorInTextField,
                     trailingIcon = {
                         Text(
-                            text = "${maxChars - totalTime.length}",
+                            text = "${maxTotalTimeCharsLength - totalTime.length}",
                             modifier = Modifier.padding(end = 8.dp)
                         )
                     }
@@ -186,17 +189,25 @@ fun CreateRecipeScreen(
                 // A next button that saves the data of a recipe name, total time, difficulty and rating into dataViewModel
                 ElevatedButton(
                     onClick = {
-                        dataViewModel.saveString(recipeName, NEW_RECIPE_TITLE)
-                        dataViewModel.saveString(totalTime, NEW_RECIPE_TIME)
-                        val difficultyInString = getDifficulty(difficulty)
-                        if (difficultyInString != null) {
-                            dataViewModel.saveString(difficultyInString, NEW_RECIPE_DIFFICULTY)
+                        if (recipeName.trim().length < minCharsLength || totalTime.trim().length < minCharsLength) {
+                            Toast.makeText(
+                                context,
+                                "The details are too short.",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        } else {
+                            dataViewModel.saveString(recipeName, NEW_RECIPE_TITLE)
+                            dataViewModel.saveString(totalTime, NEW_RECIPE_TIME)
+                            val difficultyInString = getDifficulty(difficulty)
+                            if (difficultyInString != null) {
+                                dataViewModel.saveString(difficultyInString, NEW_RECIPE_DIFFICULTY)
+                            }
+                            val ratingInString = getRating(rating)
+                            if (ratingInString != null) {
+                                dataViewModel.saveString(ratingInString, NEW_RECIPE_RATING)
+                            }
+                            navController.navigate(Screen.Ingredients.route)
                         }
-                        val ratingInString = getRating(rating)
-                        if (ratingInString != null) {
-                            dataViewModel.saveString(ratingInString, NEW_RECIPE_RATING)
-                        }
-                        navController.navigate(Screen.Ingredients.route)
                     },
                     enabled = isButtonEnabled,
                     modifier = Modifier

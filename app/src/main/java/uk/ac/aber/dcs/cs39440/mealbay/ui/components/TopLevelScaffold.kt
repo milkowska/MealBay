@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 
 /**
- * a Template for the application.
+ * a Template for the application using Scaffold.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -25,7 +25,6 @@ fun TopLevelScaffold(
             MainPageNavigationBar(navController)
         },
         floatingActionButton = floatingActionButton,
-
         content = { innerPadding ->
             pageContent(innerPadding)
         }

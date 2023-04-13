@@ -3,6 +3,7 @@ package uk.ac.aber.dcs.cs39440.mealbay.ui.recipe_data
 import androidx.compose.material3.TextField
 import androidx.compose.material3.AlertDialog
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material3.*
@@ -22,9 +23,16 @@ import uk.ac.aber.dcs.cs39440.mealbay.model.DataViewModel
 import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
 import uk.ac.aber.dcs.cs39440.mealbay.storage.*
 import androidx.compose.material3.TextButton
+import androidx.compose.ui.platform.LocalContext
+import uk.ac.aber.dcs.cs39440.mealbay.ui.components.minCharsLength
 
 import uk.ac.aber.dcs.cs39440.mealbay.ui.theme.Railway
 
+/**
+ *  This composable function is displaying the screen where the user can interact and add preparation of the custom recipe
+ *  he is currently creating. The app takes the preparation data as a String and there is no maximum length limit for the
+ *  preparation value.
+ */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -35,14 +43,17 @@ fun PreparationScreen(
     var preparationDetails by rememberSaveable { mutableStateOf("") }
     var preparationList by rememberSaveable { mutableStateOf(emptyList<String>()) }
     val openDialogOnSave = remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     fun updateFirstElement(element: String) {
+        // creates a list when it is empty
         if (preparationList.isEmpty()) {
             preparationList = listOf(element)
-        } else {
+        } else { // updates the first element of a mutable list
             preparationList = preparationList.toMutableList().apply { this[0] = element }
         }
     }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -62,6 +73,7 @@ fun PreparationScreen(
             text = stringResource(R.string.add_preparation),
             fontSize = 20.sp
         )
+
         Divider(
             thickness = 0.5.dp,
             modifier = Modifier.padding(vertical = 10.dp)
@@ -76,7 +88,9 @@ fun PreparationScreen(
                 .fillMaxWidth()
                 .padding(20.dp)
                 .height(300.dp),
-            label = { Text(stringResource(id = R.string.enter_details)) }
+            label = {
+                Text(stringResource(id = R.string.enter_details))
+            },
         )
 
         Spacer(modifier = Modifier.height(10.dp))
@@ -91,7 +105,15 @@ fun PreparationScreen(
 
             ElevatedButton(
                 onClick = {
-                    openDialogOnSave.value = true
+                    if (preparationDetails.trim() == "" || preparationDetails.trim().length < minCharsLength) {
+                        Toast.makeText(
+                            context,
+                            "The preparation details is too short.",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    } else {
+                        openDialogOnSave.value = true
+                    }
                 },
                 enabled = preparationDetails.isNotEmpty(), // button is enabled once the ingredient list is created and not empty.
                 modifier = Modifier
@@ -101,6 +123,8 @@ fun PreparationScreen(
                 Text(text = stringResource(id = R.string.save))
             }
         }
+
+        // An alert dialog is displayed before the user navigates to the next step which is choosing category
         if (openDialogOnSave.value) {
 
             AlertDialog(
@@ -125,7 +149,9 @@ fun PreparationScreen(
                         onClick = {
                             openDialogOnSave.value = false
                             updateFirstElement(preparationDetails)
+                            //Saving preparation using dataViewModel
                             dataViewModel.saveStringList(preparationList, NEW_RECIPE_PREPARATION)
+                            //Navigating to the category screen
                             navController.navigate(route = Screen.Category.route)
                         },
                     ) {

@@ -44,7 +44,6 @@ import androidx.compose.runtime.getValue
 import java.time.LocalDateTime
 import java.util.*
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.AppBarDefaults
 import androidx.compose.ui.platform.LocalContext
 import uk.ac.aber.dcs.cs39440.mealbay.storage.CURRENT_CATEGORY
 
@@ -134,7 +133,9 @@ fun HomeScreen(
                     Text(
                         text = stringResource(id = R.string.meal_bay),
                         modifier = Modifier
-                            .padding(start = 20.dp)
+                            .padding(end = 60.dp)
+                            .fillMaxWidth(),
+                        textAlign = TextAlign.Center
                     )
                 },
                 backgroundColor = Color(0xFFFFDAD4)
@@ -350,7 +351,7 @@ fun HomeScreen(
                             Text(
                                 text = stringResource(id = R.string.add_your_own),
                                 modifier = Modifier
-                                    .padding(2.dp),
+                                    .padding(bottom = 12.dp),
                                 fontSize = 20.sp,
                                 color = Color(0xFF9C4234)
                             )

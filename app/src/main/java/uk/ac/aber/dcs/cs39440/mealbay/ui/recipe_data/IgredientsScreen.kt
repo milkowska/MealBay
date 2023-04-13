@@ -38,6 +38,7 @@ import uk.ac.aber.dcs.cs39440.mealbay.model.DataViewModel
 import uk.ac.aber.dcs.cs39440.mealbay.storage.NEW_RECIPE_INGREDIENTS
 import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
 import androidx.compose.material3.AlertDialog
+import uk.ac.aber.dcs.cs39440.mealbay.ui.components.minCharsLength
 
 
 /**
@@ -315,8 +316,8 @@ fun ModalBottomSheet(ingredientsList: SnapshotStateList<String>) {
         ElevatedButton(
             enabled = ingredient.isNotEmpty(),
             onClick = {
-                if (ingredient.trim() == "") {
-                    Toast.makeText(context, "Invalid input", Toast.LENGTH_LONG).show()
+                if (ingredient.trim() == "" || ingredient.trim().length < minCharsLength) {
+                    Toast.makeText(context, "The ingredient is too short.", Toast.LENGTH_LONG).show()
                     isErrorInTextField = true
                 } else {
                     ingredientsList.add(ingredient)
@@ -324,7 +325,8 @@ fun ModalBottomSheet(ingredientsList: SnapshotStateList<String>) {
                 }
             }, modifier = Modifier
                 .width(220.dp)
-                .height(50.dp)
+                .height(50.dp),
+
         ) {
             Text(stringResource(R.string.save))
         }

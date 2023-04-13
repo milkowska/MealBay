@@ -1,6 +1,5 @@
 package uk.ac.aber.dcs.cs39440.mealbay.ui.components
 
-import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -44,7 +43,21 @@ import uk.ac.aber.dcs.cs39440.mealbay.storage.RECIPE_ID
 import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
 import uk.ac.aber.dcs.cs39440.mealbay.ui.theme.Railway
 
+// Maximum allowed characters for the collection name
+const val maxCharsLengthForCollection = 34
 
+// Minimum allowed characters for the collection name
+const val minCharsLength = 3
+
+// Maximum allowed characters for the total time
+const val maxTotalTimeCharsLength = 26
+
+// Maximum allowed characters for the recipe name
+const val maxRecipeNameCharsLength = 52
+
+/**
+ * This composable function creates an email input field in a form.
+ */
 @Composable
 fun EmailInput(
     modifier: Modifier = Modifier,
@@ -54,7 +67,6 @@ fun EmailInput(
     imeAction: ImeAction = ImeAction.Next,
     onAction: KeyboardActions = KeyboardActions.Default
 ) {
-
     TextInputField(
         modifier = modifier,
         valueState = emailState,
@@ -64,9 +76,11 @@ fun EmailInput(
         imeAction = imeAction, //  to be performed when the user presses the action button on the email input field. This action will move the focus to the next input field in the form
         onAction = onAction,
     )
-
 }
 
+/**
+ * This composable function creates a text field that is visible on a login page to handle the user's login data
+ */
 @Composable
 fun TextInputField(
     modifier: Modifier = Modifier,
@@ -103,6 +117,9 @@ fun TextInputField(
     )
 }
 
+/**
+ * This composable function creates a text field that is visible on a login page to handle the user's password data
+ */
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun PasswordInput(
@@ -153,6 +170,9 @@ fun PasswordInput(
     )
 }
 
+/**
+ * This composable function creates an IconButton with an icon to toggle password visibility.
+ */
 @Composable
 fun PasswordVisibility(passwordVisibility: MutableState<Boolean>) {
     val visible = passwordVisibility.value
@@ -164,11 +184,14 @@ fun PasswordVisibility(passwordVisibility: MutableState<Boolean>) {
     }
 }
 
-
+/**
+ * This composable function is a structure of the recipe list data and how it is displayed on the screen. It takes a recipeList
+ * as a parameter to display this list as a Column of "rows" that contain an image of the recipe, title and its difficulty
+ * values using ConstraintLayout.
+ */
 @OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun RecipeList(
-    context: Context,
     recipeList: List<Recipe>,
     navController: NavHostController,
     dataViewModel: DataViewModel = hiltViewModel(),
@@ -181,7 +204,7 @@ fun RecipeList(
             .fillMaxSize()
             .padding(top = 30.dp)
     ) {
-    //    Log.d("recipeListSize", "Size: ${recipeList.size}")
+        //    Log.d("recipeListSize", "Size: ${recipeList.size}")
         Box(modifier = Modifier.weight(1f)) {
 
             LazyColumn {
@@ -268,7 +291,7 @@ fun RecipeList(
                 }
             }
         }
-        if(showButtons) {
+        if (showButtons) {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier
@@ -308,8 +331,3 @@ fun RecipeList(
         }
     }
 }
-
-
-
-
-
