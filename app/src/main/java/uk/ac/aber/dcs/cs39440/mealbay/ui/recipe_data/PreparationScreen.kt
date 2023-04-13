@@ -32,6 +32,9 @@ import uk.ac.aber.dcs.cs39440.mealbay.ui.theme.Railway
  *  This composable function is displaying the screen where the user can interact and add preparation of the custom recipe
  *  he is currently creating. The app takes the preparation data as a String and there is no maximum length limit for the
  *  preparation value.
+ *
+ *  @param navController The navigation controller used for navigating between screens in the app.
+ *  @param dataViewModel The DataViewModel used to save preparation data.
  */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")

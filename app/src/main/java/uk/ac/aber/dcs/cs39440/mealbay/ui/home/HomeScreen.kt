@@ -47,24 +47,39 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.platform.LocalContext
 import uk.ac.aber.dcs.cs39440.mealbay.storage.CURRENT_CATEGORY
 
+/**
+ * This is a composable function that is a top-level entry point for the Home Screen feature, which displays the main
+ * screen of the app.
+ *
+ * @param navController The navigation controller used for navigating between screens in the app.
+ * @param dataViewModel The DataViewModel used to retrieve the current user ID.
+ */
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreenTopLevel(
     navController: NavHostController,
     dataViewModel: DataViewModel = hiltViewModel()
 ) {
-    HomeScreen(navController, modifier = Modifier, dataViewModel)
+    HomeScreen(navController, dataViewModel)
 }
 
+/**
+ * This composable function is used to display the data on the Home screen of the app. It contains a Top app bar which
+ * has an icon that can be used to log the current user out. This screen includes plenty of composables to represent
+ * other functionalities of the app and data.
+ *
+ * @param navController The navigation controller used for navigating between screens in the app.
+ * @param dataViewModel The DataViewModel used to save recipe ID or category ID.
+ */
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "UnusedMaterialScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreen(
     navController: NavHostController,
-    modifier: Modifier,
     dataViewModel: DataViewModel = hiltViewModel()
 ) {
+
     val mealViewModel = viewModel<MealViewModel>()
     val currentHour = remember { mutableStateOf(LocalTime.now().hour) }
     val currentMinute = remember { mutableStateOf(LocalTime.now().minute) }
@@ -88,12 +103,12 @@ fun HomeScreen(
         )
     }
     val context = LocalContext.current
-    val scope = rememberCoroutineScope()
 
+    // Updates the current hour, minute, and day of the week values every minute.
     LaunchedEffect(Unit) {
         val updateJob = launch {
             while (true) {
-                delay(60_000L) // Update every minute
+                delay(60_000L)
                 val now = LocalTime.now()
                 currentHour.value = now.hour
                 currentMinute.value = now.minute
@@ -101,6 +116,7 @@ fun HomeScreen(
             }
         }
 
+        // If the current time is exactly midnight (00:00) a new meal is fetched from the server
         if (currentHour.value == 0 && currentMinute.value == 0) {
             mealViewModel.fetchMealOfTheDay()
         }
@@ -157,7 +173,7 @@ fun HomeScreen(
                     LazyColumn(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center,
-                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+                        contentPadding = PaddingValues(horizontal = 16.dp)
                     ) {
                         item {
                             Image(
@@ -177,8 +193,8 @@ fun HomeScreen(
                                 contentScale = ContentScale.Crop
                             )
 
-                            Spacer(modifier = Modifier.height(15.dp))
-
+                            Spacer(modifier = Modifier.height(10.dp))
+                            // Displaying the proposed meal for the day
                             Text(
                                 text = "Meal for this $formattedDayOfWeek",
                                 modifier = Modifier

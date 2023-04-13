@@ -51,6 +51,9 @@ import uk.ac.aber.dcs.cs39440.mealbay.ui.theme.Railway
 /**
  * This is a composable function that is a top-level entry point for the Shopping List feature. It retrieves the current
  * id of the user that is saved using data view model.
+ *
+ * @param navController The navigation controller for navigating between screens.
+ * @param dataViewModel The DataViewModel used to retrieve the current user ID.
  */
 @Composable
 fun ListScreenTopLevel(
@@ -66,6 +69,9 @@ fun ListScreenTopLevel(
 /**
  *  This composable function uses a modal bottom sheet that contains a text field where the user can enter a shopping list
  *  value. The value must be at least 3 characters long to be successfully added to a list.
+ *  @param shoppingList The current user's shopping list as a SnapshotStateList of strings.
+ *  @param userId The current user ID.
+ *  @param onListChanged The callback function to be called when the shopping list is changed.
  */
 @Composable
 fun BottomSheet(
@@ -136,6 +142,9 @@ fun BottomSheet(
 /**
  * This composable function is used to display the shopping list UI. The list can be cleared at any time and it is
  * saved into a private collection in firebase datastore.
+ *
+ * @param navController The navigation controller for navigating between screens.
+ * @param userId The current user ID.
  */
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -373,6 +382,12 @@ fun ListScreen(
  *  database and updates a local SnapshotStateList object representing the shopping list. The function first retrieves
  *  a reference to the user's default shopping list document in Firestore using the user ID then it attaches a snapshot
  *  listener to this document to listen for any changes made to the shopping list.
+ *
+ * @param userId The current user ID.
+ * @param shoppingList The shopping list as a SnapshotStateList of strings.
+ * @param onListChanged The callback function to be called when the shopping list changes.
+ *
+ * @return Unit
  */
 suspend fun fetchShoppingList(
     userId: String,
@@ -408,6 +423,9 @@ suspend fun fetchShoppingList(
  * saveShoppingList function saves a shopping list for a specific user by updating the "items" field in the document of the
  * user's default shopping list in Firestore. It takes in the user ID and a SnapshotStateList of strings representing
  * the shopping list.
+ *
+ * @param userId The current user ID.
+ * @param shoppingList The shopping list as a SnapshotStateList of strings.
  */
 fun saveShoppingList(userId: String, shoppingList: SnapshotStateList<String>) {
 
@@ -431,6 +449,8 @@ fun saveShoppingList(userId: String, shoppingList: SnapshotStateList<String>) {
 /**
  *  clearShoppingList function clears the shopping list of a user with the given userId. It first gets a reference to
  *  the user's shopping list in Firestore, then updates the "items" field to an empty list.
+ *
+ *  @param userId The current user ID.
  */
 fun clearShoppingList(userId: String) {
     val db = FirebaseFirestore.getInstance()

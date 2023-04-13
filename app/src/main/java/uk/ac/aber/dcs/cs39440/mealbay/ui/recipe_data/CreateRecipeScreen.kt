@@ -38,6 +38,9 @@ import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
  * personal rating for this recipe by clicking on the amount of stars that is satisfactiory for the user ( there are five stars
  * available, 1 is the smallest value while 5 is the largest). Once the data is collected correctly and the user presses a next
  * button it navigates to the Ingredients screen.
+ *
+ * @param navController The navigation controller used for navigating between screens in the app.
+ * @param dataViewModel The DataViewModel used to save the recipe title, total time, rating and difficulty data.
  */
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -253,6 +256,9 @@ fun RatingBar(
  * 3 -> medium,
  * 4 -> hard,
  * 5 -> very hard.
+ *
+ * @param difficultyInInt Difficulty value as an Integer
+ * @return difficulty level as a String 
  */
 fun getDifficulty(difficultyInInt: Int): String? {
     val difficultyLevels = listOf("very easy", "easy", "medium", "hard", "very hard")
@@ -261,6 +267,10 @@ fun getDifficulty(difficultyInInt: Int): String? {
 
 /**
  * This function converts the rating as integer into a String value.
+ *
+ * @param ratingInInt rating value as an integer
+ *
+ * @return rating level as a String value
  */
 fun getRating(ratingInInt: Int): String? {
     val ratingLevels = listOf("1.0", "2.0", "3.0", "4.0", "5.0")

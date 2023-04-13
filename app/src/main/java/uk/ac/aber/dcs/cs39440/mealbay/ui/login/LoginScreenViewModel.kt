@@ -1,8 +1,6 @@
 package uk.ac.aber.dcs.cs39440.mealbay.ui.login
 
 import android.util.Log
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel

@@ -28,14 +28,20 @@ import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.*
 
-
+/**
+ * This is a composable function that displays either the categories to be chosen by the user for new recipe or shows
+ * a screen informing about the success of adding a recipe to the private colleciton
+ *
+ * @param navController The navigation controller used for navigating between screens in the app.
+ * @param dataViewModel The DataViewModel used to save the recipe data.
+ */
 @Composable
 fun CategoryScreen(
     navController: NavController,
     dataViewModel: DataViewModel = hiltViewModel()
 ) {
 
-    var categorySelected = remember { mutableStateOf(false) }
+    val categorySelected = remember { mutableStateOf(false) }
 
     if (!categorySelected.value) {
         Box(modifier = Modifier.fillMaxSize()) {
@@ -127,7 +133,7 @@ fun CategoryScreen(
             }
         }
     } else {
-
+        // Retrieving custom recipe data using data view model
         val title = dataViewModel.getString(NEW_RECIPE_TITLE)
         val category = dataViewModel.getString(NEW_RECIPE_CATEGORY)
         val difficulty = dataViewModel.getString(NEW_RECIPE_DIFFICULTY)
@@ -152,6 +158,7 @@ fun CategoryScreen(
                     total_time = totalTime
                 )
                 if (userID != null) {
+                    // Saving the recipe
                     savePrivateRecipe(userID, newRecipe)
                 }
             }
@@ -201,7 +208,13 @@ fun CategoryScreen(
     }
 }
 
-
+/**
+ * This function is used to save a private recipe for a specific user to the Firestore database. It takes in the user ID
+ * and a Recipe object and adds the recipe to the "privateRecipes" collection under the user's document in Firestore.
+ *
+ * @param userId The ID of the user that the private recipe belongs to.
+ * @param recipe The Recipe object that represents the private recipe to be saved.
+ */
 fun savePrivateRecipe(userId: String, recipe: Recipe) {
     val db = FirebaseFirestore.getInstance()
     db.collection("users")

@@ -46,6 +46,9 @@ import uk.ac.aber.dcs.cs39440.mealbay.ui.components.minCharsLength
  * he is currently creating. The list of ingredients is refreshed and shown on the screen while the user is adding them. The
  * user can come back to the previous screen if an arrow icon is pressed on the top app bar and can go to further screen when
  * a save button is clicked and then confirmed about the changes.
+ *
+ * @param navController The navigation controller used for navigating between screens in the app.
+ * @param dataViewModel The DataViewModel used to save the ingredients data.
  */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -54,6 +57,7 @@ fun IngredientsScreen(
     navController: NavController,
     dataViewModel: DataViewModel = hiltViewModel()
 ) {
+
     // Handling a sheet state for Bottom Sheet, as either hidden or half-expanded
     val sheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
@@ -69,7 +73,7 @@ fun IngredientsScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = stringResource ( id = R.string.ingredients),
+                        text = stringResource(id = R.string.ingredients),
                         fontSize = 20.sp
                     )
                 },
@@ -102,7 +106,8 @@ fun IngredientsScreen(
         ) {
 
             Column(
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
                     .padding(10.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -208,7 +213,10 @@ fun IngredientsScreen(
                                 onClick = {
                                     openAlertDialog.value = false
                                     //Saving ingredients using dataViewModel
-                                    dataViewModel.saveStringList(ingredientsList, NEW_RECIPE_INGREDIENTS)
+                                    dataViewModel.saveStringList(
+                                        ingredientsList,
+                                        NEW_RECIPE_INGREDIENTS
+                                    )
                                     //Navigating to the preparation screen
                                     navController.navigate(route = Screen.Preparation.route)
                                 },
@@ -304,7 +312,7 @@ fun ModalBottomSheet(ingredientsList: SnapshotStateList<String>) {
             },
             onValueChange = {
                 ingredient = it
-                isErrorInTextField = ingredient.isEmpty() 
+                isErrorInTextField = ingredient.isEmpty()
             },
             modifier = Modifier.width(360.dp),
             singleLine = true,
@@ -317,17 +325,19 @@ fun ModalBottomSheet(ingredientsList: SnapshotStateList<String>) {
             enabled = ingredient.isNotEmpty(),
             onClick = {
                 if (ingredient.trim() == "" || ingredient.trim().length < minCharsLength) {
-                    Toast.makeText(context, "The ingredient is too short.", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, "The ingredient is too short.", Toast.LENGTH_LONG)
+                        .show()
                     isErrorInTextField = true
                 } else {
                     ingredientsList.add(ingredient)
                     ingredient = "" // clearing an ingredient value once added to a list
                 }
-            }, modifier = Modifier
+            },
+            modifier = Modifier
                 .width(220.dp)
                 .height(50.dp),
 
-        ) {
+            ) {
             Text(stringResource(R.string.save))
         }
     }
