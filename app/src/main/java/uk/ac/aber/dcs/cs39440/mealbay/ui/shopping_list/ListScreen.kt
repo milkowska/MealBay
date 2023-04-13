@@ -447,4 +447,3 @@ fun clearShoppingList(userId: String) {
             Log.w("clearShoppingList", "Error clearing shopping list", exception)
         }
 }
-

@@ -15,20 +15,25 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 
-
+/**
+ * This is the ViewModel class for the LoginScreen.
+ */
 class LoginScreenViewModel : ViewModel() {
     private val auth: FirebaseAuth = Firebase.auth
     private val _userId = MutableLiveData<String?>()
     val userId: LiveData<String?> = _userId
 
-    //internally
+    // saving internally
     private val _loading = MutableLiveData(false)
 
-    fun setUserId(userId: String?) {
-        _userId.value = userId
-    }
-
-
+    /**
+     * This is a function that handles signing in with email and password using Firebase Authentication.
+     *
+     * @param email The email of the user.
+     * @param password The password of the user.
+     * @param onSuccess The callback function to be called if sign-in is successful.
+     * @param onError The callback function to be called if an error occurs during sign-in.
+     */
     fun signInWithEmailAndPassword(
         email: String,
         password: String,
@@ -47,17 +52,17 @@ class LoginScreenViewModel : ViewModel() {
             .addOnFailureListener { exception ->
                 when (exception) {
                     is FirebaseAuthInvalidUserException -> {
-                        // handle invalid user exception
+                        // handling invalid user exception
                         onError("Invalid email address")
                         Log.d("FBA", "Invalid email address!")
                     }
                     is FirebaseAuthInvalidCredentialsException -> {
-                        // handle invalid credentials exception
+                        // handling invalid credentials exception
                         onError("Invalid credentials!")
                         Log.d("FBA", "Invalid password")
                     }
                     is RuntimeExecutionException -> {
-                        // handle runtime exception
+                        // handling runtime exception
                         if (exception.cause is FirebaseAuthInvalidUserException) {
                             onError("Invalid email address!")
                         } else {
@@ -65,7 +70,7 @@ class LoginScreenViewModel : ViewModel() {
                         }
                     }
                     else -> {
-                        // handle other exceptions
+                        // handling other exceptions
                         onError("Error signing in")
                     }
 
@@ -73,6 +78,16 @@ class LoginScreenViewModel : ViewModel() {
             }
     }
 
+    /**
+     * a createUserWithEmailAndPassword function creates a new user account using an email address and password, and
+     * calls a callback function depending on whether the operation was successful or not.It takes in the email and
+     * password strings as well as two callback functions.
+     * @param email The email of the user.
+     * @param password The password of the user.
+     * @param onSuccess The callback function to be called if the user account is created successfully, passing in a FirebaseUser object representing the newly created user.
+     * @param onError The callback function to be called if the operation fails, passing in a String error message.
+     *
+     */
     fun createUserWithEmailAndPassword(
         email: String,
         password: String,
@@ -108,6 +123,11 @@ class LoginScreenViewModel : ViewModel() {
         }
     }
 
+    /**
+     * a private createUser function creates a user document in the Firestore database with the authenticated user's
+     * ID and display name. If the user ID is not null, a mutable map is created with the user ID and display name,
+     * and then added to the "users" collection in Firestore with the user ID as the document ID.
+     */
     private fun createUser(displayName: String?) {
         val authUserId = auth.currentUser?.uid
         if (authUserId != null) {
