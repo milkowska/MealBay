@@ -44,11 +44,12 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import androidx.compose.material.Scaffold
 import kotlinx.coroutines.launch
-import uk.ac.aber.dcs.cs39440.mealbay.model.Recipe
+import uk.ac.aber.dcs.cs39440.mealbay.data.Recipe
 import uk.ac.aber.dcs.cs39440.mealbay.storage.CURRENT_USER_ID
 import uk.ac.aber.dcs.cs39440.mealbay.storage.RECIPE_ID
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
+import uk.ac.aber.dcs.cs39440.mealbay.model.MealViewModel
 import uk.ac.aber.dcs.cs39440.mealbay.ui.theme.Railway
 
 /**

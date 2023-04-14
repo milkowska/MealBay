@@ -37,7 +37,7 @@ import uk.ac.aber.dcs.cs39440.mealbay.R
 import uk.ac.aber.dcs.cs39440.mealbay.model.DataViewModel
 import uk.ac.aber.dcs.cs39440.mealbay.storage.RECIPE_ID
 import uk.ac.aber.dcs.cs39440.mealbay.ui.components.TopLevelScaffold
-import uk.ac.aber.dcs.cs39440.mealbay.ui.explore.MealViewModel
+import uk.ac.aber.dcs.cs39440.mealbay.model.MealViewModel
 import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
 import java.time.LocalTime
 import androidx.compose.runtime.getValue

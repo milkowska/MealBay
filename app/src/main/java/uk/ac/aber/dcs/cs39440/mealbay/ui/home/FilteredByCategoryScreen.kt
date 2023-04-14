@@ -23,10 +23,10 @@ import androidx.navigation.NavHostController
 import com.google.firebase.firestore.FirebaseFirestore
 import uk.ac.aber.dcs.cs39440.mealbay.R
 import uk.ac.aber.dcs.cs39440.mealbay.model.DataViewModel
-import uk.ac.aber.dcs.cs39440.mealbay.model.Recipe
+import uk.ac.aber.dcs.cs39440.mealbay.data.Recipe
 import uk.ac.aber.dcs.cs39440.mealbay.storage.CURRENT_CATEGORY
 import uk.ac.aber.dcs.cs39440.mealbay.ui.components.RecipeList
-import uk.ac.aber.dcs.cs39440.mealbay.ui.explore.MealViewModel
+import uk.ac.aber.dcs.cs39440.mealbay.model.MealViewModel
 
 /**
  * Composable function that displays a screen with a list of recipes filtered by category.

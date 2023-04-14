@@ -1,4 +1,4 @@
-package uk.ac.aber.dcs.cs39440.mealbay.model
+package uk.ac.aber.dcs.cs39440.mealbay.data
 
 /**
  * This is a data class representing a Recipe object.
