@@ -29,6 +29,8 @@ import androidx.compose.animation.core.Animatable
 
 /**
  * This composable function displays a "splashed" logo of the app that is visible on each opening application.
+ *
+ * @param  navController the navigation controller used to navigate to other screens.
  */
 @SuppressLint("RememberReturnType")
 @Preview

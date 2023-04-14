@@ -22,7 +22,7 @@ class MealViewModel : ViewModel() {
     private val _recipesByCategory = MutableLiveData<List<Recipe>>()
     val recipesByCategory: LiveData<List<Recipe>> get() = _recipesByCategory
 
-    //initializing the MealViewModel to fetch a meal when an instance of MealViewModel is created.
+    // Initializing the MealViewModel to fetch a meal when an instance of MealViewModel is created.
     init {
         fetchMealOfTheDay()
     }
@@ -45,7 +45,7 @@ class MealViewModel : ViewModel() {
                         val recipe = document.toObject(Recipe::class.java)
                         recipe?.copy(id = document.id)
                     }.filterNotNull()
-                    //Setting the index based on the current day of the year and a collection size
+                    // Setting the index based on the current day of the year and a collection size
                     val dailyRecipeIndex = currentDayOfYear % recipes.size
                     _mealOfTheDay.value = recipes[dailyRecipeIndex]
                     //Log.d("fetchMeal", "A meal for today is: ${_mealOfTheDay.value}")
@@ -63,6 +63,10 @@ class MealViewModel : ViewModel() {
      * This function retrieves a Recipe document given the user ID and a document ID. It checks public collection of recipes
      * and a private custom recipes collection that the user can create.
      * returns a MutableLiveData object containing the state of the retrieved document, or null if the document was not found.
+     *
+     * @param documentId The ID of the recipe document to be retrieved
+     * @param userId The ID of the user associated with the recipe document.
+     * @return A MutableLiveData object containing the recipe document as a Recipe object.
      */
     fun getDocumentById(documentId: String, userId: String): MutableLiveData<Recipe?> {
 
@@ -151,7 +155,7 @@ class MealViewModel : ViewModel() {
      * where the "category" field matches the provided category.
      *
      * @param category The category used to filter recipes from the collection.
-     *
+     * @return The list of recipes fetched from the database, or null if the operation fails.
      */
     fun fetchRecipesByCategory(category: String): List<Recipe>? {
         Log.d("fetchRecipesByCategory", "fetchRecipesByCategory called with category: $category")
@@ -168,14 +172,13 @@ class MealViewModel : ViewModel() {
                         id = document.id
                         Log.d("fetchRecipesByCategory", "the id is $id ")
                     }
-
                     recipes.add(recipe)
                 }
                 _recipesByCategory.value = recipes
-                Log.d("fetchRecipesByCategory", "Recipes fetched successfully: ${recipes.size}")
+                // Log.d("fetchRecipesByCategory", "Recipes fetched successfully: ${recipes.size}")
             }
             .addOnFailureListener { exception ->
-                Log.w("fetchRecipesByCategory", "Error fetching recipes by category: ", exception)
+                // Log.w("fetchRecipesByCategory", "Error fetching recipes by category: ", exception)
             }
 
         return _recipesByCategory.value

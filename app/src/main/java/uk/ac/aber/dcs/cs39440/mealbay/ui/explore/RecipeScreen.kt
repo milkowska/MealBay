@@ -43,19 +43,22 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import androidx.compose.material.Scaffold
-import androidx.compose.material.Snackbar
-import androidx.compose.material.SnackbarHost
-import androidx.compose.material.SnackbarHostState
 import kotlinx.coroutines.launch
 import uk.ac.aber.dcs.cs39440.mealbay.model.Recipe
 import uk.ac.aber.dcs.cs39440.mealbay.storage.CURRENT_USER_ID
 import uk.ac.aber.dcs.cs39440.mealbay.storage.RECIPE_ID
-
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import uk.ac.aber.dcs.cs39440.mealbay.ui.theme.Railway
 
-
+/**
+ * Top level composable that wraps the [RecipeScreen] composable. This is used to ensure that the
+ * RecipeScreen composable can be used as a destination in the navigation graph.
+ *
+ * @param navController The NavHostController used for navigation.
+ * @param dataViewModel The DataViewModel used for storing and retrieving data across multiple composables.
+ * @param mealViewModel The MealViewModel used for fetching and storing meals data.
+ */
 @Composable
 fun RecipeScreenTopLevel(
     navController: NavHostController,
@@ -65,6 +68,13 @@ fun RecipeScreenTopLevel(
     RecipeScreen(navController, dataViewModel, mealViewModel)
 }
 
+/**
+ * Composable function that displays the details of a recipe based on the recipe ID.
+ *
+ * @param navController the navigation controller used to navigate to other screens.
+ * @param dataViewModel the view model used to retrieve and save data.
+ * @param mealViewModel the view model used for meal planning.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecipeScreen(
@@ -78,11 +88,19 @@ fun RecipeScreen(
     Log.d("MYTAG", "the id is $id or ${dataViewModel.getString(RECIPE_ID)}")
     if (id != null) {
         if (userId != null) {
-            FetchRecipeByID(navController, documentId = id,userId = userId,  mealViewModel)
+            FetchRecipeByID(navController, documentId = id, userId = userId, mealViewModel)
         }
     }
 }
 
+/**
+ * This function fetches a recipe by its ID from the database and displays its content in the UI.
+ *
+ * @param navController A NavHostController object to allow for navigation.
+ * @param documentId The documentId of the recipe to be fetched.
+ * @param userId The userId of the current user.
+ * @param mealViewModel A MealViewModel object for fetching the recipe from the database.
+ */
 @Composable
 fun FetchRecipeByID(
     navController: NavHostController,
@@ -109,6 +127,13 @@ fun FetchRecipeByID(
     }
 }
 
+/**
+ * A Composable function that displays the content of a recipe.
+ *
+ * @param navController The navController for navigating to other screens.
+ * @param recipe The recipe to be displayed.
+ * @param dataViewModel The ViewModel for handling data.
+ */
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "UnusedMaterialScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
@@ -122,8 +147,10 @@ fun ShowRecipeContent(
             .fillMaxHeight()
             .fillMaxWidth()
     ) {
+        // Using Data View Model do get the data
         val isUserCollectionEmpty by dataViewModel.isUserCollectionEmpty.observeAsState(initial = true)
-        var userId = dataViewModel.getString(CURRENT_USER_ID)
+        val userId = dataViewModel.getString(CURRENT_USER_ID)
+
         val (showCollections, setShowCollections) = remember { mutableStateOf(false) }
         val collectionsFetched = remember { mutableStateOf(listOf<DocumentSnapshot>()) }
         val isLoading = remember { mutableStateOf(true) }
@@ -185,159 +212,165 @@ fun ShowRecipeContent(
                     )
                 },
                 scaffoldState = scaffoldState,
-
-                ) {
-                LazyColumn {
-                    item {
-                        Image(
-                            painter = rememberImagePainter("${recipe.photo}"),
-                            contentDescription = "Recipe image",
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(360.dp)
-                                .padding(25.dp)
-                                .clip(RoundedCornerShape(25.dp)),
-                            contentScale = ContentScale.Crop
-                        )
-                    }
-                    item {
-                        Row(
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp)
-                        ) {
-                            Text(
-                                "Difficulty: ${recipe.difficulty}",
-                                modifier = Modifier.weight(0.5f),
-                                fontSize = 18.sp
-                            )
-                            Text(
-                                "Rating: ${recipe.rating}",
-                                modifier = Modifier.weight(0.5f),
-                                fontSize = 18.sp
+                content = {
+                    LazyColumn {
+                        item {
+                            Image(
+                                painter = rememberImagePainter("${recipe.photo}"),
+                                contentDescription = "Recipe image",
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(360.dp)
+                                    .padding(25.dp)
+                                    .clip(RoundedCornerShape(25.dp)),
+                                contentScale = ContentScale.Crop
                             )
                         }
-                    }
-                    item {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp)
-                        ) {
-                            Text(
-                                "Total time: ${recipe.total_time}",
-                                modifier = Modifier.weight(1f),
-                                fontSize = 18.sp
-                            )
-
-                            ElevatedButton(
-                                onClick = {
-                                    setShowCollections(!showCollections)
-                                },
-                                enabled = !isUserCollectionEmpty,
+                        item {
+                            Row(
+                                horizontalArrangement = Arrangement.SpaceBetween,
                                 modifier = Modifier
-                                    .padding(start = 16.dp)
-                                    .width(170.dp)
+                                    .fillMaxWidth()
+                                    .padding(16.dp)
                             ) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(
-                                        Icons.Default.Add,
-                                        contentDescription = "Add icon",
-                                        modifier = Modifier.size(22.dp)
-                                    )
-                                    Text(
-                                        "Add",
-                                        modifier = Modifier.padding(start = 4.dp),
-                                        fontSize = 17.sp,
-                                        fontFamily = Railway,
-                                    )
+                                Text(
+                                    "Difficulty: ${recipe.difficulty}",
+                                    modifier = Modifier.weight(0.5f),
+                                    fontSize = 18.sp
+                                )
+                                Text(
+                                    "Rating: ${recipe.rating}",
+                                    modifier = Modifier.weight(0.5f),
+                                    fontSize = 18.sp
+                                )
+                            }
+                        }
+                        item {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp)
+                            ) {
+                                Text(
+                                    "Total time: ${recipe.total_time}",
+                                    modifier = Modifier.weight(1f),
+                                    fontSize = 18.sp
+                                )
+
+                                ElevatedButton(
+                                    onClick = {
+                                        setShowCollections(!showCollections)
+                                    },
+                                    enabled = !isUserCollectionEmpty,
+                                    modifier = Modifier
+                                        .padding(start = 16.dp)
+                                        .width(170.dp)
+                                ) {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Icon(
+                                            Icons.Default.Add,
+                                            contentDescription = "Add icon",
+                                            modifier = Modifier.size(22.dp)
+                                        )
+                                        Text(
+                                            "Add",
+                                            modifier = Modifier.padding(start = 4.dp),
+                                            fontSize = 17.sp,
+                                            fontFamily = Railway,
+                                        )
+                                    }
                                 }
+
                             }
 
                         }
-
-                    }
-                    item {
-                        Divider(
-                            thickness = 0.5.dp,
-                            modifier = Modifier.padding(vertical = 10.dp)
-                        )
-                    }
-                    item {
-                        Box(
-                            modifier = Modifier.fillMaxWidth(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                stringResource(R.string.ingredients),
-                                fontSize = 25.sp,
-                                color = Color(0xFF9C4234)
+                        item {
+                            Divider(
+                                thickness = 0.5.dp,
+                                modifier = Modifier.padding(vertical = 10.dp)
                             )
                         }
-                    }
-                    item {
-                        Spacer(modifier = Modifier.height(20.dp))
-                    }
-                    items(recipe.ingredients.size) { index ->
-                        val item = recipe.ingredients[index]
-                        val splitItems = item.split("|")
+                        item {
+                            Box(
+                                modifier = Modifier.fillMaxWidth(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    stringResource(R.string.ingredients),
+                                    fontSize = 25.sp,
+                                    color = Color(0xFF9C4234)
+                                )
+                            }
+                        }
+                        item {
+                            Spacer(modifier = Modifier.height(20.dp))
+                        }
+                        items(recipe.ingredients.size) { index ->
+                            val item = recipe.ingredients[index]
+                            val splitItems = item.split("|")
 
-                        splitItems.forEach { splitItem ->
+                            splitItems.forEach { splitItem ->
+                                Text(
+                                    buildAnnotatedString {
+                                        withStyle(SpanStyle(color = Color(0xFF9C4234))) {
+                                            append("  • ") // bullet point
+                                        }
+                                        withStyle(SpanStyle(fontSize = 20.sp)) {
+                                            append(splitItem) // item text
+                                        }
+                                    }
+                                )
+                            }
+                        }
+
+                        item {
+                            Divider(
+                                thickness = 0.5.dp,
+                                modifier = Modifier.padding(vertical = 10.dp)
+                            )
+                        }
+                        item {
+                            Box(
+                                modifier = Modifier.fillMaxWidth(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    stringResource(R.string.preparation),
+                                    fontSize = 25.sp,
+                                    color = Color(0xFF9C4234),
+                                    modifier = Modifier.padding(start = 20.dp),
+                                )
+                            }
+                        }
+
+                        items(recipe.preparation.size) { index ->
+                            val item = recipe.preparation[index]
+
                             Text(
                                 buildAnnotatedString {
-                                    withStyle(SpanStyle(color = Color(0xFF9C4234))) {
-                                        append("  • ") // bullet point
+                                    withStyle(
+                                        SpanStyle(
+                                            fontSize = 22.sp,
+                                            color = Color(0xFF9C4234)
+                                        )
+                                    ) {
+                                        append("  ${index + 1}) ")
                                     }
-                                    withStyle(SpanStyle(fontSize = 20.sp)) {
-                                        append(splitItem) // item text
+                                    withStyle(SpanStyle(fontSize = 19.sp)) {
+                                        append(item)
+                                        Spacer(modifier = Modifier.padding(6.dp))
                                     }
                                 }
                             )
                         }
-                    }
-
-                    item {
-                        Divider(
-                            thickness = 0.5.dp,
-                            modifier = Modifier.padding(vertical = 10.dp)
-                        )
-                    }
-                    item {
-                        Box(
-                            modifier = Modifier.fillMaxWidth(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                stringResource(R.string.preparation),
-                                fontSize = 25.sp,
-                                color = Color(0xFF9C4234),
-                                modifier = Modifier.padding(start = 20.dp),
-                            )
+                        item {
+                            Spacer(modifier = Modifier.height(10.dp))
                         }
                     }
+                },
 
-                    items(recipe.preparation.size) { index ->
-                        val item = recipe.preparation[index]
-
-                        Text(
-                            buildAnnotatedString {
-                                withStyle(SpanStyle(fontSize = 22.sp, color = Color(0xFF9C4234))) {
-                                    append("  ${index + 1}) ")
-                                }
-                                withStyle(SpanStyle(fontSize = 19.sp)) {
-                                    append(item)
-                                    Spacer(modifier = Modifier.padding(6.dp))
-                                }
-                            }
-                        )
-                    }
-                    item {
-                        Spacer(modifier = Modifier.height(10.dp))
-                    }
-                }
-            }
+                )
         }
 
         if (showCollections) {
@@ -415,6 +448,16 @@ fun ShowRecipeContent(
     }
 }
 
+
+/**
+ *  CheckAndAddRecipeToCollection function checks if a recipe is already added to a collection and adds it if it's not.
+ *
+ * @param collectionID the ID of the collection to add the recipe to.
+ * @param recipeId the ID of the recipe to add to the collection.
+ * @param userId the ID of the user that owns the collection.
+ * @param showDialog a mutable state to control whether to show a dialog when the recipe is already added.
+ * @param onSuccess a callback to be invoked if the recipe is added successfully.
+ */
 @OptIn(ExperimentalMaterialApi::class)
 fun checkAndAddRecipeToCollection(
     collectionID: String,
@@ -442,10 +485,17 @@ fun checkAndAddRecipeToCollection(
             }
         }
         .addOnFailureListener { e ->
-            Log.w("CHECKRECIPE", "Error checking recipe", e)
+            Log.w("CheckRecipe", "Error checking recipe", e)
         }
 }
 
+/**
+ * Composable function that displays a list of user collections.
+ *
+ * @param collections a list of DocumentSnapshot representing the user collections.
+ * @param onItemClick a function that will be called when a collection is clicked.
+ * @param recipeId the ID of the recipe to be added to the collection.
+ */
 @Composable
 fun CollectionList(
     collections: List<DocumentSnapshot>,
@@ -483,7 +533,14 @@ fun CollectionList(
     }
 }
 
-
+/**
+ * addRecipeToCollection function adds the given recipe to the specified collection.
+ *
+ * @param collectionID the ID of the collection where the recipe should be added.
+ * @param recipeId the ID of the recipe to add.
+ * @param userId the ID of the user that owns the collection.
+ * @param onSuccess a callback function to be called upon successful completion of the operation.
+ */
 @OptIn(ExperimentalMaterialApi::class)
 fun addRecipeToCollection(
     collectionID: String,
@@ -509,10 +566,10 @@ fun addRecipeToCollection(
 
     recipeRef.set(data)
         .addOnSuccessListener {
-            Log.d("ADDRECIPE", "Recipe added with ID: ${recipeRef.id}")
+            // Log.d("AddRecipe", "Recipe added with ID: ${recipeRef.id}")
             onSuccess()
         }
         .addOnFailureListener { e ->
-            Log.w("ADDRECIPE", "Error adding recipe", e)
+            Log.w("AddRecipe", "Error adding recipe", e)
         }
 }

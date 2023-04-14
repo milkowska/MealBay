@@ -11,7 +11,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -45,6 +44,13 @@ import uk.ac.aber.dcs.cs39440.mealbay.storage.*
 import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
 import uk.ac.aber.dcs.cs39440.mealbay.ui.theme.Railway
 
+/**
+ * This composable function is a top level entry for RecipesListInCollection function and retrieves data about the user ID
+ * and collection name. It contains TopAppBar composable to display the title of the collection that is selected.
+ *
+ * @param navController The navigation controller used for navigating between screens in the app.
+ * @param dataViewModel The DataViewModel used to retrieve collection and userID.
+ */
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -73,14 +79,21 @@ fun CollectionDisplayScreen(
                 backgroundColor = Color(0xFFFFDAD4)
             )
             if (userId != null) {
-                CollectionList(userId, navController)
+                RecipesListInCollection(userId, navController)
             }
         }
     }
 }
 
+/**
+ * This composable function is used to display the private content of selected collection of the user.
+ *
+ * @param userId The current user ID.
+ * @param navController The navigation controller used for navigating between screens in the app.
+ * @param dataViewModel The DataViewModel used to save the selected collection ID.
+ */
 @Composable
-fun CollectionList(
+fun RecipesListInCollection(
     userId: String,
     navController: NavHostController,
     dataViewModel: DataViewModel = hiltViewModel(),
@@ -149,6 +162,7 @@ fun CollectionList(
                     RecipeItem(recipe,
                         onClick = {
                             recipe.id?.let {
+                                // Saving recipe Id to fetch the right recipe object.
                                 dataViewModel.saveString(it, RECIPE_ID)
                                 Log.d("CollectionList", "${recipe.id}, ${recipe.title}")
                             }
@@ -244,7 +258,6 @@ suspend fun getRecipeIdsForCollection(collectionId: String, userId: String): Lis
             .collection("recipes")
             .get()
             .await()
-
 //        Log.d("SNAPSHOT", "Snapshot: $snapshot")
 
         snapshot.documents.mapNotNull {

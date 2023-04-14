@@ -20,6 +20,8 @@ import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.screens
 
 /**
  * Implementation of the navigation bar.
+ *
+ * @param navController The navigation controller used for navigating between screens in the app.
  */
 @Composable
 fun MainPageNavigationBar(

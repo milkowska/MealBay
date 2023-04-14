@@ -44,8 +44,10 @@ import uk.ac.aber.dcs.cs39440.mealbay.ui.theme.Railway
  * This is a composable function that is used to display the public recipe collection called recipesready stored in the
  * firebase. If the data is still being fetched, a circular progress indicator is displayed. Once the data is retrieved
  * a recipe data function is called to display the data in a specific structure.
+ *
+ * @param navController The navigation controller used for navigating between screens in the app.
+ * @param dataViewModel The DataViewModel used to save recipe ID.
  */
-
 @SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalCoroutinesApi::class)
 @Composable
@@ -115,9 +117,11 @@ fun ExploreScreen(
 
 /**
  * This is a composable function that sets up a listener to a Firebase Firestore collection called "recipesready" and
- * fetches the data ordering it by field "title". It takes two parameters: onSuccess and onFailure, which are lambdas that will be
- * executed when the listener is successful or when it fails, respectively.
+ * fetches the data ordering it by field "title".
  * The DisposableEffect is used to remove the listener when the composable function is disposed.
+ *
+ * @param onSuccess A callback function that will be called when the data is successfully fetched from the Firestore collection.
+ * @param onFailure A callback function that will be called when an error occurs while fetching data from the Firestore collection.
  */
 @Composable
 fun FirebaseFetcher(
@@ -142,6 +146,13 @@ fun FirebaseFetcher(
     }
 }
 
+/**
+ * Composable function to display a list of recipes.
+ *
+ * @param recipeList List of recipes to be displayed.
+ * @param navController NavController to navigate to different screens.
+ * @param dataViewModel Instance of DataViewModel to get and set data across multiple composables.
+ */
 @OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun RecipeData(
@@ -257,12 +268,11 @@ fun RecipeData(
                         }
                     privateRecipesRef?.get()?.addOnSuccessListener { querySnapshot ->
                         hasRecipes = !querySnapshot.isEmpty
-                        Log.e("debug3", "$hasRecipes")
+                      //  Log.e("RecipeData", "$hasRecipes")
                     }?.addOnFailureListener { exception ->
-                        Log.e("ERROR", "Error checking for user's recipes", exception)
+                        //Log.e("RecipeData", "Error checking for user's recipes", exception)
                     }
                     hasRecipes
-
                 }
 
                 ElevatedButton(
@@ -272,7 +282,6 @@ fun RecipeData(
                         .fillMaxWidth()
                         .padding(all = 15.dp)
                         .weight(0.5f)
-
                 ) {
                     Text(
                         stringResource(R.string.create_new),
@@ -299,5 +308,3 @@ fun RecipeData(
         }
     }
 }
-
-

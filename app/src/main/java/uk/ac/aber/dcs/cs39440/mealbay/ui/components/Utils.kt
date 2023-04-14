@@ -57,6 +57,13 @@ const val maxRecipeNameCharsLength = 52
 
 /**
  * This composable function creates an email input field in a form.
+ *
+ * @param modifier The modifier to be applied to the email input field.
+ * @param emailState The mutable state containing the value of the email input field.
+ * @param labelId The string resource ID to be used as the label for the email input field.
+ * @param enabled Whether the email input field is enabled and can be interacted with.
+ * @param imeAction The IME action to be used for the email input field.
+ * @param onAction The keyboard actions to be used for the email input field.
  */
 @Composable
 fun EmailInput(
@@ -73,13 +80,22 @@ fun EmailInput(
         labelId = labelId,
         enabled = enabled,
         keyboardType = KeyboardType.Email,
-        imeAction = imeAction, //  to be performed when the user presses the action button on the email input field. This action will move the focus to the next input field in the form
+        imeAction = imeAction, // To be performed when the user presses the action button on the email input field. This action will move the focus to the next input field in the form
         onAction = onAction,
     )
 }
 
 /**
- * This composable function creates a text field that is visible on a login page to handle the user's login data
+ * This composable function creates a text field that is visible on a login page to handle the user's login data.
+ *
+ * @param modifier The modifier to be applied to the input field.
+ * @param valueState A mutable state that holds the value of the input field.
+ * @param labelId The string resource ID to be used as the label for the input field.
+ * @param enabled A boolean value indicating whether the input field is enabled or not.
+ * @param isSingleLine A boolean value indicating whether the input field should allow only one line of text.
+ * @param keyboardType The type of keyboard to be used for the input field.
+ * @param imeAction The IME action to be used for the input field. The default value is ImeAction.Next.
+ * @param onAction The keyboard actions for the input field. The default value is KeyboardActions.Default.
  */
 @Composable
 fun TextInputField(
@@ -118,7 +134,14 @@ fun TextInputField(
 }
 
 /**
- * This composable function creates a text field that is visible on a login page to handle the user's password data
+ * This composable function creates a text field that is visible on a login page to handle the user's password data.
+ * @param modifier Modifier for styling.
+ * @param passwordState MutableState to store password input.
+ * @param labelId Resource ID for the label of the input field.
+ * @param enabled Boolean value to determine if the input field is enabled.
+ * @param passwordVisibility MutableState to toggle password visibility.
+ * @param imeAction ImeAction to set keyboard's action button. Default is Done.
+ * @param onDoneAction Lambda to execute when done action is triggered on the keyboard.
  */
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -172,6 +195,8 @@ fun PasswordInput(
 
 /**
  * This composable function creates an IconButton with an icon to toggle password visibility.
+ *
+ * @param passwordVisibility the state that tracks whether the password field is currently visible or not
  */
 @Composable
 fun PasswordVisibility(passwordVisibility: MutableState<Boolean>) {
@@ -188,6 +213,11 @@ fun PasswordVisibility(passwordVisibility: MutableState<Boolean>) {
  * This composable function is a structure of the recipe list data and how it is displayed on the screen. It takes a recipeList
  * as a parameter to display this list as a Column of "rows" that contain an image of the recipe, title and its difficulty
  * values using ConstraintLayout.
+ *
+ * @param recipeList the list of Recipes to display.
+ * @param navController the NavHostController responsible for navigating between screens
+ * @param dataViewModel a DataViewModel used for saving the id of the selected recipe
+ * @param showButtons a Boolean flag indicating whether or not to show the create and explore buttons at the bottom of the screen
  */
 @OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable

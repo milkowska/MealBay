@@ -39,6 +39,9 @@ import uk.ac.aber.dcs.cs39440.mealbay.ui.theme.Railway
  * shows the actual data of this recipe.
  * It displays a row of buttons which are responsible for creating a new recipe or navigating to the main explore page where
  * the user can search for public recipes.
+ *
+ * @param navController The navigation controller used for navigating between screens in the app.
+ * @param dataViewModel The DataViewModel used to retrieve user ID.
  */
 @Composable
 fun PrivateCustomRecipesScreen(
@@ -65,7 +68,6 @@ fun PrivateCustomRecipesScreen(
                 .fillMaxSize()
         )
         {
-
             //Displaying a Circular progress indicator while the data is being fetched
             if (isLoading) {
                 Box(
@@ -202,6 +204,11 @@ fun PrivateCustomRecipesScreen(
  * This function fetches the data from Firebase Datastore given the current user ID.
  * If the private collection of custom recipes exists, the data is fetched, if the data is empty a callback
  * function onEmpty is executed or onFailure if there is any failure during reading and fetching the data.
+ *
+ * @param userId The ID of the user for whom to fetch custom recipes.
+ * @param onSuccess A callback function to handle the query snapshot if it is successful.
+ * @param onFailure A callback function to handle the exception if the query fails.
+ * @param onEmpty A callback function to handle the case where the query returns an empty result set.
  */
 @Composable
 fun fetchCustomRecipes(
@@ -210,7 +217,6 @@ fun fetchCustomRecipes(
     onFailure: (Exception) -> Unit,
     onEmpty: () -> Unit,
 ) {
-
     val db: FirebaseFirestore = FirebaseFirestore.getInstance()
 
     DisposableEffect(userId) {

@@ -30,7 +30,7 @@ import androidx.compose.runtime.*
 
 /**
  * This is a composable function that displays either the categories to be chosen by the user for new recipe or shows
- * a screen informing about the success of adding a recipe to the private colleciton
+ * a screen informing about the success of adding a recipe to the private collection.
  *
  * @param navController The navigation controller used for navigating between screens in the app.
  * @param dataViewModel The DataViewModel used to save the recipe data.
@@ -40,7 +40,6 @@ fun CategoryScreen(
     navController: NavController,
     dataViewModel: DataViewModel = hiltViewModel()
 ) {
-
     val categorySelected = remember { mutableStateOf(false) }
 
     if (!categorySelected.value) {

@@ -28,7 +28,16 @@ import uk.ac.aber.dcs.cs39440.mealbay.storage.CURRENT_CATEGORY
 import uk.ac.aber.dcs.cs39440.mealbay.ui.components.RecipeList
 import uk.ac.aber.dcs.cs39440.mealbay.ui.explore.MealViewModel
 
-
+/**
+ * Composable function that displays a screen with a list of recipes filtered by category.
+ * It gets the category from dataViewModel and fetches the list of recipes from mealViewModel and
+ * getRecipesByCategory using the category. Displays a CircularProgressIndicator if the data is
+ * still loading and a RecipeList if the data is ready.
+ *
+ * @param navController the navigation controller.
+ * @param dataViewModel the view model that holds the category and user data.
+ * @param mealViewModel the view model that holds the recipe data.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -91,10 +100,14 @@ fun FilteredByCategoryScreen(
 }
 
 /**
- * getRecipesByCategory function gets a reference to the Firestore database and uses a query to retrieve documents
+ * A getRecipesByCategory function gets a reference to the Firestore database and uses a query to retrieve documents
  * from the "recipesready" collection that have the specified category value. It maps the retrieved documents to Recipe
  * objects, setting the ID of each recipe from the document ID, and updates the value of the recipesLiveData
  * object with the resulting list.
+ *
+ * @param category the category to filter the recipes by.
+ *
+ * @return a MutableLiveData object containing the filtered list of Recipe objects.
  */
 fun getRecipesByCategory(category: String): MutableLiveData<List<Recipe>> {
     val recipesLiveData = MutableLiveData<List<Recipe>>()

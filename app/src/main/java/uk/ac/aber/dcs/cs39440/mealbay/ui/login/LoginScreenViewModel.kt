@@ -80,6 +80,7 @@ class LoginScreenViewModel : ViewModel() {
      * a createUserWithEmailAndPassword function creates a new user account using an email address and password, and
      * calls a callback function depending on whether the operation was successful or not.It takes in the email and
      * password strings as well as two callback functions.
+     *
      * @param email The email of the user.
      * @param password The password of the user.
      * @param onSuccess The callback function to be called if the user account is created successfully, passing in a FirebaseUser object representing the newly created user.
@@ -125,6 +126,8 @@ class LoginScreenViewModel : ViewModel() {
      * a private createUser function creates a user document in the Firestore database with the authenticated user's
      * ID and display name. If the user ID is not null, a mutable map is created with the user ID and display name,
      * and then added to the "users" collection in Firestore with the user ID as the document ID.
+     *
+     * @param displayName A name to display
      */
     private fun createUser(displayName: String?) {
         val authUserId = auth.currentUser?.uid

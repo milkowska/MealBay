@@ -54,22 +54,31 @@ import uk.ac.aber.dcs.cs39440.mealbay.ui.components.maxCharsLengthForCollection
 import uk.ac.aber.dcs.cs39440.mealbay.ui.components.minCharsLength
 import uk.ac.aber.dcs.cs39440.mealbay.ui.theme.Railway
 
+/**
+ * This composable function is a top-level entry point for the Collection Screen feature that displays available collection
+ * or empty screen if there are none.
+ *
+ * @param navController The navigation controller used for navigating between screens in the app.
+ */
 @Composable
 fun CollectionScreenTopLevel(
     navController: NavHostController,
 ) {
-    CollectionScreen(navController, modifier = Modifier)
+    CollectionScreen(navController/* modifier = Modifier*/)
 }
 
 /**
  * This screen is used to create or view existing private to the user collections. The user can press
  * on any to see the contents. These are fetched from firebase.
+ *
+ * @param navController The navigation controller used for navigating between screens in the app.
+ * @param dataViewModel The DataViewModel used to retrieve user ID, and check if the collection is empty or not.
  */
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun CollectionScreen(
     navController: NavHostController,
-    modifier: Modifier,
+    // modifier: Modifier,
     dataViewModel: DataViewModel = hiltViewModel()
 ) {
     // Getting user ID saved by view model
@@ -154,6 +163,9 @@ fun CollectionScreen(
     }
 }
 
+/**
+ * This composable function represents an empty screen UI if the collections are not created by the user.
+ */
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun EmptyCollectionScreen(
@@ -212,6 +224,11 @@ fun EmptyCollectionScreen(
     }
 }
 
+/**
+ * This composable function represents a Modal Bottom Sheet content where the user can add the collection name.
+ *
+ * @param dataViewModel The DataViewModel used to retrieve the user ID.
+ */
 @Composable
 fun BottomSheet(dataViewModel: DataViewModel = hiltViewModel()) {
 
@@ -290,6 +307,9 @@ fun BottomSheet(dataViewModel: DataViewModel = hiltViewModel()) {
 
 /**
  *  This function saves a new private collection to Firebase Firestore.
+ *
+ *  @param userId The current user ID.
+ *  @param name The collection name to be saved.
  */
 fun savePrivateCollection(userId: String, name: String) {
     // Get an instance of the Firestore database.
@@ -315,6 +335,9 @@ fun savePrivateCollection(userId: String, name: String) {
 
 /**
  *  This function deletes a private collection given the current user id and a collection ID.
+ *
+ *  @param userId The current user ID.
+ *  @param collectionId The collection ID to be deleted.
  */
 fun deleteCollection(userId: String, collectionId: String) {
     val db = FirebaseFirestore.getInstance()
@@ -335,7 +358,12 @@ fun deleteCollection(userId: String, collectionId: String) {
 
 /**
  * This function is displaying the available collections if they exists, the size and name of them. New collection can
- * still be created here
+ * still be created here.
+ *
+ * @param userId The current user ID.
+ * @param onDeleteClick A function that is called when the user clicks the delete button for a collection and passes the ID of the collection to be deleted as a parameter.
+ * @param onCollectionClick A function that is called when the user clicks on a collection. Passes the ID of the collection to be opened as a parameter.
+ * @param dataViewModel The DataViewModel instance used to save collection information.
  */
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -493,7 +521,11 @@ fun DisplayCollections(
 }
 
 /**
- * This function retrieves the size of the collection (in recipes)
+ * A getCollectionSize suspending function fetches the size of a collection given the collection ID and user ID.
+ *
+ * @param userId the ID of the user whose collection we are fetching.
+ * @param collectionId the ID of the collection whose size we are fetching.
+ * @return the size of the collection if it exists, otherwise 0.
  */
 suspend fun getCollectionSize(userId: String, collectionId: String): Int {
     val firestore = Firebase.firestore

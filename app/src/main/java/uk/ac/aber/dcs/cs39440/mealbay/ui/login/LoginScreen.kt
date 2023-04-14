@@ -39,6 +39,15 @@ import uk.ac.aber.dcs.cs39440.mealbay.ui.components.EmailInput
 import uk.ac.aber.dcs.cs39440.mealbay.ui.components.PasswordInput
 import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
 
+/**
+ * A composable function that displays a login screen with a form for users to enter their email and password in order to
+ * sign in or create a new account. Uses LoginScreenViewModel and DataViewModel to handle use authentication and save user
+ * data. Displays either the login form or the create account form based on the value of the showLoginForm variable.
+ *
+ * @param navController  used for navigation to other screens.
+ * @param viewModel a LoginScreenViewModel used for user authentication.
+ * @param dataViewModel a DataViewModel used for saving user data.
+ */
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -152,7 +161,13 @@ fun LoginScreen(
     }
 }
 
-
+/**
+ * Composable function for displaying a form for user email and password input.
+ *
+ * @param loading Whether the form is currently in a loading state or not.
+ * @param isCreateAccount Whether the form is for creating a new account or logging into an existing one.
+ * @param onDone A callback function to be executed when the user has finished entering their email and password.
+ */
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun UserForm(
@@ -217,6 +232,18 @@ fun UserForm(
     }
 }
 
+/**
+ * Composable button that displays a progress indicator while a background operation is in progress and triggers an
+ * action when clicked if the input is valid.
+ *
+ * @param textId The string resource ID for the text displayed on the button.
+ * @param loading Boolean value indicating if the button is currently in a loading state.
+ * @param validInputs Boolean value indicating if the input fields have valid data.
+ * @param onClick Lambda function that is called when the button is clicked and the input is valid.
+ *
+ * @return A FilledTonalButton composable with the specified parameters, displaying a progress indicator while loading
+ * and triggering the onClick lambda function when clicked if the input is valid.
+ */
 @OptIn(ExperimentalCoroutinesApi::class)
 @Composable
 fun SendButton(
