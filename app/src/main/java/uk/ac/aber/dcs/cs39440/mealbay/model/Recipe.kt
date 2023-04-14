@@ -1,4 +1,8 @@
 package uk.ac.aber.dcs.cs39440.mealbay.model
+
+/**
+ * This is a data class representing a Recipe object.
+ */
 data class Recipe(
 
     val category: String? = "",

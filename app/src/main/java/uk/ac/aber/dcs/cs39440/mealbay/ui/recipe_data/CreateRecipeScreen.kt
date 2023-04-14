@@ -258,6 +258,7 @@ fun RatingBar(
  * 5 -> very hard.
  *
  * @param difficultyInInt Difficulty value as an Integer
+ *
  * @return difficulty level as a String 
  */
 fun getDifficulty(difficultyInInt: Int): String? {

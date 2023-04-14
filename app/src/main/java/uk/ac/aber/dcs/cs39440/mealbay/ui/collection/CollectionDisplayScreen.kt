@@ -86,7 +86,7 @@ fun CollectionList(
     dataViewModel: DataViewModel = hiltViewModel(),
 ) {
     val selectedCollectionId = dataViewModel.getString(COLLECTION_ID)
-    Log.d("DEBUG", "Selected collection ID: $selectedCollectionId")
+    Log.d("CollectionList", "Selected collection ID: $selectedCollectionId")
 
     val recipes = remember { mutableStateListOf<Recipe>() }
     val isLoading = remember { mutableStateOf(true) }
@@ -148,15 +148,15 @@ fun CollectionList(
                 items(recipes) { recipe ->
                     RecipeItem(recipe,
                         onClick = {
-                        recipe.id?.let {
-                            dataViewModel.saveString(it, RECIPE_ID)
-                            Log.d("debug2", "${recipe.id}, ${recipe.title}")
-                        }
-                        navController.navigate(Screen.Recipe.route)
-                    }, onDelete = {  recipeId ->
-                        openDialog.value = true
-                        dataViewModel.saveString(recipeId, RECIPE_ID)
-                    })
+                            recipe.id?.let {
+                                dataViewModel.saveString(it, RECIPE_ID)
+                                Log.d("CollectionList", "${recipe.id}, ${recipe.title}")
+                            }
+                            navController.navigate(Screen.Recipe.route)
+                        }, onDelete = { recipeId ->
+                            openDialog.value = true
+                            dataViewModel.saveString(recipeId, RECIPE_ID)
+                        })
                 }
             }
             if (openDialog.value) {
@@ -183,9 +183,10 @@ fun CollectionList(
                             openDialog.value = false
                             val recipeId = dataViewModel.getString(RECIPE_ID)
                             val recipeToRemove =
-                                recipes.find { it.id == recipeId
+                                recipes.find {
+                                    it.id == recipeId
                                 }
-                            Log.d("debug2", "${dataViewModel.getString(RECIPE_ID)}")
+                            Log.d("CollectionList", "${dataViewModel.getString(RECIPE_ID)}")
                             if (selectedCollectionId != null && recipeToRemove != null) {
                                 deleteRecipeFromCollection(
                                     userId, selectedCollectionId,
@@ -216,13 +217,22 @@ fun CollectionList(
                     }
                 )
             }
-
         }
     }
 }
 
+/**
+ * getRecipeIdsForCollection function retrieves a list of recipe IDs for a given collection ID and user ID by querying
+ * the Firestore database.
+ *
+ * @param collectionId The ID of the collection to retrieve recipe IDs for.
+ * @param userId The ID of the user to retrieve the collection from.
+ *
+ * @return A list of recipe IDs associated with the given collection ID and user ID or an empty list if an error occurs.
+ */
 suspend fun getRecipeIdsForCollection(collectionId: String, userId: String): List<String> {
     val firestore = Firebase.firestore
+
     val userCollectionsRef = firestore
         .collection("users")
         .document(userId)
@@ -235,7 +245,7 @@ suspend fun getRecipeIdsForCollection(collectionId: String, userId: String): Lis
             .get()
             .await()
 
-        Log.d("SNAPSHOT", "Snapshot: $snapshot")
+//        Log.d("SNAPSHOT", "Snapshot: $snapshot")
 
         snapshot.documents.mapNotNull {
             it.getString("recipeId")
@@ -247,10 +257,21 @@ suspend fun getRecipeIdsForCollection(collectionId: String, userId: String): Lis
     }
 }
 
+/**
+ * This function retrieves asynchronously a list of Recipe objects from either the 'recipesready' or 'privateRecipes'
+ * collections in Firebase Firestore based on a list of recipe IDs. It then maps the resulting snapshots to Recipe objects
+ * and filters out any null values before returning the list.
+ *
+ * @param recipeIds The list of recipe IDs to retrieve.
+ * @param userId The current user ID to retrieve private recipes.
+ *
+ * @return A list of Recipe objects matching the provided recipe IDs.
+ */
 suspend fun getRecipesByIds(recipeIds: List<String>, userId: String): List<Recipe> {
     val firestore = Firebase.firestore
     val recipesReadyRef = firestore.collection("recipesready")
-    val privateRecipesRef = firestore.collection("users").document(userId).collection("privateRecipes")
+    val privateRecipesRef =
+        firestore.collection("users").document(userId).collection("privateRecipes")
 
     return try {
         val recipesDeferred = recipeIds.map { recipeId ->
@@ -271,7 +292,6 @@ suspend fun getRecipesByIds(recipeIds: List<String>, userId: String): List<Recip
                     }
                     else -> null
                 }
-
                 recipe
             }
         }
@@ -284,6 +304,14 @@ suspend fun getRecipesByIds(recipeIds: List<String>, userId: String): List<Recip
     }
 }
 
+/**
+ * This composable function displays a single recipe item as a card in a list. The recipe is represented by
+ * the Recipe object passed in as a parameter.
+ *
+ * @param recipe The recipe object to be displayed as a card in the list.
+ * @param onClick The lambda to be called when the user clicks on the recipe card.
+ * @param onDelete The lambda to be called when the user clicks on the delete button.
+ */
 @Composable
 fun RecipeItem(
     recipe: Recipe,
@@ -348,7 +376,7 @@ fun RecipeItem(
         )
 
         IconButton(
-            onClick = {  onDelete( recipe.id!! ) },
+            onClick = { onDelete(recipe.id!!) },
             modifier = Modifier
                 .constrainAs(deleteButton) {
                     start.linkTo(category.start)
@@ -361,6 +389,14 @@ fun RecipeItem(
     }
 }
 
+/**
+ * deleteRecipeFromCollection function deletes a recipe from a user's collection in the Firestore database.
+ *
+ * @param userId The ID of the user who owns the collection.
+ * @param collectionId The ID of the collection to delete the recipe from.
+ * @param recipeId The ID of the recipe to be deleted.
+ * @param onSuccess Callback function to be executed after successful deletion.
+ */
 fun deleteRecipeFromCollection(
     userId: String,
     collectionId: String,
