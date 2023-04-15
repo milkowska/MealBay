@@ -170,15 +170,15 @@ class MealViewModel : ViewModel() {
                     val recipe = document.toObject(Recipe::class.java)
                     recipe.apply {
                         id = document.id
-                        Log.d("fetchRecipesByCategory", "the id is $id ")
+                        Log.d("MYTAG", "fetchRecipesByCategory succeeded: recipe $id fetched")
                     }
                     recipes.add(recipe)
                 }
                 _recipesByCategory.value = recipes
-                // Log.d("fetchRecipesByCategory", "Recipes fetched successfully: ${recipes.size}")
+                Log.d("MYTAG", "fetchRecipesByCategory succeeded: ${recipes.size} recipes found")
             }
             .addOnFailureListener { exception ->
-                // Log.w("fetchRecipesByCategory", "Error fetching recipes by category: ", exception)
+                Log.d("MYTAG", "fetchRecipesByCategory failed: ${exception.message}")
             }
 
         return _recipesByCategory.value

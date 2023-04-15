@@ -2,7 +2,7 @@
     <string name="app_name">MealBay</string>
     <string name="search_icon">Search</string>
     <string name="collection_icon">Collections</string>
-    <string name="list_icon">Shopping list</string>
+    <string name="list_icon">List</string>
     <string name="home_icon">Home</string>
     <string name="shopping_list_is_empty">Shopping list is currently empty.</string>
     <string name="clear_all">Clear all</string>

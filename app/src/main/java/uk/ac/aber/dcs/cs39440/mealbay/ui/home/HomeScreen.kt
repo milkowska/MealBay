@@ -515,7 +515,6 @@ fun HomeScreen(
                                 categoryRow.forEach { category ->
                                     ElevatedButton(
                                         onClick = {
-
                                             dataViewModel.saveString(category, CURRENT_CATEGORY)
 
                                             navController.navigate(Screen.Filtered.route)

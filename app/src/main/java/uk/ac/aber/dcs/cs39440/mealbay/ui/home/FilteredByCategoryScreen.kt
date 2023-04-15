@@ -120,13 +120,17 @@ fun getRecipesByCategory(category: String): MutableLiveData<List<Recipe>> {
             val recipes = querySnapshot.documents.mapNotNull { documentSnapshot ->
                 val recipe = documentSnapshot.toObject(Recipe::class.java)
                 recipe?.apply { id = documentSnapshot.id
-                Log.d("MYTAG", "the id is $id ")}
+                Log.d("MYTAG", "the cat is $category ")}
             }
             recipesLiveData.value = recipes
+            Log.d("MYTAG", "getRecipesByCategory succeeded: ${recipes.size} recipes found")
+
         }
         .addOnFailureListener { exception ->
             // handle the exception here, e.g., log the error or set the value to null
             recipesLiveData.value = null
+            Log.d("MYTAG", "getRecipesByCategory failed: ${exception.message}")
+
             println("Failed to get recipes by category: ${exception.message}")
         }
 
