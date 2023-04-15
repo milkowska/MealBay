@@ -157,8 +157,9 @@ class MealViewModel : ViewModel() {
      * @param category The category used to filter recipes from the collection.
      * @return The list of recipes fetched from the database, or null if the operation fails.
      */
-    fun fetchRecipesByCategory(category: String): List<Recipe>? {
-        Log.d("fetchRecipesByCategory", "fetchRecipesByCategory called with category: $category")
+    fun fetchRecipesByCategory(category: String): LiveData<List<Recipe>?> {
+        val recipesLiveData = MutableLiveData<List<Recipe>?>()
+
         val db = FirebaseFirestore.getInstance()
         val query = db.collection("recipesready")
             .whereEqualTo("category", category)
@@ -174,13 +175,15 @@ class MealViewModel : ViewModel() {
                     }
                     recipes.add(recipe)
                 }
-                _recipesByCategory.value = recipes
+                recipesLiveData.value = recipes
                 Log.d("MYTAG", "fetchRecipesByCategory succeeded: ${recipes.size} recipes found")
             }
             .addOnFailureListener { exception ->
                 Log.d("MYTAG", "fetchRecipesByCategory failed: ${exception.message}")
+                recipesLiveData.value = null
             }
 
-        return _recipesByCategory.value
+        return recipesLiveData
     }
+
 }

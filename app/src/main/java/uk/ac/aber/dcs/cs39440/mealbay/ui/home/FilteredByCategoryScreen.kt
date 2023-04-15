@@ -7,9 +7,8 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,6 +27,7 @@ import uk.ac.aber.dcs.cs39440.mealbay.storage.CURRENT_CATEGORY
 import uk.ac.aber.dcs.cs39440.mealbay.ui.components.RecipeList
 import uk.ac.aber.dcs.cs39440.mealbay.model.MealViewModel
 
+
 /**
  * Composable function that displays a screen with a list of recipes filtered by category.
  * It gets the category from dataViewModel and fetches the list of recipes from mealViewModel and
@@ -41,15 +41,28 @@ import uk.ac.aber.dcs.cs39440.mealbay.model.MealViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
+
 fun FilteredByCategoryScreen(
     navController: NavHostController,
     dataViewModel: DataViewModel = hiltViewModel(),
     mealViewModel: MealViewModel = viewModel()
 ) {
     val category = dataViewModel.getString(CURRENT_CATEGORY)
-    val recipeList = category?.let { mealViewModel.fetchRecipesByCategory(it) }
-    val recipeListLiveData = category?.let { getRecipesByCategory(it) }
+    val recipeList by category?.let {
+        mealViewModel.fetchRecipesByCategory(it).observeAsState(null)
+    } ?: remember { mutableStateOf(null) }
+
     val (isLoading, setIsLoading) = remember { mutableStateOf(true) }
+
+    // When the category changes, set isLoading to true
+    LaunchedEffect(category) {
+        setIsLoading(true)
+    }
+
+    // When the recipeList changes, set isLoading to false
+    LaunchedEffect(recipeList) {
+        setIsLoading(false)
+    }
 
     Scaffold(
         topBar = {
@@ -84,55 +97,13 @@ fun FilteredByCategoryScreen(
                         .size(29.dp)
                 )
             }
-        }
-
-        if (recipeList != null) {
-
-            setIsLoading(false)
+        } else if (recipeList != null) {
             RecipeList(
-                recipeList = recipeList,
+                recipeList = recipeList!!,
                 navController = navController,
                 dataViewModel = dataViewModel,
                 showButtons = false
             )
         }
     }
-}
-
-/**
- * A getRecipesByCategory function gets a reference to the Firestore database and uses a query to retrieve documents
- * from the "recipesready" collection that have the specified category value. It maps the retrieved documents to Recipe
- * objects, setting the ID of each recipe from the document ID, and updates the value of the recipesLiveData
- * object with the resulting list.
- *
- * @param category the category to filter the recipes by.
- *
- * @return a MutableLiveData object containing the filtered list of Recipe objects.
- */
-fun getRecipesByCategory(category: String): MutableLiveData<List<Recipe>> {
-    val recipesLiveData = MutableLiveData<List<Recipe>>()
-    val db = FirebaseFirestore.getInstance()
-
-    db.collection("recipesready")
-        .whereEqualTo("category", category)
-        .get()
-        .addOnSuccessListener { querySnapshot ->
-            val recipes = querySnapshot.documents.mapNotNull { documentSnapshot ->
-                val recipe = documentSnapshot.toObject(Recipe::class.java)
-                recipe?.apply { id = documentSnapshot.id
-                Log.d("MYTAG", "the cat is $category ")}
-            }
-            recipesLiveData.value = recipes
-            Log.d("MYTAG", "getRecipesByCategory succeeded: ${recipes.size} recipes found")
-
-        }
-        .addOnFailureListener { exception ->
-            // handle the exception here, e.g., log the error or set the value to null
-            recipesLiveData.value = null
-            Log.d("MYTAG", "getRecipesByCategory failed: ${exception.message}")
-
-            println("Failed to get recipes by category: ${exception.message}")
-        }
-
-    return recipesLiveData
 }
