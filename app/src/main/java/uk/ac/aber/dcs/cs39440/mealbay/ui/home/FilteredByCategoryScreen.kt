@@ -96,7 +96,7 @@ fun FilteredByCategoryScreen(
         } else if (recipeList != null) {
             Box(
                 modifier = Modifier.fillMaxSize()
-                    .padding(top = 30.dp),
+                    .padding(top = 40.dp),
             ) {
                 RecipeList(
                     recipeList = recipeList!!,

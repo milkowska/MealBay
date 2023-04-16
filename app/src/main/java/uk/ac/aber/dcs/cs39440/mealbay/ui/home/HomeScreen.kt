@@ -116,21 +116,7 @@ fun HomeScreen(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
-    if (userID != null) {
-        getUserByUserID(
-            userID,
-            onSuccess = { user ->
-                // Handle the retrieved user data
-                val displayName = user?.displayName ?: "Unknown"
-                dataViewModel.saveString(displayName, "CURRENT_USER_NAME")
-                Log.d("FirebaseExample", "Display name: $displayName")
-            },
-            onFailure = { exception ->
-                // Handle the error
-                Log.e("FirebaseExample", "Error fetching user: ${exception.message}")
-            }
-        )
-    }
+
     // Updates the current hour, minute, and day of the week values every minute.
     LaunchedEffect(Unit) {
         val updateJob = launch {
@@ -157,7 +143,8 @@ fun HomeScreen(
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "Hello ${dataViewModel.getString(CURRENT_USER_NAME)}!",
+
+                    text = "Hello!",
                     fontSize = 20.sp
                 )
                 Spacer(modifier = Modifier.height(15.dp))
@@ -454,7 +441,8 @@ fun HomeScreen(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .height(330.dp)
-                                        .padding(25.dp),
+                                        .padding(25.dp)
+                                        .clip(RoundedCornerShape(20.dp)),
                                     contentScale = ContentScale.Crop
                                 )
 
@@ -664,19 +652,4 @@ fun HomeScreen(
             }
         }
     }
-}
-
-fun getUserByUserID(userID: String, onSuccess: (User?) -> Unit, onFailure: (Exception) -> Unit) {
-    val db = FirebaseFirestore.getInstance()
-
-    db.collection("users")
-        .document(userID)
-        .get()
-        .addOnSuccessListener { documentSnapshot ->
-            val user = documentSnapshot.toObject(User::class.java)
-            onSuccess(user)
-        }
-        .addOnFailureListener { exception ->
-            onFailure(exception)
-        }
 }
