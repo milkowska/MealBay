@@ -201,8 +201,6 @@ fun EmptyCollectionScreen(
                 contentDescription = stringResource(id = R.string.no_data_image),
                 modifier = Modifier
                     .fillMaxWidth()
-/*                    .width(320.dp)
-                    .height(320.dp)*/
                     .padding(20.dp),
             )
 

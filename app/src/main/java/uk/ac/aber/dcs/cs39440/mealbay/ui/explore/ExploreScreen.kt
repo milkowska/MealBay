@@ -165,7 +165,6 @@ fun RecipeData(
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
-               // .padding(top = 30.dp)
         ) {
 
             Box(modifier = Modifier.weight(1f)) {

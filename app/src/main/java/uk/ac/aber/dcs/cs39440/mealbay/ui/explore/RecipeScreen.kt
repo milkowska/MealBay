@@ -166,8 +166,6 @@ fun ShowRecipeContent(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            val ingredients = recipe.ingredients
-            val preparation = recipe.preparation
 
             LaunchedEffect(userId) {
                 val db = FirebaseFirestore.getInstance()
@@ -316,11 +314,14 @@ fun ShowRecipeContent(
                                     buildAnnotatedString {
                                         withStyle(SpanStyle(color = Color(0xFF9C4234))) {
                                             append("  • ") // bullet point
+
                                         }
                                         withStyle(SpanStyle(fontSize = 20.sp)) {
                                             append(splitItem) // item text
                                         }
-                                    }
+                                    },
+                                    modifier = Modifier
+                                        .padding(10.dp)
                                 )
                             }
                         }
@@ -362,7 +363,9 @@ fun ShowRecipeContent(
                                         append(item)
                                         Spacer(modifier = Modifier.padding(6.dp))
                                     }
-                                }
+                                },
+                                modifier = Modifier
+                                    .padding(10.dp)
                             )
                         }
                         item {
