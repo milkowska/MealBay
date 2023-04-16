@@ -104,5 +104,10 @@
     <string name="all_recipes">All recipes</string>
     <string name="other_recipes">Other recipes</string>
     <string name="no_recipes_created">It seems that you haven\'t created a recipe of your own yet. To add your very first recipe, you can press the button below and start adding the details of your recipe.</string>
+    <string name="open_drawer">Open drawer</string>
+    <string name="close">Close</string>
+    <string name="log_out">Log out</string>
+    <string name="have_you_on_board">We\'re glad to have you on board!</string>
+    <string name="press_to_log_out">Press the button below to log out.</string>
 
 </resources>

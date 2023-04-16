@@ -1,7 +1,6 @@
 package uk.ac.aber.dcs.cs39440.mealbay.ui.home
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
@@ -16,13 +15,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.google.firebase.firestore.FirebaseFirestore
 import uk.ac.aber.dcs.cs39440.mealbay.R
 import uk.ac.aber.dcs.cs39440.mealbay.model.DataViewModel
-import uk.ac.aber.dcs.cs39440.mealbay.data.Recipe
 import uk.ac.aber.dcs.cs39440.mealbay.storage.CURRENT_CATEGORY
 import uk.ac.aber.dcs.cs39440.mealbay.ui.components.RecipeList
 import uk.ac.aber.dcs.cs39440.mealbay.model.MealViewModel
@@ -98,12 +94,17 @@ fun FilteredByCategoryScreen(
                 )
             }
         } else if (recipeList != null) {
-            RecipeList(
-                recipeList = recipeList!!,
-                navController = navController,
-                dataViewModel = dataViewModel,
-                showButtons = false
-            )
+            Box(
+                modifier = Modifier.fillMaxSize()
+                    .padding(top = 30.dp),
+            ) {
+                RecipeList(
+                    recipeList = recipeList!!,
+                    navController = navController,
+                    dataViewModel = dataViewModel,
+                    showButtons = false
+                )
+            }
         }
     }
 }
