@@ -197,11 +197,12 @@ fun EmptyCollectionScreen(
         ) {
 
             Image(
-                painter = painterResource(id = R.drawable.nodata),
+                painter = painterResource(id = R.drawable.recipebook),
                 contentDescription = stringResource(id = R.string.no_data_image),
                 modifier = Modifier
-                    .width(320.dp)
-                    .height(320.dp)
+                    .fillMaxWidth()
+/*                    .width(320.dp)
+                    .height(320.dp)*/
                     .padding(20.dp),
             )
 

@@ -170,6 +170,7 @@ fun ListScreen(
     LaunchedEffect(userId) {
         fetchShoppingList(userId, shoppingList) { emptyList = shoppingList.isEmpty() }
     }
+
     // Function to update the empty list state
     fun updateEmptyListState() {
         emptyList = shoppingList.isEmpty()
@@ -219,17 +220,14 @@ fun ListScreen(
                                 ) {
                                     Image(
                                         modifier = Modifier
-                                            .size(300.dp),
-
-                                        painter = painterResource(id = R.drawable.emptycart),
+                                            .fillMaxWidth(),
+                                        painter = painterResource(id = R.drawable.shopping_hands),
                                         contentDescription = stringResource(id = R.string.shopping_list_is_empty),
                                         contentScale = ContentScale.Crop
                                     )
                                 }
                             }
                             item {
-
-                                Spacer(modifier = Modifier.height(40.dp))
 
                                 Text(
                                     text = stringResource(id = R.string.empty_shopping_list),

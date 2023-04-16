@@ -143,11 +143,10 @@ fun RecipesListInCollection(
                 )
 
                 Image(
-                    painter = painterResource(R.drawable.nodatahere),
+                    painter = painterResource(R.drawable.recipe_illustration),
                     contentDescription = "Empty Collection Image",
                     modifier = Modifier
-                        .size(340.dp)
-
+                        .fillMaxWidth()
                 )
 
                 Text(
@@ -158,7 +157,8 @@ fun RecipesListInCollection(
                         .align(Alignment.CenterHorizontally),
                     textAlign = TextAlign.Center
                 )
-                Spacer(modifier = Modifier.height(35.dp))
+
+                Spacer(modifier = Modifier.height(60.dp))
             }
         } else {
             LazyColumn {
