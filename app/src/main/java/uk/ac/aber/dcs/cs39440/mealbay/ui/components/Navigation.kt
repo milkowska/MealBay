@@ -3,6 +3,8 @@ package uk.ac.aber.dcs.cs39440.mealbay.ui.components
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -27,13 +29,20 @@ import uk.ac.aber.dcs.cs39440.mealbay.ui.explore.PrivateCustomRecipesScreen
  */
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun Navigation() {
+fun Navigation(currentRoute: MutableState<String>) {
     val navController = rememberNavController()
 
+    // Listen to the NavController's destination changes
+    LaunchedEffect(navController) {
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            currentRoute.value = destination.route ?: ""
+        }
+    }
     // Defining the navigation graph
     NavHost(
         navController = navController,
         startDestination = Screen.Splash.route
+
     ) {
         composable(Screen.Home.route) { HomeScreenTopLevel(navController) }
         composable(Screen.Explore.route) {

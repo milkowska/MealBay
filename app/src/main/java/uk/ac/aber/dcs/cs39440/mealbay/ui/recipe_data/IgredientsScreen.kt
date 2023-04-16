@@ -38,6 +38,7 @@ import uk.ac.aber.dcs.cs39440.mealbay.model.DataViewModel
 import uk.ac.aber.dcs.cs39440.mealbay.storage.NEW_RECIPE_INGREDIENTS
 import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
 import androidx.compose.material3.AlertDialog
+import uk.ac.aber.dcs.cs39440.mealbay.storage.NEW_RECIPE_PHOTO
 import uk.ac.aber.dcs.cs39440.mealbay.ui.components.minCharsLength
 
 
@@ -216,6 +217,10 @@ fun IngredientsScreen(
                                     dataViewModel.saveStringList(
                                         ingredientsList,
                                         NEW_RECIPE_INGREDIENTS
+                                    )
+                                    dataViewModel.saveString(
+                                        "https://cdn.pixabay.com/photo/2020/09/02/08/19/dinner-5537679_960_720.png",
+                                        NEW_RECIPE_PHOTO
                                     )
                                     //Navigating to the preparation screen
                                     navController.navigate(route = Screen.Preparation.route)

@@ -141,7 +141,6 @@ fun CategoryScreen(
         val preparation = dataViewModel.getStringList(NEW_RECIPE_PREPARATION)
         val rating = dataViewModel.getString(NEW_RECIPE_RATING)
         val totalTime = dataViewModel.getString(NEW_RECIPE_TIME)
-
         val userID = dataViewModel.getString(CURRENT_USER_ID)
 
         ingredients?.let { nonNullIngredients ->
@@ -184,12 +183,12 @@ fun CategoryScreen(
             )
 
             Image(
-                painter = painterResource(id = R.drawable.success),
+                painter = painterResource(id = R.drawable.success_1),
                 contentDescription = stringResource(id = R.string.success_picture),
                 modifier = Modifier
-                    .width(200.dp)
-                    .height(250.dp),
-                contentScale = ContentScale.Crop
+                    .height(350.dp)
+                    .width(330.dp),
+                contentScale = ContentScale.FillHeight
             )
 
             ElevatedButton(
