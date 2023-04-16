@@ -231,41 +231,9 @@ fun HomeScreen(
                             textAlign = TextAlign.Center
                         )
                     },
-                    backgroundColor = Color(0xFFFFDAD4)
+                    backgroundColor = Color(0xFFFFB4A7)
                 )
 
-
-                /*  TopAppBar(
-                navigationIcon = {
-                    IconButton(onClick = {
-                        FirebaseAuth.getInstance().signOut().run {
-
-                            navController.navigate(Screen.Login.route)
-                            Toast.makeText(
-                                context,
-                                "You have been logged out.",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    }
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_logout_icon),
-                            contentDescription = stringResource(id = R.string.logout)
-                        )
-                    }
-                },
-                title = {
-                    Text(
-                        text = stringResource(id = R.string.meal_bay),
-                        modifier = Modifier
-                            .padding(end = 60.dp)
-                            .fillMaxWidth(),
-                        textAlign = TextAlign.Center
-                    )
-                },
-                backgroundColor = Color(0xFFFFDAD4)
-            )*/
             },
 
             ) { innerPadding ->

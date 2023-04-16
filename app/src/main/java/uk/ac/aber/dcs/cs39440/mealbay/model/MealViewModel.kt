@@ -7,6 +7,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import androidx.lifecycle.MutableLiveData
+import com.google.firebase.firestore.Query
 import uk.ac.aber.dcs.cs39440.mealbay.data.Recipe
 import java.util.*
 
@@ -164,6 +165,7 @@ class MealViewModel : ViewModel() {
         val query = db.collection("recipesready")
             .whereEqualTo("category", category)
 
+
         query.get()
             .addOnSuccessListener { documents ->
                 val recipes = mutableListOf<Recipe>()
@@ -171,19 +173,17 @@ class MealViewModel : ViewModel() {
                     val recipe = document.toObject(Recipe::class.java)
                     recipe.apply {
                         id = document.id
-                        Log.d("MYTAG", "fetchRecipesByCategory succeeded: recipe $id fetched")
+                     // Log.d("fetchRecipes", "fetchRecipesByCategory succeeded: recipe $id fetched")
                     }
                     recipes.add(recipe)
                 }
                 recipesLiveData.value = recipes
-                Log.d("MYTAG", "fetchRecipesByCategory succeeded: ${recipes.size} recipes found")
+                // Log.d("fetchRecipes", "fetchRecipesByCategory succeeded: ${recipes.size} recipes found")
             }
             .addOnFailureListener { exception ->
-                Log.d("MYTAG", "fetchRecipesByCategory failed: ${exception.message}")
+                 Log.d("fetchRecipes", "fetchRecipesByCategory failed: ${exception.message}")
                 recipesLiveData.value = null
             }
-
         return recipesLiveData
     }
-
 }

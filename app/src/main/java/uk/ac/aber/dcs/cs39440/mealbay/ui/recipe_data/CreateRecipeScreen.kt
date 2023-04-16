@@ -95,13 +95,13 @@ fun CreateRecipeScreen(
                 verticalArrangement = Arrangement.SpaceEvenly
             ) {
 
-                Spacer(modifier = Modifier.height(30.dp))
+                Spacer(modifier = Modifier.height(15.dp))
 
                 Image(
-                    painter = painterResource(id = R.drawable.peoplecooking),
+                    painter = painterResource(id = R.drawable.cooking_illustration),
                     contentDescription = stringResource(id = R.string.people_cooking),
                     modifier = Modifier
-                        .height(200.dp)
+                        .height(240.dp)
                         .padding(10.dp),
                     contentScale = ContentScale.FillHeight
                 )

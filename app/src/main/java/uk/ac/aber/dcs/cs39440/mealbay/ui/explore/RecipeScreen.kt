@@ -207,7 +207,7 @@ fun ShowRecipeContent(
                                 Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                             }
                         },
-                        backgroundColor = Color(0xFFFFDAD4)
+                        backgroundColor = Color(0xFFFFB4A7)
                     )
                 },
                 scaffoldState = scaffoldState,

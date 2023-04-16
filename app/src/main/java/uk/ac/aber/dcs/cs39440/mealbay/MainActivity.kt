@@ -18,19 +18,6 @@ import uk.ac.aber.dcs.cs39440.mealbay.ui.components.Navigation
 import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
 import uk.ac.aber.dcs.cs39440.mealbay.ui.theme.MealBayTheme
 
-/*@AndroidEntryPoint
-class MainActivity : ComponentActivity() {
-    @RequiresApi(Build.VERSION_CODES.O)
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            MealBayTheme {
-                MealBayApp()
-            }
-        }
-    }
-}*/
-
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private lateinit var currentRoute: MutableState<String>
