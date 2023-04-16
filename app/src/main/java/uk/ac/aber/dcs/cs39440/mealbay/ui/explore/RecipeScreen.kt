@@ -86,7 +86,7 @@ fun RecipeScreen(
 
     val id = dataViewModel.getString(RECIPE_ID)
     val userId = dataViewModel.getString(CURRENT_USER_ID)
-    Log.d("MYTAG", "the id is $id or ${dataViewModel.getString(RECIPE_ID)}")
+    //Log.d("RecipeScreen", "the id is $id or ${dataViewModel.getString(RECIPE_ID)}")
     if (id != null) {
         if (userId != null) {
             FetchRecipeByID(navController, documentId = id, userId = userId, mealViewModel)
@@ -220,7 +220,7 @@ fun ShowRecipeContent(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(360.dp)
-                                    .padding(25.dp)
+                                    .padding(15.dp)
                                     .clip(RoundedCornerShape(25.dp)),
                                 contentScale = ContentScale.Crop
                             )

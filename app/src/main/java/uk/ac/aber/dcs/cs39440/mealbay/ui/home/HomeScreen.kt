@@ -165,7 +165,7 @@ fun HomeScreen(
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                Button(
+                ElevatedButton(
                     onClick = {
                         FirebaseAuth.getInstance().signOut().run {
 
@@ -195,7 +195,7 @@ fun HomeScreen(
                     contentScale = ContentScale.Crop
                 )
 
-                Button(
+                ElevatedButton(
                     onClick = { scope.launch { drawerState.close() } },
                     modifier = Modifier.width(200.dp)
                 ) {
