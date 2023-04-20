@@ -26,6 +26,7 @@ import kotlinx.coroutines.delay
 import uk.ac.aber.dcs.cs39440.mealbay.R
 import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
 import androidx.compose.animation.core.Animatable
+import androidx.compose.material3.MaterialTheme
 
 /**
  * This composable function displays a "splashed" logo of the app that is visible on each opening application.
@@ -60,7 +61,9 @@ fun SplashScreen(navController: NavController = NavController(context = LocalCon
         modifier = Modifier
             .fillMaxSize()
             .scale(scale.value),
-        shape = RectangleShape
+        shape = RectangleShape,
+        color = MaterialTheme.colorScheme.surface,
+
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),

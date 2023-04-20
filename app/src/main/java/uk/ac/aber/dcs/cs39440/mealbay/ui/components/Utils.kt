@@ -50,6 +50,7 @@ import uk.ac.aber.dcs.cs39440.mealbay.data.Recipe
 import uk.ac.aber.dcs.cs39440.mealbay.storage.RECIPE_ID
 import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
 import uk.ac.aber.dcs.cs39440.mealbay.ui.theme.Railway
+import androidx.compose.material3.MaterialTheme
 
 // Maximum allowed characters for the collection name
 const val maxCharsLengthForCollection = 34
@@ -128,13 +129,14 @@ fun TextInputField(
             .fillMaxWidth(),
         enabled = enabled,
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            textColor = Color(0xFF000000),
-            errorCursorColor = Color(0xFF9C4234),
-            unfocusedBorderColor = Color(0xFF000000),
-            focusedBorderColor = Color(0xFF9C4234),
-            focusedLabelColor = Color(0xFF9C4234),
-            unfocusedLabelColor = Color(0xFF000000),
-            cursorColor = Color(0xFF9C4234)
+            textColor = MaterialTheme.colorScheme.primary,
+            errorCursorColor = MaterialTheme.colorScheme.error,
+            trailingIconColor = MaterialTheme.colorScheme.onSurface,
+            unfocusedBorderColor = MaterialTheme.colorScheme.onSurface,
+            focusedBorderColor = MaterialTheme.colorScheme.primary,
+            focusedLabelColor = MaterialTheme.colorScheme.primary,
+            unfocusedLabelColor = MaterialTheme.colorScheme.onSurface,
+            cursorColor = MaterialTheme.colorScheme.primary,
         ),
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType, imeAction = imeAction),
         keyboardActions = onAction
@@ -181,14 +183,16 @@ fun PasswordInput(
             keyboardType = KeyboardType.Password,
             imeAction = imeAction
         ),
+
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            textColor = Color(0xFF000000),
-            errorCursorColor = Color(0xFF9C4234),
-            unfocusedBorderColor = Color(0xFF000000),
-            focusedBorderColor = Color(0xFF9C4234),
-            focusedLabelColor = Color(0xFF9C4234),
-            unfocusedLabelColor = Color(0xFF000000),
-            cursorColor = Color(0xFF9C4234)
+            textColor = MaterialTheme.colorScheme.primary,
+            errorCursorColor = MaterialTheme.colorScheme.error,
+            trailingIconColor = MaterialTheme.colorScheme.onSurface,
+            unfocusedBorderColor = MaterialTheme.colorScheme.onSurface,
+            focusedBorderColor = MaterialTheme.colorScheme.primary,
+            focusedLabelColor = MaterialTheme.colorScheme.primary,
+            unfocusedLabelColor = MaterialTheme.colorScheme.onSurface,
+            cursorColor = MaterialTheme.colorScheme.primary,
         ),
         visualTransformation = visualTransformation,
         trailingIcon = { PasswordVisibility(passwordVisibility = passwordVisibility) },
@@ -385,7 +389,11 @@ fun RecipeList(
                                                     }
                                             }
                                             openAlertDialog.value = false
-                                            Toast.makeText(context, "The recipe has been deleted.", Toast.LENGTH_LONG)
+                                            Toast.makeText(
+                                                context,
+                                                "The recipe has been deleted.",
+                                                Toast.LENGTH_LONG
+                                            )
                                                 .show()
                                         }) {
                                             Text(

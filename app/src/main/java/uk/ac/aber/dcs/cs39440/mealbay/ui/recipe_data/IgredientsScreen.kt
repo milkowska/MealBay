@@ -3,6 +3,7 @@ package uk.ac.aber.dcs.cs39440.mealbay.ui.recipe_data
 import androidx.compose.material3.TextField
 import android.annotation.SuppressLint
 import android.widget.Toast
+import androidx.compose.material3.MaterialTheme
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -13,7 +14,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -91,7 +91,8 @@ fun IngredientsScreen(
                         )
                     }
                 },
-                backgroundColor = Color(0xFFFFFFFF)
+                backgroundColor = MaterialTheme.colorScheme.surface
+
             )
         }) {
 

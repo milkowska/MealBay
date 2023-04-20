@@ -1,6 +1,7 @@
 package uk.ac.aber.dcs.cs39440.mealbay.ui.collection
 
 import android.util.Log
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material.Divider
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
@@ -110,7 +111,9 @@ fun CollectionScreen(
         sheetState = sheetState,
         sheetContent = { BottomSheet() },
         modifier = Modifier.fillMaxSize(),
-        sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+        sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+        sheetBackgroundColor = MaterialTheme.colorScheme.secondaryContainer,
+        scrimColor = MaterialTheme.colorScheme.surfaceTint,
     ) {
         TopLevelScaffold(
             navController = navController,
@@ -141,7 +144,7 @@ fun CollectionScreen(
                     }
 
                     FloatingActionButton(
-                        backgroundColor = (Color(0xFFFFDAD4)),
+                        backgroundColor = MaterialTheme.colorScheme.primary,
                         onClick = {
                             coroutineScope.launch {
                                 if (sheetState.isVisible) sheetState.hide()
@@ -266,7 +269,9 @@ fun BottomSheet(dataViewModel: DataViewModel = hiltViewModel()) {
                 }
             },
             colors = TextFieldDefaults.textFieldColors(
-                focusedIndicatorColor = Color(0xFF9C4234)
+                focusedIndicatorColor = Color(0xFF9C4234),
+                textColor = MaterialTheme.colorScheme.onSurface,
+                cursorColor = MaterialTheme.colorScheme.onSurface,
             ),
             modifier = Modifier.width(360.dp),
             singleLine = true,
@@ -281,7 +286,7 @@ fun BottomSheet(dataViewModel: DataViewModel = hiltViewModel()) {
 
         Spacer(modifier = Modifier.height(100.dp))
 
-        FilledTonalButton(
+        ElevatedButton(
             enabled = collectionName.isNotEmpty(),
             onClick = {
                 if (collectionName.trim().length < minCharsLength) {
@@ -437,10 +442,7 @@ fun DisplayCollections(
                         ) {
                         Column(modifier = Modifier.padding(start = 10.dp)) {
                             Text(text = collectionName, fontSize = 19.sp)
-                            Text(
-                                text = if (collectionSize == 1) "$collectionSize recipe" else "$collectionSize recipes",
-                                fontSize = 14.sp
-                            )
+
                         }
 
                         IconButton(onClick = {
@@ -449,14 +451,13 @@ fun DisplayCollections(
                         }) {
                             Icon(Icons.Default.Close, contentDescription = "Delete Collection")
                         }
-
                     }
                     Divider()
                 }
             }
 
             FloatingActionButton(
-                backgroundColor = (Color(0xFFFFDAD4)),
+                backgroundColor = MaterialTheme.colorScheme.primary,
                 onClick = {
                     coroutineScope.launch {
                         if (sheetState.isVisible) sheetState.hide()
@@ -469,7 +470,8 @@ fun DisplayCollections(
             ) {
                 Icon(
                     Icons.Filled.Add,
-                    contentDescription = stringResource(id = R.string.create_collection)
+                    contentDescription = stringResource(id = R.string.create_collection),
+                    tint = Color.Black
                 )
             }
 

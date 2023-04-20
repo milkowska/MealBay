@@ -2,6 +2,8 @@ package uk.ac.aber.dcs.cs39440.mealbay.ui.explore
 
 import android.annotation.SuppressLint
 import android.util.Log
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -47,8 +49,6 @@ import kotlinx.coroutines.launch
 import uk.ac.aber.dcs.cs39440.mealbay.data.Recipe
 import uk.ac.aber.dcs.cs39440.mealbay.storage.CURRENT_USER_ID
 import uk.ac.aber.dcs.cs39440.mealbay.storage.RECIPE_ID
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
 import uk.ac.aber.dcs.cs39440.mealbay.model.MealViewModel
 import uk.ac.aber.dcs.cs39440.mealbay.ui.theme.Railway
 
@@ -86,7 +86,6 @@ fun RecipeScreen(
 
     val id = dataViewModel.getString(RECIPE_ID)
     val userId = dataViewModel.getString(CURRENT_USER_ID)
-    //Log.d("RecipeScreen", "the id is $id or ${dataViewModel.getString(RECIPE_ID)}")
     if (id != null) {
         if (userId != null) {
             FetchRecipeByID(navController, documentId = id, userId = userId, mealViewModel)
@@ -207,9 +206,10 @@ fun ShowRecipeContent(
                                 Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                             }
                         },
-                        backgroundColor = Color(0xFFFFB4A7)
+                        backgroundColor = MaterialTheme.colorScheme.surface
                     )
                 },
+                backgroundColor = MaterialTheme.colorScheme.background,
                 scaffoldState = scaffoldState,
                 content = {
                     LazyColumn {
@@ -257,7 +257,10 @@ fun ShowRecipeContent(
                                     fontSize = 18.sp
                                 )
 
-                                ElevatedButton(
+                                FilledTonalButton(
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = MaterialTheme.colorScheme.primaryContainer
+                                    ),
                                     onClick = {
                                         setShowCollections(!showCollections)
                                     },
@@ -383,7 +386,7 @@ fun ShowRecipeContent(
                     .padding(16.dp)
                     .size(width = 350.dp, height = 450.dp)
                     .align(Alignment.Center),
-                backgroundColor = Color(0xFFFFDED8),
+                backgroundColor = MaterialTheme.colorScheme.onSecondaryContainer,
                 shape = RoundedCornerShape(16.dp)
             ) {
                 Box(contentAlignment = Alignment.Center) {
@@ -413,10 +416,6 @@ fun ShowRecipeContent(
                                             }
                                             setShowCollections(false)
                                         }
-                                        Log.d(
-                                            "AAA",
-                                            "${collection.id}, recipe:  $recipeId, user:  $userId "
-                                        )
                                     }
                                 },
                                 recipeId = it
@@ -431,17 +430,16 @@ fun ShowRecipeContent(
                         title = { Text(text = stringResource(id = R.string.recipe_already)) },
                         text = { Text(text = stringResource(id = R.string.recipe_already_two)) },
                         shape = RoundedCornerShape(10.dp),
-                        backgroundColor = Color(0xFFFFDAD6),
+                        backgroundColor = MaterialTheme.colorScheme.surface,
                         confirmButton = {
                             Button(
                                 onClick = { showDialog.value = false },
                                 colors = ButtonDefaults.buttonColors(
-                                    backgroundColor = Color(0xFFDB7465),
-                                    contentColor = Color.White
+                                    containerColor = MaterialTheme.colorScheme.onPrimaryContainer
                                 ),
                                 modifier = Modifier
                                     .width(80.dp)
-                                    .padding(end = 5.dp, bottom = 5.dp),
+                                    .padding(end = 15.dp, bottom = 15.dp),
                                 content = { Text(stringResource(id = R.string.ok)) }
                             )
                         },
@@ -512,7 +510,7 @@ fun CollectionList(
                 .width(300.dp)
                 .height(400.dp)
                 .padding(start = 5.dp, bottom = 40.dp, end = 5.dp),
-            backgroundColor = Color(0xFFDBB2AA),
+            backgroundColor = MaterialTheme.colorScheme.secondaryContainer,
         ) {
             LazyColumn(
                 modifier = Modifier.padding(8.dp),

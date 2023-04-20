@@ -1,6 +1,7 @@
 package uk.ac.aber.dcs.cs39440.mealbay.ui.shopping_list
 
 import android.util.Log
+import androidx.compose.material3.MaterialTheme
 import  androidx.compose.runtime.mutableStateListOf
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
@@ -11,9 +12,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -31,7 +35,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.material3.TextField
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
@@ -109,6 +112,11 @@ fun BottomSheet(
             },
             modifier = Modifier.width(360.dp),
             singleLine = true,
+            colors = TextFieldDefaults.textFieldColors(
+                focusedIndicatorColor = Color(0xFF9C4234),
+                textColor = MaterialTheme.colorScheme.onSurface,
+                cursorColor = MaterialTheme.colorScheme.onSurface,
+            ),
             isError = isErrorInTextField,
         )
 
@@ -182,11 +190,13 @@ fun ListScreen(
             BottomSheet(
                 shoppingList,
                 userId,
-                onListChanged = ::updateEmptyListState
+                onListChanged = ::updateEmptyListState,
             )
         },
         modifier = Modifier.fillMaxSize(),
         sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+        sheetBackgroundColor = MaterialTheme.colorScheme.secondaryContainer,
+        scrimColor = MaterialTheme.colorScheme.surfaceTint,
     ) {
         TopLevelScaffold(
             navController = navController,
@@ -210,7 +220,7 @@ fun ListScreen(
                         // Show an empty cart image and message if the list is empty
                         if (emptyList) {
                             item {
-                                Spacer(modifier = Modifier.height(30.dp))
+                                Spacer(modifier = Modifier.height(25.dp))
                             }
                             item {
                                 Row(
@@ -228,7 +238,6 @@ fun ListScreen(
                                 }
                             }
                             item {
-
                                 Text(
                                     text = stringResource(id = R.string.empty_shopping_list),
                                     fontSize = 21.sp,
@@ -282,8 +291,9 @@ fun ListScreen(
                             .height(80.dp)
 
                     ) {
+
                         FloatingActionButton(
-                            backgroundColor = (Color(0xFFFFDAD4)),
+                            backgroundColor = MaterialTheme.colorScheme.primary,
                             onClick = {
                                 coroutineScope.launch {
                                     if (sheetState.isVisible) sheetState.hide()
@@ -292,13 +302,20 @@ fun ListScreen(
                             },
                             modifier = Modifier
                                 .align(Alignment.BottomEnd)
-                                .padding(end = 15.dp)
+                                .padding(end = 16.dp)
 
                         ) {
-                            Icon(Icons.Filled.Add, contentDescription = "Add an item")
+                            Icon(
+                                Icons.Filled.Add,
+                                contentDescription = "Add an item",
+                                tint = Color.Black
+                            )
                         }
 
-                        ElevatedButton(
+                        FilledTonalButton(
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.onPrimaryContainer
+                            ),
                             onClick = {
                                 openDialogOnSave.value = true
                             },
@@ -308,7 +325,8 @@ fun ListScreen(
                                 .height(50.dp)
                                 .padding(start = 30.dp, end = 25.dp)
                                 .align(Alignment.BottomStart),
-                        ) {
+
+                            ) {
                             Text(
                                 text = stringResource(id = R.string.clear),
                                 fontFamily = Railway
@@ -374,6 +392,7 @@ fun ListScreen(
         Spacer(modifier = Modifier.height(80.dp))
     }
 }
+
 
 /**
  *  fetchShoppingList function is executed asynchronously to retrieve the user's shopping list from the Firestore

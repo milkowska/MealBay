@@ -274,7 +274,10 @@ fun RecipeData(
                     hasRecipes
                 }
 
-                ElevatedButton(
+                FilledTonalButton(
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    ),
                     onClick = {
                         navController.navigate(Screen.Create.route)
                     }, modifier = Modifier
@@ -288,7 +291,10 @@ fun RecipeData(
                     )
                 }
 
-                ElevatedButton(
+                FilledTonalButton(
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    ),
                     onClick = {
                         navController.navigate(Screen.Custom.route)
                     },

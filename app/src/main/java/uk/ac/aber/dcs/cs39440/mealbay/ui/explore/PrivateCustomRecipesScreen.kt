@@ -3,10 +3,7 @@ package uk.ac.aber.dcs.cs39440.mealbay.ui.explore
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ElevatedButton
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.mutableStateOf
@@ -174,7 +171,10 @@ fun PrivateCustomRecipesScreen(
                         ) {
 
                             //This button navigates user to creating the custom recipe screen
-                            ElevatedButton(
+                            FilledTonalButton(
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.onPrimaryContainer
+                                ),
                                 onClick = {
                                     navController.navigate(Screen.Create.route)
                                 }, modifier = Modifier
@@ -189,7 +189,10 @@ fun PrivateCustomRecipesScreen(
                             }
 
                             //This button navigates to the explore screen where all public recipes can be seen
-                            ElevatedButton(
+                            FilledTonalButton(
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.onPrimaryContainer
+                                ),
                                 onClick = {
                                     navController.navigate(Screen.Explore.route)
                                 },

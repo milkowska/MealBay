@@ -10,7 +10,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.TopAppBar
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -44,17 +43,22 @@ import androidx.compose.runtime.getValue
 import java.time.LocalDateTime
 import java.util.*
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.ModalDrawer
+import androidx.compose.material.*
+import androidx.compose.material.DrawerValue
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.ui.platform.LocalContext
 import uk.ac.aber.dcs.cs39440.mealbay.storage.CURRENT_CATEGORY
-import androidx.compose.material.rememberDrawerState
-import androidx.compose.material.DrawerValue
-import com.google.firebase.firestore.FirebaseFirestore
-import uk.ac.aber.dcs.cs39440.mealbay.data.User
+
 import uk.ac.aber.dcs.cs39440.mealbay.storage.CURRENT_USER_ID
-import uk.ac.aber.dcs.cs39440.mealbay.storage.CURRENT_USER_NAME
 import uk.ac.aber.dcs.cs39440.mealbay.ui.theme.Railway
 
 /**
@@ -136,6 +140,7 @@ fun HomeScreen(
     }
 
     ModalDrawer(
+        drawerBackgroundColor = MaterialTheme.colorScheme.surface,
         drawerContent = {
             Column(
                 modifier = Modifier.padding(20.dp),
@@ -143,7 +148,6 @@ fun HomeScreen(
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-
                     text = "Hello!",
                     fontSize = 20.sp
                 )
@@ -165,7 +169,10 @@ fun HomeScreen(
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                ElevatedButton(
+                FilledTonalButton(
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    ),
                     onClick = {
                         FirebaseAuth.getInstance().signOut().run {
 
@@ -195,7 +202,10 @@ fun HomeScreen(
                     contentScale = ContentScale.Crop
                 )
 
-                ElevatedButton(
+                FilledTonalButton(
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    ),
                     onClick = { scope.launch { drawerState.close() } },
                     modifier = Modifier.width(200.dp)
                 ) {
@@ -231,7 +241,7 @@ fun HomeScreen(
                             textAlign = TextAlign.Center
                         )
                     },
-                    backgroundColor = Color(0xFFFFB4A7)
+                    backgroundColor = MaterialTheme.colorScheme.surface
                 )
 
             },

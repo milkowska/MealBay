@@ -84,7 +84,8 @@ fun CreateRecipeScreen(
                         )
                     }
                 },
-                backgroundColor = Color(0xFFFFDAD4)
+                backgroundColor = MaterialTheme.colorScheme.surface
+
             )
         }) {
         Box(
