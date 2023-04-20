@@ -1,27 +1,32 @@
 package uk.ac.aber.dcs.cs39440.mealbay.ui.components
 
 import android.util.Log
+import android.widget.Toast
+import androidx.compose.material3.Text
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.AlertDialog
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -36,6 +41,9 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import uk.ac.aber.dcs.cs39440.mealbay.R
 import uk.ac.aber.dcs.cs39440.mealbay.model.DataViewModel
 import uk.ac.aber.dcs.cs39440.mealbay.data.Recipe
@@ -215,9 +223,11 @@ fun PasswordVisibility(passwordVisibility: MutableState<Boolean>) {
  * values using ConstraintLayout.
  *
  * @param recipeList the list of Recipes to display.
- * @param navController the NavHostController responsible for navigating between screens
- * @param dataViewModel a DataViewModel used for saving the id of the selected recipe
- * @param showButtons a Boolean flag indicating whether or not to show the create and explore buttons at the bottom of the screen
+ * @param navController the NavHostController responsible for navigating between screens.
+ * @param dataViewModel a DataViewModel used for saving the id of the selected recipe.
+ * @param showButtons a Boolean flag indicating whether or not to show the create and explore buttons at the bottom of the screen.
+ * @param userId the current user ID.
+ * @param firestore firebase instance.
  */
 @OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -225,14 +235,17 @@ fun RecipeList(
     recipeList: List<Recipe>,
     navController: NavHostController,
     dataViewModel: DataViewModel = hiltViewModel(),
-    showButtons: Boolean
+    showButtons: Boolean,
+    userId: String,
+    firestore: FirebaseFirestore = Firebase.firestore
 ) {
     var recipeId: String?
-
+    val openAlertDialog = remember { mutableStateOf(false) }
+    var temporaryRecipeId by rememberSaveable { mutableStateOf("") }
+    var context = LocalContext.current
     Column(
         Modifier
             .fillMaxSize()
-          //  .padding(top = 30.dp)
     ) {
         Box(modifier = Modifier.weight(1f)) {
 
@@ -249,12 +262,11 @@ fun RecipeList(
                                     recipeId = it
                                     dataViewModel.saveString(recipeId!!, RECIPE_ID)
                                     Log.d("TEST", "${recipeList[index].id}")
-
                                 }
                                 navController.navigate(Screen.Recipe.route)
                             }
                     ) {
-                        val (photo, title, difficulty) = createRefs()
+                        val (photo, title, difficulty, delete) = createRefs()
                         Box(
                             modifier = Modifier
                                 .constrainAs(photo) {
@@ -279,7 +291,7 @@ fun RecipeList(
                             }
                         }
                         recipeList[index]?.title?.let {
-                            androidx.compose.material3.Text(
+                            Text(
                                 text = it,
                                 modifier = Modifier
                                     .padding(2.dp)
@@ -295,7 +307,7 @@ fun RecipeList(
                         }
 
                         recipeList[index]?.difficulty?.let {
-                            androidx.compose.material3.Text(
+                            Text(
                                 text = "Difficulty: $it",
                                 modifier = Modifier
                                     .padding(
@@ -316,6 +328,85 @@ fun RecipeList(
                                 textAlign = TextAlign.Center
                             )
                         }
+
+                        if (showButtons) {
+                            recipeList[index]?.id?.let { recipeId ->
+                                IconButton(
+                                    onClick = {
+                                        temporaryRecipeId = recipeId
+                                        openAlertDialog.value = true
+                                    },
+                                    modifier = Modifier
+                                        .constrainAs(delete) {
+                                            start.linkTo(difficulty.start)
+                                            end.linkTo(difficulty.end)
+                                            top.linkTo(difficulty.bottom, 1.dp)
+                                        }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Delete,
+                                        contentDescription = "Delete recipe"
+                                    )
+                                }
+                            }
+                            if (openAlertDialog.value) {
+                                AlertDialog(
+                                    onDismissRequest = {
+                                        openAlertDialog.value = false
+                                    },
+                                    title = {
+                                        Text(
+                                            text = stringResource(R.string.are_you_sure),
+                                            fontFamily = Railway,
+                                            fontSize = 22.sp
+                                        )
+                                    },
+                                    text = {
+                                        Text(
+                                            text = stringResource(R.string.pressing_confirm_delete),
+                                            fontFamily = Railway,
+                                            fontSize = 16.sp
+                                        )
+                                    },
+                                    confirmButton = {
+                                        TextButton(onClick = {
+                                            temporaryRecipeId.let {
+                                                firestore
+                                                    .collection("users")
+                                                    .document(userId)
+                                                    .collection("privateRecipes")
+                                                    .document(it)
+                                                    .delete()
+                                                    .addOnSuccessListener {
+                                                        Log.d(
+                                                            "RecipeList",
+                                                            "Recipe deleted successfully"
+                                                        )
+                                                    }
+                                            }
+                                            openAlertDialog.value = false
+                                            Toast.makeText(context, "The recipe has been deleted.", Toast.LENGTH_LONG)
+                                                .show()
+                                        }) {
+                                            Text(
+                                                text = stringResource(id = R.string.confirm),
+                                                fontFamily = Railway,
+                                                fontSize = 16.sp
+                                            )
+                                        }
+                                    },
+                                    dismissButton = {
+                                        TextButton(onClick = { openAlertDialog.value = false }) {
+                                            Text(
+                                                text = stringResource(id = R.string.cancel),
+                                                fontFamily = Railway,
+                                                fontSize = 16.sp
+                                            )
+                                        }
+                                    }
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -325,6 +416,7 @@ fun RecipeList(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(top = 8.dp)
             ) {
 
                 ElevatedButton(
@@ -336,7 +428,7 @@ fun RecipeList(
                         .weight(0.5f)
 
                 ) {
-                    androidx.compose.material3.Text(
+                    Text(
                         stringResource(R.string.create_new),
                         fontFamily = Railway
                     )
@@ -351,7 +443,7 @@ fun RecipeList(
                         .padding(all = 15.dp)
                         .weight(0.5f)
                 ) {
-                    androidx.compose.material3.Text(
+                    Text(
                         stringResource(R.string.other_recipes),
                         fontFamily = Railway,
                     )

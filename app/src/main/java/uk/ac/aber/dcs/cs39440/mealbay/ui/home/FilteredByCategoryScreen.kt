@@ -22,6 +22,7 @@ import uk.ac.aber.dcs.cs39440.mealbay.model.DataViewModel
 import uk.ac.aber.dcs.cs39440.mealbay.storage.CURRENT_CATEGORY
 import uk.ac.aber.dcs.cs39440.mealbay.ui.components.RecipeList
 import uk.ac.aber.dcs.cs39440.mealbay.model.MealViewModel
+import uk.ac.aber.dcs.cs39440.mealbay.storage.CURRENT_USER_ID
 
 
 /**
@@ -98,12 +99,15 @@ fun FilteredByCategoryScreen(
                 modifier = Modifier.fillMaxSize()
                     .padding(top = 40.dp),
             ) {
-                RecipeList(
-                    recipeList = recipeList!!,
-                    navController = navController,
-                    dataViewModel = dataViewModel,
-                    showButtons = false
-                )
+                dataViewModel.getString(CURRENT_USER_ID)?.let { it1 ->
+                    RecipeList(
+                        recipeList = recipeList!!,
+                        navController = navController,
+                        dataViewModel = dataViewModel,
+                        showButtons = false,
+                        userId = it1
+                    )
+                }
             }
         }
     }

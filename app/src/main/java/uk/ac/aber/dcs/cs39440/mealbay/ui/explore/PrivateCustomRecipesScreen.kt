@@ -104,6 +104,7 @@ fun PrivateCustomRecipesScreen(
                     onEmpty = {
                         setIsLoading(false)
                         setIsEmpty(true)
+                        setCustomRecipeList(emptyList())
                     },
                     onFailure = {
                         setIsLoading(false)
@@ -115,21 +116,32 @@ fun PrivateCustomRecipesScreen(
                     }
                 )
 
-                // Displaying the private recipes data
-                if (!isLoading && customRecipeList.isNotEmpty()) {
-                    setIsEmpty(false)
+                if (isLoading) {
+                    //Displaying a Circular progress indicator while the data is being fetched
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Spacer(modifier = Modifier.height(20.dp))
+
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .size(29.dp)
+                        )
+                    }
+                } else if (customRecipeList.isNotEmpty()) {
+                    // Displaying the private recipes data
                     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
                         RecipeList(
                             customRecipeList,
                             navController,
                             dataViewModel,
-                            showButtons = true
+                            showButtons = true,
+                            userId = userId
                         )
                     }
-                }
-
-                // Informing the user when the data is empty as it was not created before
-                if (customRecipeList.isEmpty() && isEmpty) {
+                } else if (isEmpty) {
+                    // Informing the user when the data is empty as it was not created before
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Bottom,
@@ -155,7 +167,6 @@ fun PrivateCustomRecipesScreen(
                             fontSize = 16.sp,
                             textAlign = TextAlign.Center
                         )
-
                         Row(
                             horizontalArrangement = Arrangement.SpaceBetween,
                             modifier = Modifier
@@ -199,6 +210,7 @@ fun PrivateCustomRecipesScreen(
         }
     }
 }
+
 
 /**
  * This function fetches the data from Firebase Datastore given the current user ID.

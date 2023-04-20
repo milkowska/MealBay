@@ -76,6 +76,7 @@
     <string name="warning_four">"After clicking the save button, you will no longer be able to modify the preparation section. "</string>
     <string name="your_recipes">Your recipes</string>
     <string name="pressing_confirm">If you proceed, the collection will be permanently deleted.</string>
+    <string name="pressing_confirm_delete">If you proceed, the custom recipe will be permanently deleted.</string>
     <string name="recipe_already">Recipe already in the collection</string>
     <string name="recipe_already_two">This recipe is already in the selected collection.</string>
     <string name="ok">OK</string>

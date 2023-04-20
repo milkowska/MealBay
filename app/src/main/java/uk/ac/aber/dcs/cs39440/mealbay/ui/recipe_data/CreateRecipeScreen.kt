@@ -31,11 +31,12 @@ import uk.ac.aber.dcs.cs39440.mealbay.ui.components.maxRecipeNameCharsLength
 import uk.ac.aber.dcs.cs39440.mealbay.ui.components.maxTotalTimeCharsLength
 import uk.ac.aber.dcs.cs39440.mealbay.ui.components.minCharsLength
 import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
+import uk.ac.aber.dcs.cs39440.mealbay.ui.theme.Railway
 
 /**
  * This composable function is displaying the screen where the user can interact and add values to the new recipe that he
  * is creating. It prompts for a recipe name, total time of preparation, giving these two a length limit and difficulty and
- * personal rating for this recipe by clicking on the amount of stars that is satisfactiory for the user ( there are five stars
+ * personal rating for this recipe by clicking on the amount of stars that is satisfactory for the user ( there are five stars
  * available, 1 is the smallest value while 5 is the largest). Once the data is collected correctly and the user presses a next
  * button it navigates to the Ingredients screen.
  *
@@ -216,7 +217,8 @@ fun CreateRecipeScreen(
                         .width(180.dp)
                         .height(50.dp),
                 ) {
-                    Text(stringResource(R.string.next))
+                    Text(stringResource(R.string.next),
+                    fontFamily = Railway)
                 }
             }
 
