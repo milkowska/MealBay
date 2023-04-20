@@ -57,7 +57,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.ui.platform.LocalContext
 import uk.ac.aber.dcs.cs39440.mealbay.storage.CURRENT_CATEGORY
-
 import uk.ac.aber.dcs.cs39440.mealbay.storage.CURRENT_USER_ID
 import uk.ac.aber.dcs.cs39440.mealbay.ui.theme.Railway
 
@@ -116,10 +115,10 @@ fun HomeScreen(
             "Vegetarian"
         )
     }
+
     val context = LocalContext.current
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-
 
     // Updates the current hour, minute, and day of the week values every minute.
     LaunchedEffect(Unit) {
@@ -148,12 +147,12 @@ fun HomeScreen(
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "Hello!",
-                    fontSize = 20.sp
+                    text = stringResource(id = R.string.hello),
+                    fontSize = 19.sp
                 )
                 Spacer(modifier = Modifier.height(15.dp))
 
-                Text(text = stringResource(R.string.have_you_on_board), fontSize = 14.sp)
+                Text(text = stringResource(R.string.have_you_on_board), fontSize = 15.sp)
 
                 Image(
                     painter = painterResource(id = R.drawable.welcome),
@@ -163,9 +162,9 @@ fun HomeScreen(
                     contentScale = ContentScale.Crop
                 )
 
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(14.dp))
 
-                Text(text = stringResource(R.string.press_to_log_out), fontSize = 14.sp)
+                Text(text = stringResource(R.string.press_to_log_out), fontSize = 15.sp)
 
                 Spacer(modifier = Modifier.height(10.dp))
 
@@ -175,7 +174,6 @@ fun HomeScreen(
                     ),
                     onClick = {
                         FirebaseAuth.getInstance().signOut().run {
-
                             navController.navigate(Screen.Login.route)
                             Toast.makeText(
                                 context,
@@ -243,7 +241,6 @@ fun HomeScreen(
                     },
                     backgroundColor = MaterialTheme.colorScheme.surface
                 )
-
             },
 
             ) { innerPadding ->
@@ -287,15 +284,15 @@ fun HomeScreen(
                                     text = "Meal for this $formattedDayOfWeek",
                                     modifier = Modifier
                                         .padding(20.dp),
-                                    fontSize = 20.sp,
-                                    color = Color(0xFF9C4234)
+                                    fontSize = 19.sp,
+                                    color =  MaterialTheme.colorScheme.primary
                                 )
 
                                 Text(
                                     text = stringResource(id = R.string.meal_for_today),
                                     modifier = Modifier
                                         .padding(bottom = 4.dp),
-                                    fontSize = 16.sp,
+                                    fontSize = 15.sp,
                                     textAlign = TextAlign.Center
                                 )
 
@@ -362,7 +359,7 @@ fun HomeScreen(
                                                     top.linkTo(photo.top, margin = 16.dp)
                                                     width = Dimension.fillToConstraints
                                                 },
-                                            fontSize = 20.sp,
+                                            fontSize = 19.sp,
                                             textAlign = TextAlign.Center
                                         )
                                     }
@@ -385,7 +382,7 @@ fun HomeScreen(
                                                         0.dp
                                                     )
                                                 },
-                                            fontSize = 16.sp,
+                                            fontSize = 15.sp,
                                             textAlign = TextAlign.Center
                                         )
                                     }
@@ -401,15 +398,15 @@ fun HomeScreen(
                                     text = stringResource(id = R.string.explore),
                                     modifier = Modifier
                                         .padding(bottom = 12.dp),
-                                    fontSize = 20.sp,
-                                    color = Color(0xFF9C4234)
+                                    fontSize = 19.sp,
+                                    color =  MaterialTheme.colorScheme.primary
                                 )
 
                                 Text(
                                     text = stringResource(id = R.string.search_description),
                                     modifier = Modifier
                                         .padding(bottom = 4.dp),
-                                    fontSize = 16.sp,
+                                    fontSize = 15.sp,
                                     textAlign = TextAlign.Center
                                 )
 
@@ -428,7 +425,7 @@ fun HomeScreen(
                                     text = stringResource(id = R.string.search_description_three),
                                     modifier = Modifier
                                         .padding(bottom = 20.dp),
-                                    fontSize = 16.sp,
+                                    fontSize = 15.sp,
                                     textAlign = TextAlign.Center
                                 )
 
@@ -444,7 +441,7 @@ fun HomeScreen(
                                     text = stringResource(id = R.string.search_description_two),
                                     modifier = Modifier
                                         .padding(top = 20.dp),
-                                    fontSize = 16.sp,
+                                    fontSize = 15.sp,
                                     textAlign = TextAlign.Center
                                 )
 
@@ -457,15 +454,15 @@ fun HomeScreen(
                                     text = stringResource(id = R.string.add_your_own),
                                     modifier = Modifier
                                         .padding(bottom = 12.dp),
-                                    fontSize = 20.sp,
-                                    color = Color(0xFF9C4234)
+                                    fontSize = 19.sp,
+                                    color =  MaterialTheme.colorScheme.primary
                                 )
 
                                 Text(
                                     text = stringResource(id = R.string.add_one),
                                     modifier = Modifier
                                         .padding(bottom = 20.dp),
-                                    fontSize = 16.sp,
+                                    fontSize = 15.sp,
                                     textAlign = TextAlign.Center
                                 )
                                 Image(
@@ -486,15 +483,15 @@ fun HomeScreen(
                                     text = stringResource(id = R.string.make_your_own),
                                     modifier = Modifier
                                         .padding(bottom = 12.dp),
-                                    fontSize = 20.sp,
-                                    color = Color(0xFF9C4234)
+                                    fontSize = 19.sp,
+                                    color =  MaterialTheme.colorScheme.primary
                                 )
 
                                 Text(
                                     text = stringResource(id = R.string.collection_feature_description_one),
                                     modifier = Modifier
                                         .padding(bottom = 20.dp),
-                                    fontSize = 16.sp,
+                                    fontSize = 15.sp,
                                     textAlign = TextAlign.Center
                                 )
 
@@ -511,7 +508,7 @@ fun HomeScreen(
                                     text = stringResource(id = R.string.collection_feature_description_two),
                                     modifier = Modifier
                                         .padding(bottom = 20.dp),
-                                    fontSize = 16.sp,
+                                    fontSize = 15.sp,
                                     textAlign = TextAlign.Center
                                 )
 
@@ -527,7 +524,7 @@ fun HomeScreen(
                                     text = stringResource(id = R.string.collection_feature_description_three),
                                     modifier = Modifier
                                         .padding(top = 12.dp, bottom = 12.dp),
-                                    fontSize = 16.sp,
+                                    fontSize = 15.sp,
                                     textAlign = TextAlign.Center
                                 )
 
@@ -540,14 +537,14 @@ fun HomeScreen(
                                     text = stringResource(id = R.string.create_your_own),
                                     modifier = Modifier
                                         .padding(bottom = 12.dp),
-                                    fontSize = 20.sp,
-                                    color = Color(0xFF9C4234)
+                                    fontSize = 19.sp,
+                                    color =  MaterialTheme.colorScheme.primary
                                 )
 
                                 Text(
                                     text = stringResource(id = R.string.shopping_list_feature_description),
 
-                                    fontSize = 16.sp,
+                                    fontSize = 15.sp,
                                     textAlign = TextAlign.Center
                                 )
 
@@ -563,7 +560,7 @@ fun HomeScreen(
                                     text = stringResource(id = R.string.shopping_list_feature_description_two),
                                     modifier = Modifier
                                         .padding(bottom = 20.dp),
-                                    fontSize = 16.sp,
+                                    fontSize = 15.sp,
                                     textAlign = TextAlign.Center
                                 )
 
@@ -579,7 +576,7 @@ fun HomeScreen(
                                     text = stringResource(id = R.string.shopping_list_feature_description_three),
                                     modifier = Modifier
                                         .padding(top = 20.dp),
-                                    fontSize = 16.sp,
+                                    fontSize = 15.sp,
                                     textAlign = TextAlign.Center
                                 )
 
@@ -592,8 +589,8 @@ fun HomeScreen(
                                     text = stringResource(id = R.string.discover),
                                     modifier = Modifier
                                         .padding(bottom = 20.dp),
-                                    fontSize = 20.sp,
-                                    color = Color(0xFF9C4234)
+                                    fontSize = 19.sp,
+                                    color =  MaterialTheme.colorScheme.primary
                                 )
                             }
                             items(categories.chunked(2)) { categoryRow ->
@@ -602,19 +599,20 @@ fun HomeScreen(
                                     modifier = Modifier.fillMaxWidth()
                                 ) {
                                     categoryRow.forEach { category ->
-                                        ElevatedButton(
+                                        FilledTonalButton(
+                                            colors = ButtonDefaults.buttonColors(
+                                                containerColor = MaterialTheme.colorScheme.primary
+                                            ),
                                             onClick = {
                                                 dataViewModel.saveString(category, CURRENT_CATEGORY)
-
                                                 navController.navigate(Screen.Filtered.route)
                                                 Log.d("CategoryClicked", "category is $category")
-
                                             },
                                             modifier = Modifier
                                                 .weight(1f)
                                                 .padding(8.dp)
                                         ) {
-                                            Text(text = category)
+                                            Text(text = category, fontFamily = Railway)
                                         }
                                     }
                                 }

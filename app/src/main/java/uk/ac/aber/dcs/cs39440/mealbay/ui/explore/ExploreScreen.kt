@@ -220,7 +220,7 @@ fun RecipeData(
                                             top.linkTo(photo.top, margin = 16.dp)
                                             width = Dimension.fillToConstraints
                                         },
-                                    fontSize = 20.sp,
+                                    fontSize = 19.sp,
                                     textAlign = TextAlign.Center
                                 )
                             }
@@ -243,7 +243,7 @@ fun RecipeData(
                                                 0.dp
                                             )
                                         },
-                                    fontSize = 16.sp,
+                                    fontSize = 15.sp,
                                     textAlign = TextAlign.Center
                                 )
                             }

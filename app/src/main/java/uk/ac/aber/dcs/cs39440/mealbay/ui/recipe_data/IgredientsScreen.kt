@@ -23,7 +23,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -40,6 +39,7 @@ import uk.ac.aber.dcs.cs39440.mealbay.model.DataViewModel
 import uk.ac.aber.dcs.cs39440.mealbay.storage.NEW_RECIPE_INGREDIENTS
 import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
 import uk.ac.aber.dcs.cs39440.mealbay.storage.NEW_RECIPE_PHOTO
 import uk.ac.aber.dcs.cs39440.mealbay.ui.components.minCharsLength
 
@@ -77,7 +77,7 @@ fun IngredientsScreen(
                 title = {
                     Text(
                         text = stringResource(id = R.string.ingredients),
-                        fontSize = 20.sp
+                        fontSize = 19.sp
                     )
                 },
                 navigationIcon = {
@@ -107,6 +107,8 @@ fun IngredientsScreen(
             sheetContent = { ModalBottomSheet(ingredientsList) },
             modifier = Modifier.fillMaxSize(),
             sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
+            sheetBackgroundColor = MaterialTheme.colorScheme.secondaryContainer,
+            scrimColor = MaterialTheme.colorScheme.surfaceTint,
         ) {
 
             Column(
@@ -120,7 +122,7 @@ fun IngredientsScreen(
 
                 Text(
                     text = stringResource(R.string.add_at_least_one),
-                    fontSize = 20.sp
+                    fontSize = 19.sp
                 )
 
                 Divider(
@@ -143,7 +145,7 @@ fun IngredientsScreen(
                         ) {
                             Text(
                                 text = ingredient,
-                                fontSize = 16.sp,
+                                fontSize = 15.sp,
                                 modifier = Modifier.weight(1f)
                             )
                             IconButton(
@@ -152,7 +154,8 @@ fun IngredientsScreen(
                             ) {
                                 Icon(
                                     imageVector = Icons.Filled.Close,
-                                    contentDescription = "Delete ingredient"
+                                    contentDescription = "Delete ingredient",
+                                    tint = MaterialTheme.colorScheme.onSurface
                                 )
                             }
                         }
@@ -176,7 +179,7 @@ fun IngredientsScreen(
                             Text(
                                 stringResource(R.string.warning),
                                 fontFamily = Railway,
-                                fontSize = 15.sp
+                                fontSize = 14.sp
                             )
                         },
                         confirmButton = {
@@ -225,7 +228,7 @@ fun IngredientsScreen(
                             Text(
                                 stringResource(R.string.warning_two),
                                 fontFamily = Railway,
-                                fontSize = 15.sp
+                                fontSize = 14.sp
                             )
                         },
                         confirmButton = {
@@ -274,21 +277,27 @@ fun IngredientsScreen(
                     verticalAlignment = Alignment.Bottom
                 ) {
 
-                    ElevatedButton(
+                    FilledTonalButton(
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.onPrimaryContainer
+                        ),
                         onClick = {
                             openAlertDialogOnSave.value = true
                         },
                         enabled = ingredientsList.isNotEmpty(), // button is enabled once the ingredient list is created and not empty.
                         modifier = Modifier
-                            .width(220.dp)
+                            .width(200.dp)
                             .height(50.dp),
                     ) {
-                        Text(text = stringResource(id = R.string.save))
+                        Text(
+                            text = stringResource(id = R.string.save),
+                            fontFamily = Railway
+                        )
                     }
 
                     // The floating button is used to show the bottom sheet when clicked.
                     FloatingActionButton(
-                        backgroundColor = (Color(0xFFFFDAD4)),
+                        backgroundColor = MaterialTheme.colorScheme.primary,
                         onClick = {
                             coroutineScope.launch {
                                 if (sheetState.isVisible) sheetState.hide()
@@ -296,7 +305,11 @@ fun IngredientsScreen(
                             }
                         },
                     ) {
-                        Icon(Icons.Filled.Add, contentDescription = "Add Ingredient")
+                        Icon(
+                            Icons.Filled.Add,
+                            contentDescription = "Add Ingredient",
+                            tint = MaterialTheme.colorScheme.surface
+                        )
                     }
                 }
             }
@@ -320,11 +333,10 @@ fun ModalBottomSheet(ingredientsList: SnapshotStateList<String>) {
         modifier = Modifier.padding(32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
-
     ) {
         Text(
             text = stringResource(id = R.string.add_ingredient),
-            fontSize = 23.sp,
+            fontSize = 21.sp,
             textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.height(20.dp))
@@ -345,7 +357,10 @@ fun ModalBottomSheet(ingredientsList: SnapshotStateList<String>) {
 
         Spacer(modifier = Modifier.height(100.dp))
 
-        ElevatedButton(
+        FilledTonalButton(
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.onPrimaryContainer
+            ),
             enabled = ingredient.isNotEmpty(),
             onClick = {
                 if (ingredient.trim() == "" || ingredient.trim().length < minCharsLength) {
@@ -360,9 +375,11 @@ fun ModalBottomSheet(ingredientsList: SnapshotStateList<String>) {
             modifier = Modifier
                 .width(220.dp)
                 .height(50.dp),
-
             ) {
-            Text(stringResource(R.string.save))
+            Text(
+                stringResource(R.string.save),
+                fontFamily = Railway
+            )
         }
     }
 }

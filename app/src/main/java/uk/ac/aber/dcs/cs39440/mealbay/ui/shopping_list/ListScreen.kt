@@ -11,12 +11,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
@@ -26,10 +27,12 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -37,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.withStyle
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -76,6 +80,7 @@ fun ListScreenTopLevel(
  *  @param userId The current user ID.
  *  @param onListChanged The callback function to be called when the shopping list is changed.
  */
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun BottomSheet(
     shoppingList: SnapshotStateList<String>,
@@ -87,6 +92,7 @@ fun BottomSheet(
     var isErrorInTextField by remember {
         mutableStateOf(false)
     }
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     Column(
         modifier = Modifier.padding(32.dp),
@@ -96,7 +102,7 @@ fun BottomSheet(
     ) {
         Text(
             text = stringResource(id = R.string.add_an_item),
-            fontSize = 23.sp,
+            fontSize = 21.sp,
             textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.height(40.dp))
@@ -118,11 +124,22 @@ fun BottomSheet(
                 cursorColor = MaterialTheme.colorScheme.onSurface,
             ),
             isError = isErrorInTextField,
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(onDone = {
+                // This is called when the user clicks the Done button
+                // on the keyboard or taps outside the keyboard
+                keyboardController?.hide()
+            })
         )
 
         Spacer(modifier = Modifier.height(100.dp))
 
-        ElevatedButton(
+        FilledTonalButton(
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.onPrimaryContainer
+            ),
             enabled = item.isNotEmpty(),
             onClick = {
                 if (item.trim() == "") {
@@ -142,7 +159,11 @@ fun BottomSheet(
                 .width(220.dp)
                 .height(50.dp)
         ) {
-            Text(stringResource(R.string.add), fontFamily = Railway)
+            Text(
+                stringResource(R.string.add),
+                fontFamily = Railway,
+                color = MaterialTheme.colorScheme.surface
+            )
         }
     }
 }
@@ -212,7 +233,6 @@ fun ListScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(lazyColumnHeight)
-
                 ) {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize()
@@ -329,7 +349,8 @@ fun ListScreen(
                             ) {
                             Text(
                                 text = stringResource(id = R.string.clear),
-                                fontFamily = Railway
+                                fontFamily = Railway,
+                                color = MaterialTheme.colorScheme.surface
                             )
                         }
                     }
@@ -351,7 +372,7 @@ fun ListScreen(
                         Text(
                             stringResource(R.string.warning_three),
                             fontFamily = Railway,
-                            fontSize = 15.sp
+                            fontSize = 14.sp
                         )
                     },
                     confirmButton = {

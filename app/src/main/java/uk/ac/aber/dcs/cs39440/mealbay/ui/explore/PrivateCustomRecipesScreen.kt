@@ -161,7 +161,7 @@ fun PrivateCustomRecipesScreen(
                             text = stringResource(id = R.string.no_recipes_created),
                             modifier = Modifier
                                 .padding(top = 50.dp, start = 25.dp, end = 25.dp, bottom = 40.dp),
-                            fontSize = 16.sp,
+                            fontSize = 15.sp,
                             textAlign = TextAlign.Center
                         )
                         Row(

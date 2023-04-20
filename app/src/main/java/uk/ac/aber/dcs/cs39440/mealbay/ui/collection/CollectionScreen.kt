@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -65,7 +66,7 @@ import uk.ac.aber.dcs.cs39440.mealbay.ui.theme.Railway
 fun CollectionScreenTopLevel(
     navController: NavHostController,
 ) {
-    CollectionScreen(navController/* modifier = Modifier*/)
+    CollectionScreen(navController)
 }
 
 /**
@@ -157,7 +158,8 @@ fun CollectionScreen(
                     ) {
                         Icon(
                             Icons.Filled.Add,
-                            contentDescription = stringResource(id = R.string.create_collection)
+                            contentDescription = stringResource(id = R.string.create_collection),
+                            tint = MaterialTheme.colorScheme.surface
                         )
                     }
                 }
@@ -190,11 +192,13 @@ fun EmptyCollectionScreen(
         sheetContent = { BottomSheet() },
         modifier = Modifier.fillMaxSize(),
         sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+        sheetBackgroundColor = MaterialTheme.colorScheme.secondaryContainer,
+        scrimColor = MaterialTheme.colorScheme.surfaceTint,
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 20.dp)
+                .padding(top = 19.dp)
                 .padding(horizontal = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -209,7 +213,7 @@ fun EmptyCollectionScreen(
 
             Text(
                 text = stringResource(R.string.no_collections),
-                fontSize = 22.sp,
+                fontSize = 21.sp,
                 textAlign = TextAlign.Center
             )
 
@@ -251,7 +255,7 @@ fun BottomSheet(dataViewModel: DataViewModel = hiltViewModel()) {
 
         Text(
             text = stringResource(id = R.string.create_collection),
-            fontSize = 23.sp,
+            fontSize = 21.sp,
             textAlign = TextAlign.Center
         )
 
@@ -286,7 +290,10 @@ fun BottomSheet(dataViewModel: DataViewModel = hiltViewModel()) {
 
         Spacer(modifier = Modifier.height(100.dp))
 
-        ElevatedButton(
+        FilledTonalButton(
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.onPrimaryContainer
+            ),
             enabled = collectionName.isNotEmpty(),
             onClick = {
                 if (collectionName.trim().length < minCharsLength) {
@@ -304,7 +311,11 @@ fun BottomSheet(dataViewModel: DataViewModel = hiltViewModel()) {
                 .width(220.dp)
                 .height(50.dp)
         ) {
-            Text(stringResource(R.string.save))
+            Text(
+                stringResource(R.string.save),
+                fontFamily = Railway,
+                color = MaterialTheme.colorScheme.surface
+            )
         }
     }
 }
@@ -442,14 +453,17 @@ fun DisplayCollections(
                         ) {
                         Column(modifier = Modifier.padding(start = 10.dp)) {
                             Text(text = collectionName, fontSize = 19.sp)
-
                         }
 
                         IconButton(onClick = {
                             openAlertDialog.value = true
                             selectedCollectionId.value = documentSnapshot.id
                         }) {
-                            Icon(Icons.Default.Close, contentDescription = "Delete Collection")
+                            Icon(
+                                Icons.Default.Close,
+                                contentDescription = "Delete Collection",
+                                tint = MaterialTheme.colorScheme.onSurface
+                            )
                         }
                     }
                     Divider()
@@ -471,7 +485,7 @@ fun DisplayCollections(
                 Icon(
                     Icons.Filled.Add,
                     contentDescription = stringResource(id = R.string.create_collection),
-                    tint = Color.Black
+                    tint = MaterialTheme.colorScheme.onSurface
                 )
             }
 
@@ -484,14 +498,13 @@ fun DisplayCollections(
                         Text(
                             text = stringResource(R.string.are_you_sure),
                             fontFamily = Railway,
-                            fontSize = 22.sp
                         )
                     },
                     text = {
                         Text(
                             text = stringResource(R.string.pressing_confirm),
                             fontFamily = Railway,
-                            fontSize = 16.sp
+                            fontSize = 14.sp
                         )
                     },
                     confirmButton = {
@@ -502,7 +515,6 @@ fun DisplayCollections(
                             Text(
                                 text = stringResource(id = R.string.confirm),
                                 fontFamily = Railway,
-                                fontSize = 16.sp
                             )
                         }
                     },
@@ -511,7 +523,6 @@ fun DisplayCollections(
                             Text(
                                 text = stringResource(id = R.string.cancel),
                                 fontFamily = Railway,
-                                fontSize = 16.sp
                             )
                         }
                     }

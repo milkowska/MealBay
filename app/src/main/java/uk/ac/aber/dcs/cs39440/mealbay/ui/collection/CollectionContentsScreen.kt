@@ -70,7 +70,7 @@ fun CollectionDisplayScreen(
                     if (collection != null) {
                         Text(
                             text = collection,
-                            fontSize = 20.sp
+                            fontSize = 19.sp
                         )
                     }
                 },
@@ -79,7 +79,7 @@ fun CollectionDisplayScreen(
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                     }
                 },
-                backgroundColor = Color(0xFFFFDAD4)
+                backgroundColor = MaterialTheme.colorScheme.surface
             )
             if (userId != null) {
                 RecipesListInCollection(userId, navController)
@@ -135,7 +135,7 @@ fun RecipesListInCollection(
 
                 Text(
                     text = stringResource(id = R.string.no_recipes),
-                    fontSize = 19.sp,
+                    fontSize = 17.sp,
                     modifier = Modifier
                         .padding(25.dp)
                         .align(Alignment.CenterHorizontally),
@@ -151,7 +151,7 @@ fun RecipesListInCollection(
 
                 Text(
                     text = stringResource(id = R.string.gohere),
-                    fontSize = 19.sp,
+                    fontSize = 17.sp,
                     modifier = Modifier
                         .padding(start = 25.dp, end = 25.dp)
                         .align(Alignment.CenterHorizontally),
@@ -186,14 +186,13 @@ fun RecipesListInCollection(
                         Text(
                             text = stringResource(R.string.are_you_sure),
                             fontFamily = Railway,
-                            fontSize = 22.sp,
                         )
                     },
                     text = {
                         Text(
                             text = stringResource(R.string.pressing_confirm_two),
                             fontFamily = Railway,
-                            fontSize = 16.sp
+                            fontSize = 14.sp
                         )
                     },
                     confirmButton = {
@@ -221,7 +220,6 @@ fun RecipesListInCollection(
                             Text(
                                 text = stringResource(id = R.string.confirm),
                                 fontFamily = Railway,
-                                fontSize = 16.sp
                             )
                         }
                     },
@@ -232,7 +230,6 @@ fun RecipesListInCollection(
                             Text(
                                 text = stringResource(id = R.string.cancel),
                                 fontFamily = Railway,
-                                fontSize = 16.sp
                             )
                         }
                     }
@@ -358,9 +355,9 @@ fun RecipeItem(
                 contentDescription = "Recipe Image",
                 modifier = Modifier
                     .height(130.dp)
-                    .width(155.dp)
+                    .width(160.dp)
                     .fillMaxSize()
-                    .clip(shape = RoundedCornerShape(8.dp))
+                    .clip(shape = RoundedCornerShape(15.dp))
                     .padding(top = 10.dp),
                 contentScale = ContentScale.Crop
             )
@@ -377,7 +374,7 @@ fun RecipeItem(
                         top.linkTo(photo.top, margin = 16.dp)
                         width = Dimension.fillToConstraints
                     },
-                fontSize = 20.sp,
+                fontSize = 19.sp,
                 textAlign = TextAlign.Center
             )
         }
@@ -385,13 +382,13 @@ fun RecipeItem(
         Text(
             text = "Category: ${recipe.category}",
             modifier = Modifier
-                .padding(top = 2.dp, start = 4.dp, end = 4.dp, bottom = 0.dp)
+                .padding(top = 1.dp, start = 4.dp, end = 4.dp, bottom = 0.dp)
                 .constrainAs(category) {
                     start.linkTo(title.start)
                     end.linkTo(title.end)
                     top.linkTo(title.bottom, 0.dp)
                 },
-            fontSize = 16.sp,
+            fontSize = 15.sp,
             textAlign = TextAlign.Center
         )
 
@@ -404,7 +401,7 @@ fun RecipeItem(
                     top.linkTo(category.bottom)
                 }
         ) {
-            Icon(Icons.Default.DeleteOutline, contentDescription = "Delete Recipe")
+            Icon(Icons.Default.DeleteOutline, contentDescription = "Delete Recipe", tint = MaterialTheme.colorScheme.onSurface)
         }
     }
 }

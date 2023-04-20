@@ -197,7 +197,7 @@ fun ShowRecipeContent(
                             recipe.title?.let {
                                 Text(
                                     text = it,
-                                    fontSize = 20.sp
+                                    fontSize = 19.sp
                                 )
                             }
                         },
@@ -273,19 +273,19 @@ fun ShowRecipeContent(
                                         Icon(
                                             Icons.Default.Add,
                                             contentDescription = "Add icon",
-                                            modifier = Modifier.size(22.dp)
+                                            modifier = Modifier.size(22.dp),
+                                            tint = MaterialTheme.colorScheme.onSurface
                                         )
                                         Text(
                                             "Add",
                                             modifier = Modifier.padding(start = 4.dp),
                                             fontSize = 17.sp,
                                             fontFamily = Railway,
+                                            color = MaterialTheme.colorScheme.onSurface
                                         )
                                     }
                                 }
-
                             }
-
                         }
                         item {
                             Divider(
@@ -300,8 +300,8 @@ fun ShowRecipeContent(
                             ) {
                                 Text(
                                     stringResource(R.string.ingredients),
-                                    fontSize = 25.sp,
-                                    color = Color(0xFF9C4234)
+                                    fontSize = 22.sp,
+                                    color = MaterialTheme.colorScheme.primary
                                 )
                             }
                         }
@@ -315,11 +315,10 @@ fun ShowRecipeContent(
                             splitItems.forEach { splitItem ->
                                 Text(
                                     buildAnnotatedString {
-                                        withStyle(SpanStyle(color = Color(0xFF9C4234))) {
+                                        withStyle(SpanStyle(color = MaterialTheme.colorScheme.primary)) {
                                             append("  • ") // bullet point
-
                                         }
-                                        withStyle(SpanStyle(fontSize = 20.sp)) {
+                                        withStyle(SpanStyle(fontSize = 18.sp)) {
                                             append(splitItem) // item text
                                         }
                                     },
@@ -342,8 +341,8 @@ fun ShowRecipeContent(
                             ) {
                                 Text(
                                     stringResource(R.string.preparation),
-                                    fontSize = 25.sp,
-                                    color = Color(0xFF9C4234),
+                                    fontSize = 22.sp,
+                                    color = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.padding(start = 20.dp),
                                 )
                             }
@@ -356,13 +355,13 @@ fun ShowRecipeContent(
                                 buildAnnotatedString {
                                     withStyle(
                                         SpanStyle(
-                                            fontSize = 22.sp,
-                                            color = Color(0xFF9C4234)
+                                            fontSize = 21.sp,
+                                            color = MaterialTheme.colorScheme.primary
                                         )
                                     ) {
                                         append("  ${index + 1}) ")
                                     }
-                                    withStyle(SpanStyle(fontSize = 19.sp)) {
+                                    withStyle(SpanStyle(fontSize = 18.sp)) {
                                         append(item)
                                         Spacer(modifier = Modifier.padding(6.dp))
                                     }
@@ -376,8 +375,7 @@ fun ShowRecipeContent(
                         }
                     }
                 },
-
-                )
+            )
         }
 
         if (showCollections) {
@@ -397,7 +395,11 @@ fun ShowRecipeContent(
                                 .align(Alignment.End)
                                 .padding(end = 0.dp, top = 4.dp)
                         ) {
-                            Icon(Icons.Default.Close, contentDescription = "Close")
+                            Icon(
+                                Icons.Default.Close,
+                                contentDescription = "Close",
+                                tint = MaterialTheme.colorScheme.surface
+                            )
                         }
 
                         dataViewModel.getString(RECIPE_ID)?.let {
@@ -429,7 +431,7 @@ fun ShowRecipeContent(
                         onDismissRequest = { showDialog.value = false },
                         title = { Text(text = stringResource(id = R.string.recipe_already)) },
                         text = { Text(text = stringResource(id = R.string.recipe_already_two)) },
-                        shape = RoundedCornerShape(10.dp),
+                        shape = RoundedCornerShape(15.dp),
                         backgroundColor = MaterialTheme.colorScheme.surface,
                         confirmButton = {
                             Button(
@@ -438,7 +440,7 @@ fun ShowRecipeContent(
                                     containerColor = MaterialTheme.colorScheme.onPrimaryContainer
                                 ),
                                 modifier = Modifier
-                                    .width(80.dp)
+                                    .width(120.dp)
                                     .padding(end = 15.dp, bottom = 15.dp),
                                 content = { Text(stringResource(id = R.string.ok)) }
                             )

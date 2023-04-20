@@ -56,12 +56,12 @@
     <string name="create_collection">Create collection</string>
     <string name="meal_bay">Meal Bay</string>
     <string name="logout">Logout</string>
-    <string name="add_at_least_one">Add at least one ingredient.</string>
-    <string name="add_ingredient">Add ingredient</string>
+    <string name="add_at_least_one">Add at least one ingredient</string>
+    <string name="add_ingredient">Ingredient name</string>
     <string name="are_you_sure">Are you sure?</string>
     <string name="warning">"If you proceed, any ingredients data you've entered for this recipe will be lost when returning to the previous screen. "</string>
     <string name="proceed">Proceed</string>
-    <string name="add_preparation">Add preparation details.</string>
+    <string name="add_preparation">Add preparation details</string>
     <string name="add_step">Add step</string>
     <string name="enter_details">Enter preparation details here…</string>
     <string name="category">Category</string>
@@ -84,7 +84,7 @@
     <string name="gohere">"To begin adding recipes, first select a recipe, click the 'Add' button, and then choose your desired collection. "</string>
     <string name="pressing_confirm_two">If you proceed, this recipe will be removed from this collection.</string>
     <string name="confirm">Confirm</string>
-    <string name="add_an_item">Item name</string>
+    <string name="add_an_item">Name</string>
     <string name="warning_three">If you proceed, the content of the shopping list will be cleared.</string>
     <string name="empty_shopping_list">Your shopping list is currently empty. Click on the add button to add an ingredient.</string>
     <string name="my_shopping_list">"My shopping list "</string>
@@ -110,5 +110,7 @@
     <string name="log_out">Log out</string>
     <string name="have_you_on_board">We\'re glad to have you on board!</string>
     <string name="press_to_log_out">Press the button below to log out.</string>
+    <string name="hello">Hello!</string>
+    <string name="password">Password</string>
 
 </resources>

@@ -26,6 +26,7 @@ import androidx.navigation.NavController
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -40,6 +41,7 @@ import uk.ac.aber.dcs.cs39440.mealbay.storage.CURRENT_USER_ID
 import uk.ac.aber.dcs.cs39440.mealbay.ui.components.EmailInput
 import uk.ac.aber.dcs.cs39440.mealbay.ui.components.PasswordInput
 import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
+import uk.ac.aber.dcs.cs39440.mealbay.ui.theme.Railway
 
 /**
  * A composable function that displays a login screen with a form for users to enter their email and password in order to
@@ -146,7 +148,8 @@ fun LoginScreen(
 
                     Text(
                         loginText,
-                        fontSize = 16.sp
+                        fontSize = 15.sp,
+                        color = MaterialTheme.colorScheme.onSurface,
                     )
 
                     Text(
@@ -157,7 +160,8 @@ fun LoginScreen(
                             }
                             .padding(start = 5.dp),
                         fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp
+                        fontSize = 15.sp,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
             }
@@ -200,9 +204,10 @@ fun UserForm(
 
         if (isCreateAccount) Text(
             text = stringResource(id = R.string.create_account_description),
-            fontSize = 16.sp,
+            fontSize = 15.sp,
             modifier = Modifier
-                .padding(start = 25.dp, end = 25.dp, bottom = 5.dp)
+                .padding(start = 25.dp, end = 25.dp, bottom = 5.dp),
+            color = MaterialTheme.colorScheme.onSurface
         )
 
         EmailInput(emailState = email, enabled = !loading, onAction = KeyboardActions {
@@ -212,7 +217,7 @@ fun UserForm(
         PasswordInput(
             modifier = Modifier.focusRequester(passwordFocusRequest),
             passwordState = password,
-            labelId = "Password",
+            labelId = stringResource(id = R.string.password),
             enabled = !loading,
             passwordVisibility = passwordVisibility,
             imeAction = ImeAction.Done,
@@ -265,11 +270,10 @@ fun SendButton(
             .padding(top = 17.dp, start = 10.dp, end = 10.dp)
             .fillMaxWidth()
             .height(50.dp),
-
         enabled = !loading && validInputs,
     ) {
         if (loading) CircularProgressIndicator(modifier = Modifier.size(30.dp))
-        else Text(text = textId, modifier = Modifier.padding(5.dp))
+        else Text(text = textId, modifier = Modifier.padding(5.dp), fontFamily = Railway, color = MaterialTheme.colorScheme.surface)
     }
 }
 

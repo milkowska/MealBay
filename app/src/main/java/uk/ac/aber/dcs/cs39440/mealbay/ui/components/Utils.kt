@@ -2,29 +2,33 @@ package uk.ac.aber.dcs.cs39440.mealbay.ui.components
 
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.material3.Text
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.AlertDialog
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
+import androidx.compose.material.Icon
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.TextButton
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.ElevatedButton
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -50,7 +54,6 @@ import uk.ac.aber.dcs.cs39440.mealbay.data.Recipe
 import uk.ac.aber.dcs.cs39440.mealbay.storage.RECIPE_ID
 import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
 import uk.ac.aber.dcs.cs39440.mealbay.ui.theme.Railway
-import androidx.compose.material3.MaterialTheme
 
 // Maximum allowed characters for the collection name
 const val maxCharsLengthForCollection = 34
@@ -129,7 +132,7 @@ fun TextInputField(
             .fillMaxWidth(),
         enabled = enabled,
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            textColor = MaterialTheme.colorScheme.primary,
+            textColor = MaterialTheme.colorScheme.onSurface,
             errorCursorColor = MaterialTheme.colorScheme.error,
             trailingIconColor = MaterialTheme.colorScheme.onSurface,
             unfocusedBorderColor = MaterialTheme.colorScheme.onSurface,
@@ -185,7 +188,7 @@ fun PasswordInput(
         ),
 
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            textColor = MaterialTheme.colorScheme.primary,
+            textColor = MaterialTheme.colorScheme.onSurface,
             errorCursorColor = MaterialTheme.colorScheme.error,
             trailingIconColor = MaterialTheme.colorScheme.onSurface,
             unfocusedBorderColor = MaterialTheme.colorScheme.onSurface,
@@ -305,7 +308,7 @@ fun RecipeList(
                                         top.linkTo(photo.top, margin = 16.dp)
                                         width = Dimension.fillToConstraints
                                     },
-                                fontSize = 20.sp,
+                                fontSize = 19.sp,
                                 textAlign = TextAlign.Center
                             )
                         }
@@ -328,7 +331,7 @@ fun RecipeList(
                                             0.dp
                                         )
                                     },
-                                fontSize = 16.sp,
+                                fontSize = 15.sp,
                                 textAlign = TextAlign.Center
                             )
                         }
@@ -349,7 +352,8 @@ fun RecipeList(
                                 ) {
                                     Icon(
                                         imageVector = Icons.Default.Delete,
-                                        contentDescription = "Delete recipe"
+                                        contentDescription = "Delete recipe",
+                                        tint = MaterialTheme.colorScheme.onSurface
                                     )
                                 }
                             }
@@ -362,14 +366,14 @@ fun RecipeList(
                                         Text(
                                             text = stringResource(R.string.are_you_sure),
                                             fontFamily = Railway,
-                                            fontSize = 22.sp
+
                                         )
                                     },
                                     text = {
                                         Text(
                                             text = stringResource(R.string.pressing_confirm_delete),
                                             fontFamily = Railway,
-                                            fontSize = 16.sp
+                                            fontSize = 14.sp
                                         )
                                     },
                                     confirmButton = {
@@ -399,7 +403,6 @@ fun RecipeList(
                                             Text(
                                                 text = stringResource(id = R.string.confirm),
                                                 fontFamily = Railway,
-                                                fontSize = 16.sp
                                             )
                                         }
                                     },
@@ -408,7 +411,6 @@ fun RecipeList(
                                             Text(
                                                 text = stringResource(id = R.string.cancel),
                                                 fontFamily = Railway,
-                                                fontSize = 16.sp
                                             )
                                         }
                                     }
@@ -427,7 +429,10 @@ fun RecipeList(
                     .padding(top = 8.dp)
             ) {
 
-                ElevatedButton(
+                FilledTonalButton(
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    ),
                     onClick = {
                         navController.navigate(Screen.Create.route)
                     }, modifier = Modifier
@@ -442,7 +447,10 @@ fun RecipeList(
                     )
                 }
 
-                ElevatedButton(
+                FilledTonalButton(
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    ),
                     onClick = {
                         navController.navigate(Screen.Explore.route)
                     },

@@ -67,7 +67,7 @@ fun FilteredByCategoryScreen(
                 title = {
                     Text(
                         text = "$category recipes",
-                        fontSize = 20.sp
+                        fontSize = 19.sp
                     )
                 },
                 navigationIcon = {

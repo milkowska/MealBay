@@ -26,7 +26,11 @@ import uk.ac.aber.dcs.cs39440.mealbay.data.Recipe
 import uk.ac.aber.dcs.cs39440.mealbay.storage.*
 import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
 import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
+import uk.ac.aber.dcs.cs39440.mealbay.ui.theme.Railway
 
 /**
  * This is a composable function that displays either the categories to be chosen by the user for new recipe or shows
@@ -55,11 +59,11 @@ fun CategoryScreen(
             ) {
                 Text(
                     text = stringResource(id = R.string.category),
-                    fontSize = 22.sp
+                    fontSize = 21.sp
                 )
                 Text(
                     text = stringResource(id = R.string.which_category),
-                    fontSize = 18.sp
+                    fontSize = 17.sp
                 )
 
                 Divider(
@@ -108,12 +112,14 @@ fun CategoryScreen(
                     }
                 }
 
-                ElevatedButton(
+                FilledTonalButton(
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    ),
                     onClick = {
                         selectedCategory.value?.let {
                             dataViewModel.saveString(it, NEW_RECIPE_CATEGORY)
                         }
-
                         //Setting a default picture of the recipe
                         dataViewModel.saveString(
                             "https://cdn.pixabay.com/photo/2020/09/02/08/19/dinner-5537679_960_720.png",
@@ -126,7 +132,7 @@ fun CategoryScreen(
                         .width(220.dp)
                         .height(50.dp),
                 ) {
-                    Text(text = stringResource(id = R.string.save))
+                    Text(text = stringResource(id = R.string.save), fontFamily = Railway)
                 }
 
             }
@@ -172,12 +178,12 @@ fun CategoryScreen(
         ) {
             Text(
                 text = stringResource(id = R.string.exciting_news),
-                fontSize = 22.sp
+                fontSize = 21.sp
             )
 
             Text(
                 text = stringResource(id = R.string.recipe_created),
-                fontSize = 18.sp,
+                fontSize = 17.sp,
                 modifier = Modifier
                     .padding(30.dp),
             )
@@ -191,7 +197,10 @@ fun CategoryScreen(
                 contentScale = ContentScale.FillHeight
             )
 
-            ElevatedButton(
+            FilledTonalButton(
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.onPrimaryContainer
+                ),
                 onClick = {
                     navController.navigate(Screen.Explore.route)
                     categorySelected.value = false
@@ -200,7 +209,10 @@ fun CategoryScreen(
                     .width(220.dp)
                     .height(50.dp),
             ) {
-                Text(text = stringResource(id = R.string.done))
+                Text(
+                    text = stringResource(id = R.string.done),
+                    fontFamily = Railway
+                )
             }
         }
     }

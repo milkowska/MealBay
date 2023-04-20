@@ -15,7 +15,6 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -71,7 +70,7 @@ fun CreateRecipeScreen(
                 title = {
                     Text(
                         text = stringResource(id = R.string.create_new_recipe),
-                        fontSize = 20.sp
+                        fontSize = 19.sp
                     )
                 },
                 navigationIcon = {
@@ -168,7 +167,7 @@ fun CreateRecipeScreen(
 
                 Text(
                     text = stringResource(R.string.difficulty_of_new_recipe),
-                    fontSize = 18.sp
+                    fontSize = 17.sp
                 )
 
                 // This rating bar is for setting a difficulty level from very easy to very hard
@@ -180,7 +179,7 @@ fun CreateRecipeScreen(
 
                 Text(
                     text = stringResource(R.string.rating_of_new_recipe),
-                    fontSize = 18.sp
+                    fontSize = 17.sp
                 )
 
                 // This rating bar is for setting a rating from 1 star to 5
@@ -191,7 +190,10 @@ fun CreateRecipeScreen(
                 Spacer(modifier = Modifier.height(15.dp))
 
                 // A next button that saves the data of a recipe name, total time, difficulty and rating into dataViewModel
-                ElevatedButton(
+                FilledTonalButton(
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    ),
                     onClick = {
                         if (recipeName.trim().length < minCharsLength || totalTime.trim().length < minCharsLength) {
                             Toast.makeText(
@@ -247,7 +249,9 @@ fun RatingBar(
                 modifier = Modifier
                     .clickable { onRatingChanged(i) }
                     .size(24.dp)
-                    .padding(2.dp)
+                    .padding(2.dp),
+                tint = MaterialTheme.colorScheme.onPrimaryContainer
+
             )
         }
     }

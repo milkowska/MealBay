@@ -1,12 +1,14 @@
 package uk.ac.aber.dcs.cs39440.mealbay.ui.recipe_data
 
 import androidx.compose.material3.TextField
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.AlertDialog
 import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material3.*
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -62,18 +64,18 @@ fun PreparationScreen(
             .padding(10.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         Text(
             text = stringResource(R.string.preparation),
-            fontSize = 24.sp
+            fontSize = 21.sp
         )
 
         Spacer(modifier = Modifier.height(10.dp))
 
         Text(
             text = stringResource(R.string.add_preparation),
-            fontSize = 20.sp
+            fontSize = 17.sp
         )
 
         Divider(
@@ -105,12 +107,15 @@ fun PreparationScreen(
             verticalAlignment = Alignment.Bottom
         ) {
 
-            ElevatedButton(
+            FilledTonalButton(
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.onPrimaryContainer
+                ),
                 onClick = {
                     if (preparationDetails.trim() == "" || preparationDetails.trim().length < minCharsLength) {
                         Toast.makeText(
                             context,
-                            "The preparation details is too short.",
+                            "The preparation details are too short.",
                             Toast.LENGTH_LONG
                         ).show()
                     } else {
@@ -122,7 +127,10 @@ fun PreparationScreen(
                     .width(220.dp)
                     .height(50.dp),
             ) {
-                Text(text = stringResource(id = R.string.save))
+                Text(
+                    text = stringResource(id = R.string.save),
+                    fontFamily = Railway
+                )
             }
         }
 
@@ -143,7 +151,7 @@ fun PreparationScreen(
                     Text(
                         stringResource(R.string.warning_four),
                         fontFamily = Railway,
-                        fontSize = 15.sp
+                        fontSize = 14.sp
                     )
                 },
                 confirmButton = {
