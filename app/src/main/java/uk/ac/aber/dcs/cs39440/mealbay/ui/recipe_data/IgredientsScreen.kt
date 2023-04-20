@@ -12,6 +12,8 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -129,14 +131,30 @@ fun IngredientsScreen(
                 LazyColumn(
                     modifier = Modifier.weight(1f),
                     contentPadding = PaddingValues(vertical = 16.dp, horizontal = 8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
+
                     items(ingredientsList) { ingredient ->
-                        Text(
-                            text = ingredient,
-                            fontSize = 16.sp,
-                            modifier = Modifier.fillMaxWidth()
-                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = ingredient,
+                                fontSize = 16.sp,
+                                modifier = Modifier.weight(1f)
+                            )
+                            IconButton(
+                                onClick = { ingredientsList.remove(ingredient) },
+                                modifier = Modifier.size(21.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.Close,
+                                    contentDescription = "Delete ingredient"
+                                )
+                            }
+                        }
                     }
                 }
 
@@ -212,7 +230,7 @@ fun IngredientsScreen(
                         confirmButton = {
                             TextButton(
                                 onClick = {
-                                    openAlertDialog.value = false
+                                    openAlertDialogOnSave.value = false
                                     //Saving ingredients using dataViewModel
                                     dataViewModel.saveStringList(
                                         ingredientsList,
@@ -235,7 +253,7 @@ fun IngredientsScreen(
                         dismissButton = {
                             TextButton(
                                 onClick = {
-                                    openAlertDialog.value = false
+                                    openAlertDialogOnSave.value = false
                                 },
                             ) {
                                 Text(
