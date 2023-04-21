@@ -142,7 +142,7 @@ fun HomeScreen(
         drawerBackgroundColor = MaterialTheme.colorScheme.surface,
         drawerContent = {
             Column(
-                modifier = Modifier.padding(20.dp),
+                modifier = Modifier.padding(10.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
@@ -152,7 +152,7 @@ fun HomeScreen(
                 )
                 Spacer(modifier = Modifier.height(15.dp))
 
-                Text(text = stringResource(R.string.have_you_on_board), fontSize = 16.sp)
+                Text(text = stringResource(R.string.have_you_on_board), fontSize = 15.sp)
 
                 Image(
                     painter = painterResource(id = R.drawable.welcome),
@@ -162,9 +162,9 @@ fun HomeScreen(
                     contentScale = ContentScale.Crop
                 )
 
-                Spacer(modifier = Modifier.height(14.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
-                Text(text = stringResource(R.string.press_to_log_out), fontSize = 16.sp)
+                Text(text = stringResource(R.string.press_to_log_out), fontSize = 15.sp)
 
                 Spacer(modifier = Modifier.height(10.dp))
 
@@ -190,13 +190,13 @@ fun HomeScreen(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(5.dp))
+                Spacer(modifier = Modifier.height(15.dp))
 
                 Image(
                     painter = painterResource(id = R.drawable.person_looking),
                     contentDescription = stringResource(id = R.string.logo),
                     modifier = Modifier
-                        .height(210.dp),
+                        .height(170.dp),
                     contentScale = ContentScale.Crop
                 )
 

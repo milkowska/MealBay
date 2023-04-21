@@ -44,10 +44,10 @@ fun Navigation(currentRoute: MutableState<String>) {
     val user = Firebase.auth.currentUser
     var start = Screen.Splash.route
 
-    if (user != null) {
-        start = Screen.Home.route
-    }else {
-        start = Screen.Splash.route
+    start = if (user != null) {
+        Screen.Home.route
+    } else {
+        Screen.Splash.route
     }
     // Defining the navigation graph
     NavHost(

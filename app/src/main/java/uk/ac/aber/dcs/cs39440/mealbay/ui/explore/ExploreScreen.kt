@@ -190,7 +190,7 @@ fun RecipeData(
     BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = 70.dp)
+            .padding(top = 75.dp)
     ) {
         Column(
             modifier = Modifier
