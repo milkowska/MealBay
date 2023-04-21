@@ -16,6 +16,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import uk.ac.aber.dcs.cs39440.mealbay.R
 import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.Screen
 import uk.ac.aber.dcs.cs39440.mealbay.ui.navigation.screens
+import uk.ac.aber.dcs.cs39440.mealbay.ui.theme.Railway
 
 
 /**
@@ -67,7 +68,7 @@ fun MainPageNavigationBar(
                         contentDescription = labelText
                     )
                 },
-                label = { Text(text = labelText) },
+                label = { Text(text = labelText, fontFamily = Railway) },
                 selected = isSelected,
                 onClick = {
                     navController.navigate(screen.route) {

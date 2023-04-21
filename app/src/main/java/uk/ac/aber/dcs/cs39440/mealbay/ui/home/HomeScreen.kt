@@ -152,7 +152,7 @@ fun HomeScreen(
                 )
                 Spacer(modifier = Modifier.height(15.dp))
 
-                Text(text = stringResource(R.string.have_you_on_board), fontSize = 15.sp)
+                Text(text = stringResource(R.string.have_you_on_board), fontSize = 16.sp)
 
                 Image(
                     painter = painterResource(id = R.drawable.welcome),
@@ -164,7 +164,7 @@ fun HomeScreen(
 
                 Spacer(modifier = Modifier.height(14.dp))
 
-                Text(text = stringResource(R.string.press_to_log_out), fontSize = 15.sp)
+                Text(text = stringResource(R.string.press_to_log_out), fontSize = 16.sp)
 
                 Spacer(modifier = Modifier.height(10.dp))
 
@@ -293,7 +293,7 @@ fun HomeScreen(
                                     text = stringResource(id = R.string.meal_for_today),
                                     modifier = Modifier
                                         .padding(bottom = 4.dp),
-                                    fontSize = 15.sp,
+                                    fontSize = 16.sp,
                                     textAlign = TextAlign.Center
                                 )
 
@@ -383,7 +383,7 @@ fun HomeScreen(
                                                         0.dp
                                                     )
                                                 },
-                                            fontSize = 15.sp,
+                                            fontSize = 16.sp,
                                             textAlign = TextAlign.Center
                                         )
                                     }
@@ -407,7 +407,7 @@ fun HomeScreen(
                                     text = stringResource(id = R.string.search_description),
                                     modifier = Modifier
                                         .padding(bottom = 4.dp),
-                                    fontSize = 15.sp,
+                                    fontSize = 16.sp,
                                     textAlign = TextAlign.Center
                                 )
 
@@ -426,7 +426,7 @@ fun HomeScreen(
                                     text = stringResource(id = R.string.search_description_three),
                                     modifier = Modifier
                                         .padding(bottom = 20.dp),
-                                    fontSize = 15.sp,
+                                    fontSize = 16.sp,
                                     textAlign = TextAlign.Center
                                 )
 
@@ -442,7 +442,7 @@ fun HomeScreen(
                                     text = stringResource(id = R.string.search_description_two),
                                     modifier = Modifier
                                         .padding(top = 20.dp),
-                                    fontSize = 15.sp,
+                                    fontSize = 16.sp,
                                     textAlign = TextAlign.Center
                                 )
 
@@ -463,7 +463,7 @@ fun HomeScreen(
                                     text = stringResource(id = R.string.add_one),
                                     modifier = Modifier
                                         .padding(bottom = 20.dp),
-                                    fontSize = 15.sp,
+                                    fontSize = 16.sp,
                                     textAlign = TextAlign.Center
                                 )
                                 Image(
@@ -492,7 +492,7 @@ fun HomeScreen(
                                     text = stringResource(id = R.string.collection_feature_description_one),
                                     modifier = Modifier
                                         .padding(bottom = 20.dp),
-                                    fontSize = 15.sp,
+                                    fontSize = 16.sp,
                                     textAlign = TextAlign.Center
                                 )
 
@@ -509,7 +509,7 @@ fun HomeScreen(
                                     text = stringResource(id = R.string.collection_feature_description_two),
                                     modifier = Modifier
                                         .padding(bottom = 20.dp),
-                                    fontSize = 15.sp,
+                                    fontSize = 16.sp,
                                     textAlign = TextAlign.Center
                                 )
 
@@ -525,7 +525,7 @@ fun HomeScreen(
                                     text = stringResource(id = R.string.collection_feature_description_three),
                                     modifier = Modifier
                                         .padding(top = 12.dp, bottom = 12.dp),
-                                    fontSize = 15.sp,
+                                    fontSize = 16.sp,
                                     textAlign = TextAlign.Center
                                 )
 
@@ -545,7 +545,7 @@ fun HomeScreen(
                                 Text(
                                     text = stringResource(id = R.string.shopping_list_feature_description),
 
-                                    fontSize = 15.sp,
+                                    fontSize = 16.sp,
                                     textAlign = TextAlign.Center
                                 )
 
@@ -561,7 +561,7 @@ fun HomeScreen(
                                     text = stringResource(id = R.string.shopping_list_feature_description_two),
                                     modifier = Modifier
                                         .padding(bottom = 20.dp),
-                                    fontSize = 15.sp,
+                                    fontSize = 16.sp,
                                     textAlign = TextAlign.Center
                                 )
 
@@ -577,7 +577,7 @@ fun HomeScreen(
                                     text = stringResource(id = R.string.shopping_list_feature_description_three),
                                     modifier = Modifier
                                         .padding(top = 20.dp),
-                                    fontSize = 15.sp,
+                                    fontSize = 16.sp,
                                     textAlign = TextAlign.Center
                                 )
 

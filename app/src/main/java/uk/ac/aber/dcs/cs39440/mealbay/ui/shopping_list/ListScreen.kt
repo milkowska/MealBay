@@ -101,7 +101,7 @@ fun BottomSheet(
 
     ) {
         Text(
-            text = stringResource(id = R.string.add_an_item),
+            text = stringResource(id = R.string.add_an_item_two),
             fontSize = 21.sp,
             textAlign = TextAlign.Center
         )
@@ -308,7 +308,7 @@ fun ListScreen(
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
                             .fillMaxWidth()
-                            .height(80.dp)
+                            .height(74.dp)
 
                     ) {
 
@@ -328,7 +328,7 @@ fun ListScreen(
                             Icon(
                                 Icons.Filled.Add,
                                 contentDescription = "Add an item",
-                                tint = Color.Black
+                                tint = MaterialTheme.colorScheme.surface
                             )
                         }
 
@@ -343,7 +343,7 @@ fun ListScreen(
                             modifier = Modifier
                                 .width(220.dp)
                                 .height(50.dp)
-                                .padding(start = 30.dp, end = 25.dp)
+                                .padding(start = 30.dp, end = 10.dp)
                                 .align(Alignment.BottomStart),
 
                             ) {

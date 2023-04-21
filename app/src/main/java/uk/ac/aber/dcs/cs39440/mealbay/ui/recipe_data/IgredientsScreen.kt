@@ -273,7 +273,7 @@ fun IngredientsScreen(
                     modifier = Modifier
                         .padding(16.dp)
                         .weight(1f),
-                    horizontalArrangement = Arrangement.spacedBy(40.dp),
+                    horizontalArrangement = Arrangement.spacedBy(65.dp),
                     verticalAlignment = Alignment.Bottom
                 ) {
 
@@ -286,7 +286,7 @@ fun IngredientsScreen(
                         },
                         enabled = ingredientsList.isNotEmpty(), // button is enabled once the ingredient list is created and not empty.
                         modifier = Modifier
-                            .width(200.dp)
+                            .width(220.dp)
                             .height(50.dp),
                     ) {
                         Text(
@@ -344,7 +344,7 @@ fun ModalBottomSheet(ingredientsList: SnapshotStateList<String>) {
         TextField(
             value = ingredient,
             label = {
-                Text(text = stringResource(R.string.add_ingredient))
+                Text(text = stringResource(R.string.name))
             },
             onValueChange = {
                 ingredient = it

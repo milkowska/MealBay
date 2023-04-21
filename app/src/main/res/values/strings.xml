@@ -112,5 +112,7 @@
     <string name="press_to_log_out">Press the button below to log out.</string>
     <string name="hello">Hello!</string>
     <string name="password">Password</string>
+    <string name="add_an_item_two">Add an item</string>
+    <string name="name">Name</string>
 
 </resources>

@@ -162,6 +162,7 @@ fun CollectionScreen(
                             tint = MaterialTheme.colorScheme.surface
                         )
                     }
+                    Spacer(modifier = Modifier.height(10.dp))
                 }
             }
         }
@@ -198,8 +199,8 @@ fun EmptyCollectionScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 19.dp)
-                .padding(horizontal = 24.dp),
+                .padding(top = 15.dp)
+                .padding(horizontal = 22.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
@@ -208,7 +209,7 @@ fun EmptyCollectionScreen(
                 contentDescription = stringResource(id = R.string.no_data_image),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(20.dp),
+                    .padding(18.dp),
             )
 
             Text(
@@ -392,7 +393,7 @@ fun DisplayCollections(
     val isLoading = remember { mutableStateOf(true) }
     val openAlertDialog = remember { mutableStateOf(false) }
     val selectedCollectionId = remember { mutableStateOf("") }
-
+    val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
@@ -466,7 +467,7 @@ fun DisplayCollections(
                             )
                         }
                     }
-                    Divider()
+                    Divider( color = MaterialTheme.colorScheme.onSurface)
                 }
             }
 
@@ -511,6 +512,8 @@ fun DisplayCollections(
                         TextButton(onClick = {
                             onDeleteClick(selectedCollectionId.value)
                             openAlertDialog.value = false
+                            Toast.makeText(context, "The collection has been removed.", Toast.LENGTH_SHORT)
+                                .show()
                         }) {
                             Text(
                                 text = stringResource(id = R.string.confirm),
