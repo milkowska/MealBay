@@ -24,6 +24,8 @@ class LoginScreenViewModel : ViewModel() {
     // saving internally
     private val _loading = MutableLiveData(false)
 
+
+
     /**
      * This is a function that handles signing in with email and password using Firebase Authentication.
      *

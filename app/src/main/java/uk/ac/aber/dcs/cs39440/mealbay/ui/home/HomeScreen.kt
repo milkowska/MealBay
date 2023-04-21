@@ -236,7 +236,8 @@ fun HomeScreen(
                             modifier = Modifier
                                 .padding(end = 60.dp)
                                 .fillMaxWidth(),
-                            textAlign = TextAlign.Center
+                            textAlign = TextAlign.Center,
+                            fontSize = 19.sp,
                         )
                     },
                     backgroundColor = MaterialTheme.colorScheme.surface

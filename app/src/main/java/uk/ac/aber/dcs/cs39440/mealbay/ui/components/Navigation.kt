@@ -5,9 +5,12 @@ import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import uk.ac.aber.dcs.cs39440.mealbay.ui.collection.CollectionDisplayScreen
 import uk.ac.aber.dcs.cs39440.mealbay.ui.collection.CollectionScreenTopLevel
 import uk.ac.aber.dcs.cs39440.mealbay.ui.recipe_data.CreateRecipeScreen
@@ -38,11 +41,18 @@ fun Navigation(currentRoute: MutableState<String>) {
             currentRoute.value = destination.route ?: ""
         }
     }
+    val user = Firebase.auth.currentUser
+    var start = Screen.Splash.route
+
+    if (user != null) {
+        start = Screen.Home.route
+    }else {
+        start = Screen.Splash.route
+    }
     // Defining the navigation graph
     NavHost(
         navController = navController,
-        startDestination = Screen.Splash.route
-
+        startDestination = start
     ) {
         composable(Screen.Home.route) { HomeScreenTopLevel(navController) }
         composable(Screen.Explore.route) {
