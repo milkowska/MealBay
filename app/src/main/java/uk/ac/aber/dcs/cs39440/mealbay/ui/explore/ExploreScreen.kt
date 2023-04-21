@@ -1,6 +1,8 @@
 package uk.ac.aber.dcs.cs39440.mealbay.ui.explore
 
 import android.annotation.SuppressLint
+import androidx.compose.runtime.derivedStateOf
+
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -39,6 +41,7 @@ import uk.ac.aber.dcs.cs39440.mealbay.model.DataViewModel
 import uk.ac.aber.dcs.cs39440.mealbay.storage.CURRENT_USER_ID
 import uk.ac.aber.dcs.cs39440.mealbay.storage.RECIPE_ID
 import uk.ac.aber.dcs.cs39440.mealbay.ui.theme.Railway
+import androidx.compose.runtime.LaunchedEffect
 
 /**
  * This is a composable function that is used to display the public recipe collection called recipesready stored in the
@@ -67,52 +70,68 @@ fun ExploreScreen(
             val (isLoading, setIsLoading) = remember { mutableStateOf(true) }
             val (recipeList, setRecipeList) = remember { mutableStateOf(listOf<Recipe>()) }
             val context = LocalContext.current
+            val searchQuery = remember { mutableStateOf("") }
 
-            // While the data is being retrieved the circular progress indicator appears
-            if (isLoading) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
+            val filteredRecipes = remember(recipeList, searchQuery.value) {
+                recipeList.filter { recipe ->
+                    recipe.title?.contains(searchQuery.value, ignoreCase = true) ?: false
+                }
+            }
+            Column {
+                SearchBar(searchQuery)
+                Surface(
+                    modifier = Modifier
+                        .padding(innerPadding)
+                        .fillMaxSize()
                 ) {
-                    Spacer(modifier = Modifier.height(20.dp))
+                    // While the data is being retrieved the circular progress indicator appears
+                    if (isLoading) {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Spacer(modifier = Modifier.height(20.dp))
 
-                    CircularProgressIndicator(
-                        modifier = Modifier
-                            .size(29.dp)
+                            CircularProgressIndicator(
+                                modifier = Modifier
+                                    .size(29.dp)
+                            )
+                        }
+                    }
+
+                    // Fetching recipe data and mapping it to Recipe object
+                    FirebaseFetcher(
+                        onSuccess = { queryDocumentSnapshots ->
+                            setIsLoading(false)
+                            val list = queryDocumentSnapshots.documents
+                            val recipes = list.mapNotNull { documentSnapshot ->
+                                val r: Recipe? = documentSnapshot.toObject(Recipe::class.java)
+                                if (r != null) {
+                                    r.id = documentSnapshot.id
+                                }
+                                r
+                            }
+                            setRecipeList(recipes)
+                        },
+                        onFailure = {
+                            setIsLoading(false)
+                            Toast.makeText(
+                                context,
+                                "Fail to get the data.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     )
                 }
             }
-
-            // Fetching recipe data and mapping it to Recipe object
-            FirebaseFetcher(
-                onSuccess = { queryDocumentSnapshots ->
-                    setIsLoading(false)
-                    val list = queryDocumentSnapshots.documents
-                    val recipes = list.mapNotNull { documentSnapshot ->
-                        val r: Recipe? = documentSnapshot.toObject(Recipe::class.java)
-                        if (r != null) {
-                            r.id = documentSnapshot.id
-                        }
-                        r
-                    }
-                    setRecipeList(recipes)
-                },
-                onFailure = {
-                    setIsLoading(false)
-                    Toast.makeText(
-                        context,
-                        "Fail to get the data.",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            )
-
             // Displaying the data in a specific layout
             if (!isLoading) {
-                RecipeData(recipeList, navController, dataViewModel)
+                RecipeData(filteredRecipes, searchQuery.value, navController, dataViewModel)
             }
         }
     }
+
+
 }
 
 /**
@@ -147,22 +166,32 @@ fun FirebaseFetcher(
 }
 
 /**
- * Composable function to display a list of recipes.
+ * Composable function to display a list of recipes with a search text field.
  *
- * @param recipeList List of recipes to be displayed.
+ * @param filteredRecipes List of filtered recipes by query to be displayed.
+ * @param searchQuery a query to be used to filter the recipe list
  * @param navController NavController to navigate to different screens.
  * @param dataViewModel Instance of DataViewModel to get and set data across multiple composables.
  */
 @OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun RecipeData(
-    recipeList: List<Recipe>,
+    filteredRecipes: List<Recipe>,
+    searchQuery: String,
     navController: NavHostController,
     dataViewModel: DataViewModel = hiltViewModel()
 ) {
     var recipeId: String?
 
-    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+    // Trigger recomposition when searchQuery changes
+    LaunchedEffect(searchQuery) {}
+    // Log.d("SEARCH_QUERY", "query: $searchQuery")
+
+    BoxWithConstraints(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(top = 70.dp)
+    ) {
         Column(
             modifier = Modifier
         ) {
@@ -171,14 +200,14 @@ fun RecipeData(
 
                 LazyColumn {
                     // setting data for each item was by recipeList
-                    itemsIndexed(recipeList) { index, item ->
+                    itemsIndexed(filteredRecipes) { index, item ->
 
                         ConstraintLayout(
                             modifier = Modifier
                                 .padding(top = 5.dp, start = 10.dp, end = 10.dp)
                                 .fillMaxWidth()
                                 .clickable {
-                                    recipeList[index]?.id?.let {
+                                    filteredRecipes[index]?.id?.let {
                                         recipeId = it
                                         dataViewModel.saveString(recipeId!!, RECIPE_ID)
                                         Log.d("TEST", "$recipeId")
@@ -195,7 +224,7 @@ fun RecipeData(
 
                                     }
                             ) {
-                                recipeList[index]?.photo?.let {
+                                filteredRecipes[index]?.photo?.let {
                                     Image(
                                         painter = rememberImagePainter(it),
                                         contentDescription = "Recipe Image",
@@ -209,7 +238,7 @@ fun RecipeData(
                                     )
                                 }
                             }
-                            recipeList[index]?.title?.let {
+                            filteredRecipes[index]?.title?.let {
                                 Text(
                                     text = it,
                                     modifier = Modifier
@@ -225,7 +254,7 @@ fun RecipeData(
                                 )
                             }
 
-                            recipeList[index]?.rating?.let {
+                            filteredRecipes[index]?.rating?.let {
                                 Text(
                                     text = "Rating: $it",
                                     modifier = Modifier
@@ -267,7 +296,7 @@ fun RecipeData(
                         }
                     privateRecipesRef?.get()?.addOnSuccessListener { querySnapshot ->
                         hasRecipes = !querySnapshot.isEmpty
-                      //  Log.e("RecipeData", "$hasRecipes")
+                        //  Log.e("RecipeData", "$hasRecipes")
                     }?.addOnFailureListener { exception ->
                         //Log.e("RecipeData", "Error checking for user's recipes", exception)
                     }
@@ -312,4 +341,16 @@ fun RecipeData(
             }
         }
     }
+}
+
+@Composable
+fun SearchBar(query: MutableState<String>) {
+    TextField(
+        value = query.value,
+        onValueChange = { query.value = it },
+        label = { Text("Search recipes") },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    )
 }
