@@ -25,7 +25,6 @@ class LoginScreenViewModel : ViewModel() {
     private val _loading = MutableLiveData(false)
 
 
-
     /**
      * This is a function that handles signing in with email and password using Firebase Authentication.
      *
@@ -54,7 +53,7 @@ class LoginScreenViewModel : ViewModel() {
                     is FirebaseAuthInvalidUserException -> {
                         // handling invalid user exception
                         onError("Invalid email address")
-                        Log.d("FBA", "Invalid email address!")
+                        Log.d("FBA", "Invalid email address!!")
                     }
                     is FirebaseAuthInvalidCredentialsException -> {
                         // handling invalid credentials exception
@@ -96,6 +95,11 @@ class LoginScreenViewModel : ViewModel() {
         onError: (String) -> Unit
     ) {
         if (_loading.value == false) {
+
+            if (password.length < 6) {
+                onError("Password is too short!")
+                return
+            }
             _loading.value = true
             auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener { task ->
@@ -109,7 +113,7 @@ class LoginScreenViewModel : ViewModel() {
                     } else {
                         val errorMessage = when (val exception = task.exception) {
                             is FirebaseAuthInvalidCredentialsException -> {
-                                "Invalid email address!"
+                                "Invalid credentials!"
                             }
                             else -> {
                                 "Error creating user!"

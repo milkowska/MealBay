@@ -67,7 +67,6 @@ fun LoginScreen(
     val scope = rememberCoroutineScope()
 
     Surface(
-
         modifier = Modifier
             .fillMaxSize(),
         color = MaterialTheme.colorScheme.surface,
@@ -194,7 +193,7 @@ fun UserForm(
     val keyboardController = LocalSoftwareKeyboardController.current
     val valid = remember(email.value, password.value) {
         email.value.trim().isNotEmpty() && password.value.trim()
-            .isNotEmpty() && (password.value.trim().length >= 6)
+            .isNotEmpty() /*&& (password.value.trim().length >= 6)*/
     }
 
     val modifier = Modifier
@@ -236,7 +235,7 @@ fun UserForm(
                 id = R.string.login
             ),
             loading = loading,
-            validInputs = valid
+            validInputs = valid,
         ) {
             onDone(email.value.trim(), password.value.trim())
             // to make the keyboard go away when the button is clicked
