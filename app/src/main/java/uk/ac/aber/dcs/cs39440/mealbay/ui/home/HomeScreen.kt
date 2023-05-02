@@ -56,6 +56,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.ui.platform.LocalContext
+import com.google.firebase.firestore.FirebaseFirestore
 import uk.ac.aber.dcs.cs39440.mealbay.storage.CURRENT_CATEGORY
 import uk.ac.aber.dcs.cs39440.mealbay.storage.CURRENT_USER_ID
 import uk.ac.aber.dcs.cs39440.mealbay.ui.theme.Railway

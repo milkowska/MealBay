@@ -105,6 +105,7 @@ fun CategoryScreen(
                                     }
                                 },
                                 colors = CheckboxDefaults.colors(
+                                    uncheckedColor = MaterialTheme.colorScheme.onPrimaryContainer,
                                     checkedColor = Color(0xFF9C4234)
                                 )
                             )
