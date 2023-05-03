@@ -273,7 +273,7 @@ fun IngredientsScreen(
                     modifier = Modifier
                         .padding(16.dp)
                         .weight(1f),
-                    horizontalArrangement = Arrangement.spacedBy(65.dp),
+                    horizontalArrangement = Arrangement.spacedBy(20.dp),
                     verticalAlignment = Alignment.Bottom
                 ) {
 

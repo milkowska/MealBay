@@ -1,4 +1,4 @@
-package uk.ac.aber.dcs.cs39440.mealbay.ui.login
+package uk.ac.aber.dcs.cs39440.mealbay.model
 
 import android.util.Log
 import androidx.lifecycle.LiveData
